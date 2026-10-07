@@ -216,17 +216,62 @@ export async function registerStudent(input: z.input<typeof RegisterStudentSchem
           }));
 
         if (academicYear) {
+          // If rollNumber was not explicitly provided by staff, auto-assign next sequential roll number in this section
+          let assignedRoll = data.rollNumber;
+          if (!assignedRoll) {
+            const lastEnrollment = await tx.enrollment.findFirst({
+              where: {
+                sectionId: data.sectionId,
+                academicYearId: academicYear.id,
+                rollNumber: { not: null },
+              },
+              orderBy: { rollNumber: "desc" },
+            });
+            assignedRoll = (lastEnrollment?.rollNumber ?? 0) + 1;
+          }
+
           await tx.enrollment.create({
             data: {
               studentId: student.id,
               sectionId: data.sectionId,
               academicYearId: academicYear.id,
-              rollNumber: data.rollNumber ?? null,
+              rollNumber: assignedRoll,
               startDate: new Date(),
               status: "ACTIVE",
             },
           });
         }
+      }
+
+      // Automatically generate Term 1 Admission & Academic Fee Invoice
+      try {
+        const feeStructure = await tx.feeStructure.findFirst({
+          where: { schoolId: school.id },
+          orderBy: { createdAt: "desc" },
+        });
+
+        const invoiceCount = await tx.feeInvoice.count();
+        const invoiceNo = `INV-2026-${String(invoiceCount + 101).padStart(4, "0")}`;
+
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 30); // 30 days from admission
+
+        await tx.feeInvoice.create({
+          data: {
+            studentId: student.id,
+            feeStructureId: feeStructure?.id || null,
+            invoiceNo,
+            title: "Term 1 Admission & Academic Fee",
+            amount: feeStructure
+              ? Math.round((Number(feeStructure.tuitionFee) + Number(feeStructure.labFee)) / 3)
+              : 7500,
+            paidAmount: 0,
+            dueDate,
+            status: "PENDING",
+          },
+        });
+      } catch (feeErr) {
+        console.warn("Could not auto-generate fee invoice during registration:", feeErr);
       }
 
       return { user, student };

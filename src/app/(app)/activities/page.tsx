@@ -27,9 +27,9 @@ export default async function ActivitiesPage() {
                 <Badge color="blue">{a.kind}</Badge>
                 {a.consentRequired && <Badge color="amber">Consent required</Badge>}
               </div>
-              <h2 className="font-semibold">{a.name}</h2>
-              <p className="mt-1 text-sm text-slate-600">{a.description}</p>
-              <div className="mt-2 flex flex-wrap gap-4 text-xs text-slate-500">
+              <h2 className="font-semibold text-white">{a.name}</h2>
+              <p className="mt-1 text-sm text-slate-300">{a.description}</p>
+              <div className="mt-2 flex flex-wrap gap-4 text-xs text-slate-400">
                 <span>Coordinator: {a.coordinator.firstName} {a.coordinator.lastName}</span>
                 <span>{a._count.participants} participants</span>
                 {a.venue && <span>Venue: {a.venue}</span>}

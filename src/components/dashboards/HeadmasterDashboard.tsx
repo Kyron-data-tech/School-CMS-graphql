@@ -100,20 +100,32 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
                 <span>📅</span> Attendance Register
               </Link>
               <Link
-                href="/homework"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold backdrop-blur-md border border-white/10 transition"
-              >
-                <span>📝</span> Homework Hub
-              </Link>
-              <Link
                 href="/results"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-200 font-bold backdrop-blur-md border border-purple-400/30 transition"
               >
                 <span>📄</span> Official Marksheets
               </Link>
               <Link
-                href="/register"
+                href="/fees"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold backdrop-blur-md border border-emerald-400/30 transition"
+              >
+                <span>💳</span> Fee Invoicing
+              </Link>
+              <Link
+                href="/transport"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold backdrop-blur-md border border-amber-400/30 transition"
+              >
+                <span>🚌</span> Transport Fleet
+              </Link>
+              <Link
+                href="/library"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-200 font-bold backdrop-blur-md border border-indigo-400/30 transition"
+              >
+                <span>📚</span> Library Catalog
+              </Link>
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold backdrop-blur-md border border-white/10 transition"
               >
                 <span>⚡</span> Admissions Desk
               </Link>
@@ -194,17 +206,17 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
           {recentStudents.length === 0 ? (
             <Empty title="No recent student registrations">New students will appear here once registered.</Empty>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-slate-800">
               {recentStudents.map((s) => {
                 const enr = s.enrollments[0];
                 return (
-                  <li key={s.id} className="flex items-center justify-between py-3 text-xs sm:text-sm hover:bg-slate-50/70 -mx-2 px-2.5 rounded-xl transition">
+                  <li key={s.id} className="flex items-center justify-between py-3 text-xs sm:text-sm hover:bg-slate-800/50 -mx-2 px-2.5 rounded-xl transition">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-100 to-indigo-100 text-xs font-black text-brand-800 border border-brand-200/50 shadow-subtle">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-900 to-indigo-900 text-xs font-black text-brand-300 border border-brand-700/50 shadow-subtle">
                         {s.firstName[0]}{s.lastName[0]}
                       </div>
                       <div>
-                        <div className="font-bold text-slate-900 leading-tight">
+                        <div className="font-bold text-white leading-tight">
                           {s.firstName} {s.lastName}
                         </div>
                         <div className="font-mono text-[11px] text-slate-400 mt-0.5">{s.admissionNo}</div>
@@ -220,7 +232,7 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
                       )}
                       <Link
                         href={`/students/${s.id}`}
-                        className="rounded-xl border border-slate-200 px-3 py-1 text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition shadow-subtle"
+                        className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-1 text-xs font-bold text-slate-300 hover:bg-slate-700 hover:text-white transition shadow-subtle"
                       >
                         Profile
                       </Link>
@@ -239,7 +251,7 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
           action={
             <Link
               href="/attendance"
-              className="text-xs font-bold text-brand-600 hover:text-brand-800 transition"
+              className="text-xs font-bold text-brand-400 hover:text-brand-300 transition"
             >
               Full Register →
             </Link>
@@ -250,12 +262,12 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
               All students have recorded attendance in morning homeroom roll call.
             </Empty>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-slate-800">
               {absentToday.map((a) => (
                 <li key={a.id} className="flex items-center justify-between py-3 text-xs sm:text-sm">
                   <div className="flex items-center gap-2.5">
                     <span className="h-2 w-2 rounded-full bg-rose-500" />
-                    <span className="font-bold text-slate-800">
+                    <span className="font-bold text-white">
                       {a.student.firstName} {a.student.lastName}
                     </span>
                   </div>
@@ -273,10 +285,10 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
           title="Examination & Results Approvals"
           subtitle="Teacher submissions awaiting Controller review"
         >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-slate-50 to-brand-50/50 border border-slate-200/90 gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-slate-950 to-brand-950/60 border border-slate-800 gap-4">
             <div>
-              <div className="text-3xl font-black text-slate-900 tracking-tight font-display">{pendingResults}</div>
-              <p className="text-xs text-slate-500 font-medium mt-1">
+              <div className="text-3xl font-black text-white tracking-tight font-display">{pendingResults}</div>
+              <p className="text-xs text-slate-400 font-medium mt-1">
                 Subject assessments submitted by faculty awaiting institutional sign-off.
               </p>
             </div>
@@ -297,11 +309,11 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
           {events.length === 0 ? (
             <Empty title="No upcoming calendar events">School assemblies and exam dates will appear here.</Empty>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-slate-800">
               {events.map((e) => (
                 <li key={e.id} className="flex items-center justify-between py-2.5 text-xs sm:text-sm">
-                  <span className="font-bold text-slate-800">{e.title}</span>
-                  <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200 font-mono">
+                  <span className="font-bold text-white">{e.title}</span>
+                  <span className="text-[11px] font-bold text-slate-300 bg-slate-800 px-2.5 py-0.5 rounded-lg border border-slate-700 font-mono">
                     {fmtDate(e.startAt)}
                   </span>
                 </li>
@@ -318,16 +330,16 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
         action={
           <Link
             href="/audit"
-            className="text-xs font-bold text-brand-600 hover:text-brand-800 transition"
+            className="text-xs font-bold text-brand-400 hover:text-brand-300 transition"
           >
             Full Audit Log →
           </Link>
         }
       >
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-slate-800">
           {recentAudit.map((l) => (
             <li key={l.id} className="flex flex-col sm:flex-row sm:items-center justify-between py-2.5 text-xs sm:text-sm gap-1">
-              <span className="font-semibold text-slate-800">{l.summary}</span>
+              <span className="font-semibold text-slate-200">{l.summary}</span>
               <span className="text-[11px] text-slate-400 font-mono">
                 {l.actorName} · {fmtDate(l.createdAt)}
               </span>

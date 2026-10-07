@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { getAuthContext } from "@/lib/auth/context";
 import { assertCan, can } from "@/lib/permissions/engine";
 import { listAccessibleStudents } from "@/lib/queries/students";
@@ -10,11 +11,29 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
   // Server-side gate — never rely on the hidden nav item.
   assertCan(ctx, "students", "personal_info", "view");
 
+  const isStudent = ctx.roleKeys.includes("student") || Boolean(ctx.studentId);
+  const isParent = ctx.roleKeys.includes("parent") || Boolean(ctx.guardianId);
+
+  // If logged in as student, directly open their personal student profile
+  if (isStudent && ctx.studentId) {
+    redirect(`/students/${ctx.studentId}`);
+  }
+
+  // If parent has exactly one child, directly open that child's profile
+  if (isParent && ctx.childStudentIds.length === 1) {
+    redirect(`/students/${ctx.childStudentIds[0]}`);
+  }
+
   const sp = await searchParams;
   const { rows, total } = await listAccessibleStudents(ctx, {
     search: sp.q,
     pageSize: 100,
   });
+
+  // Fallback for student if studentId was not in session context
+  if (isStudent && rows.length > 0) {
+    redirect(`/students/${rows[0].id}`);
+  }
 
   const sections = await db.section.findMany({
     where: { academicYear: { schoolId: ctx.schoolId, isCurrent: true } },

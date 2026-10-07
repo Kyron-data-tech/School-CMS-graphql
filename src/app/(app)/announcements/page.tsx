@@ -85,7 +85,7 @@ export default async function AnnouncementsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Campus Notice Board & Bulletins"
-        subtitle="Institutional announcements, emergency alerts, and circulars powered by GraphQL"
+        subtitle="Institutional announcements, emergency alerts, and administrative circulars"
       />
 
       <InteractiveAnnouncementsClient

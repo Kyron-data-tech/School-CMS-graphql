@@ -108,7 +108,7 @@ export default async function AttendancePage({
     <div className="space-y-6">
       <PageHeader
         title="Student Attendance Register"
-        subtitle={`Class ${activeSummary.gradeName.replace("Class ", "")}-${activeSummary.name} · ${date} · Live GraphQL marking, batch actions & CSV export`}
+        subtitle={`Class ${activeSummary.gradeName.replace("Class ", "")}-${activeSummary.name} · ${date} · Daily roll call, batch actions & CSV export`}
       />
 
       <InteractiveAttendanceClient

@@ -215,7 +215,7 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="rounded-2xl border border-brand-200 bg-gradient-to-r from-brand-900 via-indigo-900 to-slate-900 p-6 text-white shadow-xl">
+      <div className="rounded-2xl border border-brand-800/60 bg-gradient-to-r from-brand-950 via-indigo-950 to-slate-900 p-6 text-white shadow-xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -253,7 +253,7 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
             }}
             className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition ${
               activeTab === "remarks"
-                ? "bg-white text-slate-900 shadow-md font-semibold"
+                ? "bg-brand-600 text-white shadow-md font-semibold"
                 : "text-slate-300 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -268,7 +268,7 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
             }}
             className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition ${
               activeTab === "quiz"
-                ? "bg-white text-slate-900 shadow-md font-semibold"
+                ? "bg-brand-600 text-white shadow-md font-semibold"
                 : "text-slate-300 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -283,7 +283,7 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
             }}
             className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition ${
               activeTab === "notice"
-                ? "bg-white text-slate-900 shadow-md font-semibold"
+                ? "bg-brand-600 text-white shadow-md font-semibold"
                 : "text-slate-300 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -298,7 +298,7 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
             }}
             className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition ${
               activeTab === "chat"
-                ? "bg-white text-slate-900 shadow-md font-semibold"
+                ? "bg-brand-600 text-white shadow-md font-semibold"
                 : "text-slate-300 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -313,29 +313,29 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
             }}
             className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition ml-auto ${
               activeTab === "settings"
-                ? "bg-amber-400 text-slate-900 shadow-md font-bold"
+                ? "bg-amber-500 text-slate-950 shadow-md font-bold"
                 : "bg-white/10 text-amber-200 hover:bg-white/20"
             }`}
           >
-            ⚙️ Model Settings (Sir's Endpoint)
+            ⚙️ Model & AI Settings
           </button>
         </div>
       </div>
 
       {/* Main Content Layout */}
       {activeTab === "settings" ? (
-        /* TAB 5: MODEL SETTINGS & SIR'S ENDPOINT */
+        /* TAB 5: MODEL SETTINGS & ENDPOINT CONFIG */
         <div className="card p-6 max-w-3xl mx-auto space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
             <div>
-              <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
+              <h3 className="text-base font-semibold text-white flex items-center gap-2">
                 <span>⚙️</span> Custom Model & Endpoint Configuration
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-400">
                 Connect School-CMS to your own model server, Ollama, LM Studio, vLLM, or Google Gemini.
               </p>
             </div>
-            <span className="rounded bg-indigo-50 px-2.5 py-1 text-xs font-mono font-medium text-indigo-700">
+            <span className="rounded bg-indigo-950/60 px-2.5 py-1 text-xs font-mono font-medium text-indigo-300 border border-indigo-800/60">
               API Ready
             </span>
           </div>
@@ -350,12 +350,12 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
                   onClick={() => saveSettings({ ...settings, provider: "custom", modelName: "llama3" })}
                   className={`rounded-xl border p-3 text-left transition ${
                     settings.provider === "custom"
-                      ? "border-brand-600 bg-brand-50/70 ring-2 ring-brand-600/20"
-                      : "border-slate-200 hover:bg-slate-50"
+                      ? "border-brand-500 bg-brand-950/60 ring-2 ring-brand-500/40"
+                      : "border-slate-800 bg-slate-950/60 hover:bg-slate-800/50"
                   }`}
                 >
-                  <div className="text-xs font-bold text-slate-900">⚡ Sir's Custom Endpoint</div>
-                  <div className="text-[11px] text-slate-500 mt-1">Ollama, LM Studio, vLLM, or private server</div>
+                  <div className="text-xs font-bold text-white">⚡ Sir's Custom Endpoint</div>
+                  <div className="text-[11px] text-slate-400 mt-1">Ollama, LM Studio, vLLM, or private server</div>
                 </button>
 
                 <button
@@ -363,12 +363,12 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
                   onClick={() => saveSettings({ ...settings, provider: "gemini", modelName: "gemini-1.5-flash" })}
                   className={`rounded-xl border p-3 text-left transition ${
                     settings.provider === "gemini"
-                      ? "border-brand-600 bg-brand-50/70 ring-2 ring-brand-600/20"
-                      : "border-slate-200 hover:bg-slate-50"
+                      ? "border-brand-500 bg-brand-950/60 ring-2 ring-brand-500/40"
+                      : "border-slate-800 bg-slate-950/60 hover:bg-slate-800/50"
                   }`}
                 >
-                  <div className="text-xs font-bold text-slate-900">🤖 Google Gemini API</div>
-                  <div className="text-[11px] text-slate-500 mt-1">Gemini 1.5 Flash / Pro cloud model</div>
+                  <div className="text-xs font-bold text-white">🤖 Google Gemini API</div>
+                  <div className="text-[11px] text-slate-400 mt-1">Gemini 1.5 Flash / Pro cloud model</div>
                 </button>
 
                 <button
@@ -376,20 +376,20 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
                   onClick={() => saveSettings({ ...settings, provider: "builtin", modelName: "academic-domain-v1" })}
                   className={`rounded-xl border p-3 text-left transition ${
                     settings.provider === "builtin"
-                      ? "border-brand-600 bg-brand-50/70 ring-2 ring-brand-600/20"
-                      : "border-slate-200 hover:bg-slate-50"
+                      ? "border-brand-500 bg-brand-950/60 ring-2 ring-brand-500/40"
+                      : "border-slate-800 bg-slate-950/60 hover:bg-slate-800/50"
                   }`}
                 >
-                  <div className="text-xs font-bold text-slate-900">🏫 Built-in Academic Engine</div>
-                  <div className="text-[11px] text-slate-500 mt-1">Zero config, instant responses, offline</div>
+                  <div className="text-xs font-bold text-white">🏫 Built-in Academic Engine</div>
+                  <div className="text-[11px] text-slate-400 mt-1">Zero config, instant responses, offline</div>
                 </button>
               </div>
             </div>
 
             {/* Custom Endpoint Parameters */}
             {settings.provider === "custom" && (
-              <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-3">
-                <div className="text-xs font-semibold text-slate-800">Custom Model Connection Details</div>
+              <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4 space-y-3">
+                <div className="text-xs font-semibold text-slate-200">Custom Model Connection Details</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="label text-xs">Model Name *</label>
@@ -425,8 +425,8 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
             )}
 
             {settings.provider === "gemini" && (
-              <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-3">
-                <div className="text-xs font-semibold text-slate-800">Google Gemini Configuration</div>
+              <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4 space-y-3">
+                <div className="text-xs font-semibold text-slate-200">Google Gemini Configuration</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="label text-xs">Gemini Model</label>
@@ -466,10 +466,10 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
             </div>
 
             {/* Connection Test Bar */}
-            <div className="rounded-xl border border-slate-200 bg-white p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
               <div>
-                <div className="text-xs font-semibold text-slate-800">Test Model Connection</div>
-                <div className="text-[11px] text-slate-500">
+                <div className="text-xs font-semibold text-white">Test Model Connection</div>
+                <div className="text-[11px] text-slate-400">
                   Sends a real-time verification ping to verify that Sir's endpoint is reachable.
                 </div>
               </div>
@@ -488,15 +488,15 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
               <div
                 className={`rounded-xl p-3.5 text-xs ${
                   testResult.success
-                    ? "border border-emerald-200 bg-emerald-50 text-emerald-900"
-                    : "border border-amber-200 bg-amber-50 text-amber-900"
+                    ? "border border-emerald-800/80 bg-emerald-950/60 text-emerald-200"
+                    : "border border-amber-800/80 bg-amber-950/60 text-amber-200"
                 }`}
               >
                 <div className="font-semibold flex items-center gap-1.5">
                   <span>{testResult.success ? "✓" : "⚠️"}</span>
                   <span>{testResult.success ? "Connection Successful!" : "Connection Warning"}</span>
                   {testResult.latencyMs !== undefined && (
-                    <span className="ml-auto font-mono text-[11px] bg-white/60 px-2 py-0.5 rounded">
+                    <span className="ml-auto font-mono text-[11px] bg-slate-900 border border-slate-800 px-2 py-0.5 rounded text-slate-200">
                       {testResult.latencyMs}ms latency
                     </span>
                   )}
@@ -514,7 +514,7 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
             <div className="card p-5 space-y-4">
               {activeTab === "remarks" && (
                 <form onSubmit={handleGenerateRemarks} className="space-y-4">
-                  <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-1.5">
+                  <h3 className="text-sm font-semibold text-white flex items-center gap-1.5">
                     <span>📝</span> Generate Student Remarks
                   </h3>
                   <div>
@@ -589,7 +589,7 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
 
               {activeTab === "quiz" && (
                 <form onSubmit={handleGenerateQuiz} className="space-y-4">
-                  <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-1.5">
+                  <h3 className="text-sm font-semibold text-white flex items-center gap-1.5">
                     <span>📋</span> Smart Quiz Generator
                   </h3>
                   <div>
@@ -652,7 +652,7 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
 
               {activeTab === "notice" && (
                 <form onSubmit={handleGenerateNotice} className="space-y-4">
-                  <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-1.5">
+                  <h3 className="text-sm font-semibold text-white flex items-center gap-1.5">
                     <span>📢</span> Draft Official Notice / Circular
                   </h3>
                   <div>
@@ -708,11 +708,11 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
           <div className="lg:col-span-7">
             <div className="card p-5 h-full flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-slate-800">Generated AI Output</span>
+                    <span className="text-sm font-semibold text-white">Generated AI Output</span>
                     {providerUsed && (
-                      <span className="rounded bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-700 border border-indigo-100">
+                      <span className="rounded bg-indigo-950/60 px-2 py-0.5 text-[11px] font-medium text-indigo-300 border border-indigo-800/60">
                         {providerUsed}
                       </span>
                     )}
@@ -721,7 +721,7 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
                     <button
                       type="button"
                       onClick={handleCopy}
-                      className="btn-ghost text-xs flex items-center gap-1 text-slate-600 hover:text-slate-900"
+                      className="btn-ghost text-xs flex items-center gap-1 text-slate-300 hover:text-white"
                     >
                       {copied ? "✓ Copied!" : "📋 Copy Output"}
                     </button>
@@ -731,20 +731,20 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
                 <div className="mt-4">
                   {loading ? (
                     <div className="flex flex-col items-center justify-center py-20 space-y-3">
-                      <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600"></div>
-                      <p className="text-xs font-medium text-slate-500">
+                      <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-800 border-t-brand-400"></div>
+                      <p className="text-xs font-medium text-slate-400">
                         LLM is reasoning and formatting output...
                       </p>
                     </div>
                   ) : resultText ? (
-                    <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4 text-xs text-slate-800 font-sans leading-relaxed whitespace-pre-wrap">
+                    <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 text-xs text-slate-200 font-sans leading-relaxed whitespace-pre-wrap">
                       {resultText}
                     </div>
                   ) : (
-                    <div className="rounded-xl border border-dashed border-slate-200 p-12 text-center text-slate-400">
+                    <div className="rounded-xl border border-dashed border-slate-800 bg-slate-950/30 p-12 text-center text-slate-500">
                       <div className="mx-auto mb-2 text-2xl">✨</div>
-                      <p className="text-xs font-medium text-slate-600">No output generated yet</p>
-                      <p className="text-[11px] text-slate-400 mt-1">
+                      <p className="text-xs font-medium text-slate-300">No output generated yet</p>
+                      <p className="text-[11px] text-slate-500 mt-1">
                         Fill out the parameters on the left and click Generate to see the response.
                       </p>
                     </div>
@@ -752,7 +752,7 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
                 </div>
               </div>
 
-              <div className="mt-4 border-t border-slate-100 pt-3 flex items-center justify-between text-[11px] text-slate-400">
+              <div className="mt-4 border-t border-slate-800 pt-3 flex items-center justify-between text-[11px] text-slate-500">
                 <span>Active Provider: {settings.provider}</span>
                 <span>Configurable in Model Settings</span>
               </div>
@@ -776,7 +776,7 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
                       msg.sender === "user"
                         ? "bg-brand-600 text-white"
-                        : "bg-slate-200 text-slate-700"
+                        : "bg-slate-800 text-slate-200 border border-slate-700"
                     }`}
                   >
                     {msg.sender === "user" ? "You" : "🤖"}
@@ -785,7 +785,7 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
                     className={`max-w-xl rounded-2xl p-3.5 text-xs leading-relaxed ${
                       msg.sender === "user"
                         ? "bg-brand-600 text-white rounded-tr-none"
-                        : "bg-slate-100 text-slate-800 rounded-tl-none whitespace-pre-wrap"
+                        : "bg-slate-900 border border-slate-800 text-slate-200 rounded-tl-none whitespace-pre-wrap"
                     }`}
                   >
                     {msg.text}
@@ -801,7 +801,7 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
             </div>
 
             {/* Chat Input Bar */}
-            <div className="border-t border-slate-100 p-4 bg-slate-50/50">
+            <div className="border-t border-slate-800 p-4 bg-slate-950/60">
               <form onSubmit={handleSendChat} className="flex gap-2">
                 <input
                   type="text"
@@ -828,7 +828,7 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
                   onClick={() =>
                     setChatInput("What is the minimum attendance required for Class 8 exams?")
                   }
-                  className="rounded bg-white border border-slate-200 px-2 py-0.5 text-[10px] text-slate-600 hover:border-brand-300 hover:text-brand-700"
+                  className="rounded bg-slate-900 border border-slate-800 px-2 py-0.5 text-[10px] text-slate-300 hover:border-brand-500 hover:text-white transition-colors"
                 >
                   Attendance policy
                 </button>
@@ -837,18 +837,18 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
                   onClick={() =>
                     setChatInput("Explain the letter grading scale used in report cards")
                   }
-                  className="rounded bg-white border border-slate-200 px-2 py-0.5 text-[10px] text-slate-600 hover:border-brand-300 hover:text-brand-700"
+                  className="rounded bg-slate-900 border border-slate-800 px-2 py-0.5 text-[10px] text-slate-300 hover:border-brand-500 hover:text-white transition-colors"
                 >
                   Grading scale
                 </button>
                 <button
                   type="button"
                   onClick={() =>
-                    setChatInput("How can I register a new student via GraphQL?")
+                    setChatInput("How can I register a new student for admissions?")
                   }
-                  className="rounded bg-white border border-slate-200 px-2 py-0.5 text-[10px] text-slate-600 hover:border-brand-300 hover:text-brand-700"
+                  className="rounded bg-slate-900 border border-slate-800 px-2 py-0.5 text-[10px] text-slate-300 hover:border-brand-500 hover:text-white transition-colors"
                 >
-                  GraphQL student registration
+                  Student registration
                 </button>
               </div>
             </div>

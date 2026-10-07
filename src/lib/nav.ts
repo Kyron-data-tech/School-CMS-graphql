@@ -16,17 +16,43 @@ const ITEMS: NavItem[] = [
   { href: "/notes", label: "Subject Notes", module: "*", resource: "*" },
   { href: "/results", label: "Results & Marksheets", module: "exams", resource: "results" },
   { href: "/timetable", label: "Timetable", module: "academics", resource: "timetable" },
+  { href: "/transport", label: "Transport & Buses", module: "*", resource: "*" },
+  { href: "/library", label: "Library Catalog", module: "*", resource: "*" },
+  { href: "/fees", label: "Fee Invoicing", module: "*", resource: "*" },
   { href: "/activities", label: "Activities", module: "activities", resource: "activity" },
   { href: "/announcements", label: "Announcements", module: "announcements", resource: "announcement" },
-  { href: "/knowledge", label: "Knowledge Base", module: "knowledge", resource: "articles" },
   { href: "/copilot", label: "Academic Assistant", module: "*", resource: "*" },
   { href: "/roles", label: "Staff & Roles", module: "admin", resource: "roles" },
   { href: "/audit", label: "Audit Log", module: "admin", resource: "audit" },
 ];
 
 export function navFor(ctx: AuthContext): NavItem[] {
+  const isStudentOrParent = Boolean(
+    ctx.studentId ||
+      ctx.guardianId ||
+      ctx.roleKeys.includes("student") ||
+      ctx.roleKeys.includes("parent")
+  );
+
   return ITEMS.filter((item) => {
+    // Academic Assistant (AI) is only for teaching and administrative staff
+    if (item.href === "/copilot" && isStudentOrParent) {
+      return false;
+    }
     if (item.module === "*") return true;
     return can(ctx, item.module, item.resource, "view");
+  }).map((item) => {
+    if (isStudentOrParent) {
+      if (item.href === "/students") {
+        return {
+          ...item,
+          label: ctx.roleKeys.includes("parent") ? "Student Profile" : "My Profile",
+        };
+      }
+      if (item.href === "/transport") return { ...item, label: "My Bus Route" };
+      if (item.href === "/library") return { ...item, label: "Library Books" };
+      if (item.href === "/fees") return { ...item, label: "My Fees & Receipts" };
+    }
+    return item;
   });
 }

@@ -169,6 +169,9 @@ model School {
   examTypes      ExamType[]
   customFields   CustomField[]
   knowledgeCategories KnowledgeCategory[]
+  transportRoutes TransportRoute[]
+  libraryBooks    LibraryBook[]
+  feeStructures   FeeStructure[]
 }
 
 model Campus {
@@ -455,6 +458,9 @@ model Student {
   achievements   Achievement[]
   notes          StudentNote[]
   documents      StudentDocument[]
+  transport      StudentTransport[]
+  libraryBorrows LibraryBorrowRecord[]
+  invoices       FeeInvoice[]
 
   @@unique([schoolId, admissionNo])
   @@index([schoolId])
@@ -1042,3 +1048,168 @@ model AuditLog {
   @@index([module])
   @@index([actorId])
 }
+
+// ── Transport / Buses ─────────────────────────────────────────────────────────
+
+model TransportRoute {
+  id          String   @id @default(cuid())
+  schoolId    String
+  name        String
+  code        String
+  startPoint  String
+  endPoint    String
+  stops       Json
+  fareAmount  Decimal? @db.Decimal(10, 2)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  school      School   @relation(fields: [schoolId], references: [id])
+  vehicles    TransportVehicle[]
+  students    StudentTransport[]
+
+  @@unique([schoolId, code])
+  @@index([schoolId])
+}
+
+model TransportVehicle {
+  id             String   @id @default(cuid())
+  routeId        String
+  registrationNo String
+  driverName     String
+  driverPhone    String
+  driverLicense  String?
+  capacity       Int      @default(40)
+  status         String   @default("ACTIVE")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  route          TransportRoute @relation(fields: [routeId], references: [id], onDelete: Cascade)
+
+  @@index([routeId])
+}
+
+model StudentTransport {
+  id          String   @id @default(cuid())
+  studentId   String
+  routeId     String
+  stopName    String
+  pickupTime  String?
+  dropTime    String?
+  startDate   DateTime @default(now())
+  endDate     DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  student     Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  route       TransportRoute @relation(fields: [routeId], references: [id])
+
+  @@index([studentId])
+  @@index([routeId])
+}
+
+// ── Library Management ───────────────────────────────────────────────────────
+
+model LibraryBook {
+  id              String   @id @default(cuid())
+  schoolId        String
+  title           String
+  author          String
+  isbn            String?
+  category        String
+  publisher       String?
+  publishedYear   Int?
+  shelfLocation   String?
+  totalCopies     Int      @default(1)
+  availableCopies Int      @default(1)
+  coverUrl        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  school          School   @relation(fields: [schoolId], references: [id])
+  borrows         LibraryBorrowRecord[]
+
+  @@index([schoolId])
+  @@index([schoolId, category])
+}
+
+model LibraryBorrowRecord {
+  id          String    @id @default(cuid())
+  bookId      String
+  studentId   String
+  borrowedAt  DateTime  @default(now())
+  dueDate     DateTime
+  returnedAt  DateTime?
+  fineAmount  Decimal?  @db.Decimal(10, 2)
+  status      String    @default("BORROWED")
+  remarks     String?
+
+  book        LibraryBook @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  student     Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([bookId])
+  @@index([studentId])
+  @@index([status])
+}
+
+// ── Fee Invoicing & Finance ──────────────────────────────────────────────────
+
+model FeeStructure {
+  id           String   @id @default(cuid())
+  schoolId     String
+  name         String
+  gradeId      String?
+  academicYear String
+  frequency    String
+  tuitionFee   Decimal  @db.Decimal(10, 2)
+  labFee       Decimal  @default(0) @db.Decimal(10, 2)
+  libraryFee   Decimal  @default(0) @db.Decimal(10, 2)
+  transportFee Decimal  @default(0) @db.Decimal(10, 2)
+  otherFee     Decimal  @default(0) @db.Decimal(10, 2)
+  totalAmount  Decimal  @db.Decimal(10, 2)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  school       School   @relation(fields: [schoolId], references: [id])
+  invoices     FeeInvoice[]
+
+  @@index([schoolId])
+}
+
+model FeeInvoice {
+  id             String      @id @default(cuid())
+  studentId      String
+  feeStructureId String?
+  invoiceNo      String
+  title          String
+  amount         Decimal     @db.Decimal(10, 2)
+  paidAmount     Decimal     @default(0) @db.Decimal(10, 2)
+  dueDate        DateTime
+  status         String      @default("PENDING")
+  paymentMethod  String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  student        Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  feeStructure   FeeStructure? @relation(fields: [feeStructureId], references: [id])
+  payments       FeePayment[]
+
+  @@unique([invoiceNo])
+  @@index([studentId])
+  @@index([status])
+}
+
+model FeePayment {
+  id             String     @id @default(cuid())
+  invoiceId      String
+  amount         Decimal    @db.Decimal(10, 2)
+  transactionRef String?
+  paymentMethod  String
+  paidAt         DateTime   @default(now())
+  notes          String?
+
+  invoice        FeeInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+

@@ -143,12 +143,12 @@ export function InteractiveAnnouncementsClient({
         setIsUrgent(false);
         setFeedback({
           type: "success",
-          message: `Announcement broadcast successfully via GraphQL to ${audience}!`,
+          message: `Announcement broadcast successfully to ${audience}!`,
         });
       } catch (err: any) {
         setFeedback({
           type: "error",
-          message: err.message || "Failed to create announcement via GraphQL.",
+          message: err.message || "Failed to create announcement.",
         });
       }
     });
@@ -252,7 +252,7 @@ export function InteractiveAnnouncementsClient({
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            Broadcast Announcement (GraphQL)
+            Broadcast Announcement
           </button>
         )}
       </div>
@@ -355,7 +355,7 @@ export function InteractiveAnnouncementsClient({
           <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-4 border border-slate-100">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
-                <span>📢</span> Broadcast Announcement (GraphQL)
+                <span>📢</span> Broadcast Announcement
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}

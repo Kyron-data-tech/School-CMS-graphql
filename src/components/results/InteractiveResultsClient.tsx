@@ -237,18 +237,18 @@ export function InteractiveResultsClient({
 
         setFeedback({
           type: "success",
-          message: `Saved ${savedCount} assessment records via GraphQL for ${activeGradebook.subjectName}!`,
+          message: `Saved ${savedCount} assessment records for ${activeGradebook.subjectName}!`,
         });
       } catch (err: any) {
         setFeedback({
           type: "error",
-          message: err.message || "Failed to save marks via GraphQL.",
+          message: err.message || "Failed to save marks.",
         });
       }
     });
   };
 
-  // Publish Results via GraphQL
+  // Publish Results
   const handlePublishResults = () => {
     if (!activeGradebook) return;
 
@@ -272,12 +272,12 @@ export function InteractiveResultsClient({
 
         setFeedback({
           type: "success",
-          message: `Exam results for "${activeGradebook.examName}" published to student & parent portals via GraphQL!`,
+          message: `Exam results for "${activeGradebook.examName}" published to student & parent portals!`,
         });
       } catch (err: any) {
         setFeedback({
           type: "error",
-          message: err.message || "Failed to publish exam results via GraphQL.",
+          message: err.message || "Failed to publish exam results.",
         });
       }
     });
@@ -325,8 +325,8 @@ export function InteractiveResultsClient({
 
   if (!activeGradebook) {
     return (
-      <div className="card p-12 text-center text-slate-500">
-        <p className="font-semibold text-slate-700">No examination subjects found in your scope.</p>
+      <div className="card p-12 text-center text-slate-400">
+        <p className="font-semibold text-white">No examination subjects found in your scope.</p>
       </div>
     );
   }
@@ -334,7 +334,7 @@ export function InteractiveResultsClient({
   return (
     <div className="space-y-6">
       {/* ── EXAM SUBJECT PICKER TABS ── */}
-      <div className="flex flex-wrap items-center gap-2 bg-white p-3 rounded-xl shadow-card border border-slate-100">
+      <div className="flex flex-wrap items-center gap-2 bg-slate-900/90 p-3 rounded-xl shadow-card border border-slate-800">
         <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 mr-2">
           Assessment:
         </span>
@@ -346,8 +346,8 @@ export function InteractiveResultsClient({
               onClick={() => setSelectedSubjectId(g.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 isActive
-                  ? "bg-brand-600 text-white shadow-sm ring-2 ring-brand-300 ring-offset-1"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  ? "bg-brand-600 text-white shadow-sm ring-2 ring-brand-400 ring-offset-1 ring-offset-slate-900"
+                  : "bg-slate-800 text-slate-300 hover:bg-slate-700"
               }`}
             >
               {g.examName} · {g.gradeName.replace("Class ", "")}-{g.sectionName} · {g.subjectName}
@@ -360,8 +360,8 @@ export function InteractiveResultsClient({
       {!isStudentOrParent && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <div className="card p-3.5 text-center border-l-4 border-l-brand-600">
-            <div className="text-xs font-medium text-slate-500">Class Average</div>
-            <div className="text-xl font-bold text-brand-700 mt-1">
+            <div className="text-xs font-medium text-slate-400">Class Average</div>
+            <div className="text-xl font-bold text-brand-400 mt-1">
               {analytics.avg} / {activeGradebook.maxMarks}
             </div>
             <div className="text-[11px] text-slate-400 mt-0.5">
@@ -370,29 +370,29 @@ export function InteractiveResultsClient({
           </div>
 
           <div className="card p-3.5 text-center border-l-4 border-l-emerald-500">
-            <div className="text-xs font-medium text-slate-500">Pass Rate</div>
-            <div className="text-xl font-bold text-emerald-600 mt-1">{analytics.passRate}%</div>
-            <div className="text-[11px] text-emerald-600 font-medium mt-0.5">Passing marks: {activeGradebook.passingMarks ?? Math.round(activeGradebook.maxMarks * 0.4)}</div>
+            <div className="text-xs font-medium text-slate-400">Pass Rate</div>
+            <div className="text-xl font-bold text-emerald-400 mt-1">{analytics.passRate}%</div>
+            <div className="text-[11px] text-emerald-400 font-medium mt-0.5">Passing marks: {activeGradebook.passingMarks ?? Math.round(activeGradebook.maxMarks * 0.4)}</div>
           </div>
 
           <div className="card p-3.5 text-center border-l-4 border-l-purple-500">
-            <div className="text-xs font-medium text-slate-500">Top Score</div>
-            <div className="text-xl font-bold text-purple-600 mt-1">
+            <div className="text-xs font-medium text-slate-400">Top Score</div>
+            <div className="text-xl font-bold text-purple-400 mt-1">
               {analytics.highest} / {activeGradebook.maxMarks}
             </div>
-            <div className="text-[11px] text-purple-500 font-medium mt-0.5">Highest recorded</div>
+            <div className="text-[11px] text-purple-400 font-medium mt-0.5">Highest recorded</div>
           </div>
 
           <div className="card p-3.5 text-center border-l-4 border-l-amber-500">
-            <div className="text-xs font-medium text-slate-500">Graded Roster</div>
-            <div className="text-xl font-bold text-amber-600 mt-1">
+            <div className="text-xs font-medium text-slate-400">Graded Roster</div>
+            <div className="text-xl font-bold text-amber-400 mt-1">
               {analytics.gradedCount} / {analytics.count}
             </div>
             <div className="text-[11px] text-slate-400 mt-0.5">Students evaluated</div>
           </div>
 
           <div className="card p-3.5 text-center border-l-4 border-l-sky-500">
-            <div className="text-xs font-medium text-slate-500">Release Status</div>
+            <div className="text-xs font-medium text-slate-400">Release Status</div>
             <div className="mt-1">
               {activeGradebook.isPublished ? (
                 <Badge color="green">Published</Badge>
@@ -431,9 +431,9 @@ export function InteractiveResultsClient({
           <button
             type="button"
             onClick={handleExportCSV}
-            className="px-2.5 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition-colors"
+            className="px-2.5 py-1.5 text-xs font-medium rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:bg-slate-700 flex items-center gap-1.5 transition-colors"
           >
-            <svg className="h-3.5 w-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
             Export CSV
@@ -467,7 +467,7 @@ export function InteractiveResultsClient({
               disabled={isPending}
               className="btn-ghost text-xs py-1.5 px-3 flex items-center gap-1.5"
             >
-              {isPending ? "Saving..." : "Save Marks (GraphQL)"}
+              {isPending ? "Saving..." : "Save Marks"}
             </button>
           )}
 
@@ -478,7 +478,7 @@ export function InteractiveResultsClient({
               disabled={isPending}
               className="btn-primary text-xs py-1.5 px-4 flex items-center gap-1.5 shadow-sm"
             >
-              Approve &amp; Publish Results (GraphQL)
+              Approve &amp; Publish Results
             </button>
           )}
         </div>
@@ -489,15 +489,15 @@ export function InteractiveResultsClient({
         <div
           className={`p-3.5 rounded-xl text-xs font-medium flex items-center justify-between transition-all ${
             feedback.type === "success"
-              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-              : "bg-rose-50 text-rose-800 border border-rose-200"
+              ? "bg-emerald-950/80 text-emerald-300 border border-emerald-800/80"
+              : "bg-rose-950/80 text-rose-300 border border-rose-800/80"
           }`}
         >
           <div className="flex items-center gap-2">
             <span>{feedback.type === "success" ? "✓" : "⚠️"}</span>
             <span>{feedback.message}</span>
           </div>
-          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-slate-700 ml-4 font-bold">
+          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-slate-200 ml-4 font-bold">
             ✕
           </button>
         </div>
@@ -505,11 +505,11 @@ export function InteractiveResultsClient({
 
       {/* ── GRADEBOOK TABLE ── */}
       <div className="card overflow-hidden">
-        <div className="px-4 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-          <h3 className="font-semibold text-sm text-slate-800">
+        <div className="px-4 py-3 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between">
+          <h3 className="font-semibold text-sm text-white">
             {activeGradebook.examName} · {activeGradebook.gradeName.replace("Class ", "")}-{activeGradebook.sectionName} · {activeGradebook.subjectName} (Max {activeGradebook.maxMarks})
           </h3>
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-slate-400">
             Showing {filteredResults.length} students
           </span>
         </div>
@@ -517,7 +517,7 @@ export function InteractiveResultsClient({
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/50">
+              <tr className="border-b border-slate-800 bg-slate-950/90">
                 <th className="th py-2.5 w-16 text-center">Roll</th>
                 <th className="th py-2.5">Student Information</th>
                 <th className="th py-2.5 w-32">Marks Scored</th>
@@ -527,18 +527,18 @@ export function InteractiveResultsClient({
                 <th className="th py-2.5 text-center w-28">Official Marksheet</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-800/80">
               {filteredResults.map((r) => {
                 const isPassing = (r.marks || 0) >= (activeGradebook.passingMarks ?? activeGradebook.maxMarks * 0.4);
 
                 return (
-                  <tr key={r.studentId} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="td py-2.5 text-center font-mono font-semibold text-slate-600">
+                  <tr key={r.studentId} className="hover:bg-slate-800/40 transition-colors">
+                    <td className="td py-2.5 text-center font-mono font-semibold text-slate-400">
                       {r.rollNumber ?? "—"}
                     </td>
 
                     <td className="td py-2.5">
-                      <div className="font-semibold text-slate-900">{r.studentName}</div>
+                      <div className="font-semibold text-white">{r.studentName}</div>
                       <div className="text-[11px] text-slate-400 font-mono">Adm: {r.admissionNo}</div>
                     </td>
 
@@ -552,12 +552,12 @@ export function InteractiveResultsClient({
                             value={r.marks ?? ""}
                             onChange={(e) => updateStudentMark(r.studentId, e.target.value)}
                             placeholder="0"
-                            className="input py-1 px-2 text-xs font-mono font-bold max-w-[5rem] text-slate-900 border-slate-300"
+                            className="input py-1 px-2 text-xs font-mono font-bold max-w-[5rem] text-white border-slate-700 bg-slate-950"
                           />
                           <span className="text-slate-400 font-medium">/ {activeGradebook.maxMarks}</span>
                         </div>
                       ) : (
-                        <div className="font-mono font-bold text-slate-900">
+                        <div className="font-mono font-bold text-white">
                           {r.marks !== null && r.marks !== undefined ? `${r.marks} / ${activeGradebook.maxMarks}` : "—"}
                         </div>
                       )}
@@ -568,18 +568,18 @@ export function InteractiveResultsClient({
                         <span
                           className={`inline-block px-2 py-0.5 rounded text-xs font-bold font-mono ${
                             r.grade === "A+" || r.grade === "A"
-                              ? "bg-emerald-100 text-emerald-800"
+                              ? "bg-emerald-950/80 text-emerald-400 border border-emerald-800/60"
                               : r.grade === "B"
-                              ? "bg-blue-100 text-blue-800"
+                              ? "bg-blue-950/80 text-blue-400 border border-blue-800/60"
                               : r.grade === "C"
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-rose-100 text-rose-800"
+                              ? "bg-amber-950/80 text-amber-400 border border-amber-800/60"
+                              : "bg-rose-950/80 text-rose-400 border border-rose-800/60"
                           }`}
                         >
                           {r.grade}
                         </span>
                       ) : (
-                        <span className="text-slate-300">—</span>
+                        <span className="text-slate-500">—</span>
                       )}
                     </td>
 
@@ -596,10 +596,10 @@ export function InteractiveResultsClient({
                           placeholder="Feedback / notes..."
                           value={r.remarks ?? ""}
                           onChange={(e) => updateRemarks(r.studentId, e.target.value)}
-                          className="input py-1 px-2.5 text-xs w-full max-w-xs text-slate-700 bg-slate-50/50 focus:bg-white"
+                          className="input py-1 px-2.5 text-xs w-full max-w-xs text-white bg-slate-950/70 border border-slate-700 focus:border-brand-500"
                         />
                       ) : (
-                        <span className="text-xs text-slate-500 italic">{r.remarks || "—"}</span>
+                        <span className="text-xs text-slate-400 italic">{r.remarks || "—"}</span>
                       )}
                     </td>
 

@@ -82,16 +82,28 @@ export async function TeacherDashboard({ ctx }: { ctx: AuthContext }) {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Link
-              href="/copilot"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-brand-500 via-indigo-600 to-brand-600 px-4 py-2.5 text-xs font-bold text-white shadow-glow hover:from-brand-400 hover:to-indigo-500 transition-all active:scale-95"
+              href="/notes"
+              className="inline-flex items-center gap-1.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-2 text-xs font-black shadow-md transition active:scale-95"
             >
-              <span>✨</span> AI Copilot
+              <span>📖</span> Subject Notes
             </Link>
             <Link
               href="/attendance"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md px-4 py-2.5 text-xs font-bold text-white border border-white/15 transition active:scale-95"
+              className="inline-flex items-center gap-1.5 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md px-3.5 py-2 text-xs font-bold text-white border border-white/15 transition active:scale-95"
             >
-              <span>📅</span> Mark Attendance
+              <span>📅</span> Attendance
+            </Link>
+            <Link
+              href="/results"
+              className="inline-flex items-center gap-1.5 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md px-3.5 py-2 text-xs font-bold text-white border border-white/15 transition active:scale-95"
+            >
+              <span>🏆</span> Enter Marks
+            </Link>
+            <Link
+              href="/library"
+              className="inline-flex items-center gap-1.5 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md px-3.5 py-2 text-xs font-bold text-white border border-white/15 transition active:scale-95"
+            >
+              <span>📚</span> Library
             </Link>
           </div>
         </div>
@@ -134,19 +146,19 @@ export async function TeacherDashboard({ ctx }: { ctx: AuthContext }) {
             {classTeacher.map((s) => (
               <div
                 key={s.id}
-                className="flex items-center justify-between rounded-2xl border border-brand-100 bg-brand-50/50 p-4 shadow-subtle hover:border-brand-300 transition"
+                className="flex items-center justify-between rounded-2xl border border-brand-900/60 bg-brand-950/40 p-4 shadow-subtle hover:border-brand-700 transition"
               >
                 <div>
-                  <div className="text-base font-bold text-slate-900">
+                  <div className="text-base font-bold text-white">
                     Class {s.grade.name.replace("Class ", "")}-{s.name}
                   </div>
-                  <div className="text-xs text-slate-500 mt-0.5">
+                  <div className="text-xs text-slate-400 mt-0.5">
                     {s._count.enrollments} Enrolled Students
                   </div>
                 </div>
                 <Link
                   href="/students"
-                  className="rounded-xl bg-white px-3 py-1.5 text-xs font-bold text-brand-700 shadow-subtle border border-brand-200 hover:bg-brand-50 transition"
+                  className="rounded-xl bg-slate-800 px-3 py-1.5 text-xs font-bold text-brand-300 shadow-subtle border border-slate-700 hover:bg-slate-700 transition"
                 >
                   Open Class →
                 </Link>
@@ -164,19 +176,19 @@ export async function TeacherDashboard({ ctx }: { ctx: AuthContext }) {
           {todayClasses.length === 0 ? (
             <Empty title="No classes today">You have no teaching periods scheduled for {DAYS[today]}.</Empty>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-slate-800">
               {todayClasses.map((t) => (
                 <li key={t.id} className="flex items-center justify-between py-3 text-sm">
                   <div className="flex items-center gap-2.5">
-                    <span className="font-bold text-slate-800">{sectionName(t.offering)}</span>
-                    <span className="text-slate-400">·</span>
-                    <span className="text-slate-600 font-medium">{t.offering.subject.name}</span>
+                    <span className="font-bold text-white">{sectionName(t.offering)}</span>
+                    <span className="text-slate-500">·</span>
+                    <span className="text-slate-300 font-medium">{t.offering.subject.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">
+                    <span className="rounded-md bg-slate-800 px-2 py-0.5 text-xs font-semibold text-slate-300 border border-slate-700">
                       {t.period.startTime}–{t.period.endTime}
                     </span>
-                    <span className="rounded-md bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700 border border-brand-200/60">
+                    <span className="rounded-md bg-brand-950/70 px-2 py-0.5 text-xs font-bold text-brand-300 border border-brand-800/80">
                       Room {t.room?.name ?? "—"}
                     </span>
                   </div>
@@ -190,15 +202,15 @@ export async function TeacherDashboard({ ctx }: { ctx: AuthContext }) {
           title="Assigned Subjects & Sections"
           subtitle="Courses you teach across academic grades"
           action={
-            <Link href="/results" className="text-xs font-bold text-brand-600 hover:text-brand-800 transition">
+            <Link href="/results" className="text-xs font-bold text-brand-400 hover:text-brand-300 transition">
               Enter Marks →
             </Link>
           }
         >
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-slate-800">
             {offerings.map((o) => (
               <li key={o.id} className="flex items-center justify-between py-3 text-sm">
-                <span className="font-semibold text-slate-800">{o.subject.name}</span>
+                <span className="font-semibold text-white">{o.subject.name}</span>
                 <Badge color="blue">Class {sectionName(o)}</Badge>
               </li>
             ))}

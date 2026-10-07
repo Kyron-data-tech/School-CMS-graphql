@@ -7,14 +7,14 @@ import Link from "next/link";
 
 function roleBadge(roleKey: string) {
   const map: Record<string, { label: string; className: string }> = {
-    headmaster: { label: "Principal", className: "bg-purple-50 border-purple-200 text-purple-800" },
-    teacher: { label: "Faculty", className: "bg-blue-50 border-blue-200 text-blue-800" },
-    class_teacher: { label: "Class Teacher", className: "bg-indigo-50 border-indigo-200 text-indigo-800" },
-    student: { label: "Student", className: "bg-emerald-50 border-emerald-200 text-emerald-800" },
-    exam_controller: { label: "Exam Controller", className: "bg-rose-50 border-rose-200 text-rose-800" },
+    headmaster: { label: "Principal", className: "bg-purple-950/70 border-purple-800/80 text-purple-300" },
+    teacher: { label: "Faculty", className: "bg-blue-950/70 border-blue-800/80 text-blue-300" },
+    class_teacher: { label: "Class Teacher", className: "bg-indigo-950/70 border-indigo-800/80 text-indigo-300" },
+    student: { label: "Student", className: "bg-emerald-950/70 border-emerald-800/80 text-emerald-300" },
+    exam_controller: { label: "Exam Controller", className: "bg-rose-950/70 border-rose-800/80 text-rose-300" },
   };
 
-  const item = map[roleKey] || { label: roleKey, className: "bg-slate-100 border-slate-200 text-slate-700" };
+  const item = map[roleKey] || { label: roleKey, className: "bg-slate-800 border-slate-700 text-slate-300" };
   return (
     <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider ${item.className}`}>
       {item.label}
@@ -38,35 +38,35 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const items = navFor(ctx);
 
   return (
-    <div className="flex min-h-screen bg-slate-950/60 backdrop-blur-[1px] font-sans selection:bg-brand-500 selection:text-white">
+    <div className="flex min-h-screen bg-slate-950/90 text-slate-100 font-sans selection:bg-brand-500 selection:text-white">
       {/* ── SIDEBAR ── */}
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200/90 bg-white/95 backdrop-blur-md md:flex shadow-sm z-20">
+      <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-800/90 bg-slate-900/95 backdrop-blur-md md:flex shadow-2xl z-20">
         {/* Brand Header */}
-        <div className="flex items-center gap-3.5 border-b border-slate-100 px-5 py-4">
+        <div className="flex items-center gap-3.5 border-b border-slate-800 px-5 py-4">
           <div className="relative h-10 w-10 shrink-0 p-0.5 rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-indigo-900 shadow-sm">
-            <div className="h-full w-full rounded-[14px] bg-slate-900 flex flex-col items-center justify-center text-center p-0.5 border border-white/20">
+            <div className="h-full w-full rounded-[14px] bg-slate-950 flex flex-col items-center justify-center text-center p-0.5 border border-white/20">
               <span className="font-serif font-black text-amber-400 text-sm tracking-wider">GIA</span>
               <span className="text-[7px] font-mono text-slate-300">1984</span>
             </div>
-            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-white" />
+            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-slate-900" />
           </div>
           <div className="min-w-0 flex-1">
-            <span className="block truncate text-sm font-black tracking-tight text-slate-900 font-display">
+            <span className="block truncate text-sm font-black tracking-tight text-white font-display">
               Greenfield Academy
             </span>
-            <span className="block truncate text-[11px] font-medium text-slate-500">
+            <span className="block truncate text-[11px] font-medium text-slate-400">
               Central Academic SIS
             </span>
           </div>
         </div>
 
         {/* Academic Context Badge */}
-        <div className="mx-3.5 my-3 rounded-2xl bg-gradient-to-r from-slate-50 to-brand-50/60 p-2.5 border border-slate-200/80 flex items-center justify-between text-xs">
-          <div className="text-[11px] font-bold text-slate-800 flex items-center gap-1.5">
+        <div className="mx-3.5 my-3 rounded-2xl bg-gradient-to-r from-slate-950 to-slate-900/90 p-2.5 border border-slate-800 flex items-center justify-between text-xs">
+          <div className="text-[11px] font-bold text-slate-200 flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             2026–27 Session
           </div>
-          <span className="rounded-lg bg-white px-2 py-0.5 text-[10px] font-black text-brand-700 border border-brand-200/80 shadow-subtle uppercase">
+          <span className="rounded-lg bg-slate-800 px-2 py-0.5 text-[10px] font-black text-brand-300 border border-brand-800/80 shadow-subtle uppercase">
             Term 1
           </span>
         </div>
@@ -77,62 +77,62 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Admissions Quick Shortcut Link */}
-        <div className="p-3 border-t border-slate-100 bg-slate-50/50">
+        <div className="p-3 border-t border-slate-800 bg-slate-950/40">
           <Link
             href="/register"
-            className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-brand-200/80 shadow-subtle hover:bg-brand-50/60 transition group text-xs"
+            className="flex items-center justify-between p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80 shadow-subtle hover:bg-slate-700/80 hover:border-slate-600 transition group text-xs text-white"
           >
             <div className="flex items-center gap-2">
               <span>📝</span>
-              <span className="font-bold text-slate-800">Admissions Desk</span>
+              <span className="font-bold text-slate-100">Admissions Desk</span>
             </div>
-            <span className="text-brand-600 font-black group-hover:translate-x-0.5 transition-transform">→</span>
+            <span className="text-brand-400 font-black group-hover:translate-x-0.5 transition-transform">→</span>
           </Link>
         </div>
 
         {/* Institutional Footer Info */}
-        <div className="border-t border-slate-100 p-3.5 bg-slate-50/30 text-[11px] text-slate-500 flex items-center justify-between">
-          <span className="flex items-center gap-1.5 font-bold text-slate-600">
+        <div className="border-t border-slate-800 p-3.5 bg-slate-950/60 text-[11px] text-slate-400 flex items-center justify-between">
+          <span className="flex items-center gap-1.5 font-bold text-slate-300">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
             Campus Network
           </span>
-          <span className="text-[10px] font-bold text-slate-400 bg-white px-1.5 py-0.5 rounded border border-slate-200">
+          <span className="text-[10px] font-bold text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700">
             CBSE 1930482
           </span>
         </div>
       </aside>
 
       {/* ── MAIN CONTENT AREA ── */}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col bg-slate-950/80 backdrop-blur-sm min-h-screen">
         {/* Top Navbar */}
-        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200/90 bg-white/95 backdrop-blur-md px-5 sm:px-8 py-3.5 shadow-subtle">
+        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-800/90 bg-slate-900/95 backdrop-blur-md px-5 sm:px-8 py-3.5 shadow-subtle">
           <div className="md:hidden flex items-center gap-2.5">
             <div className="grid h-8 w-8 place-items-center rounded-xl bg-brand-600 font-bold text-white text-xs">
               G
             </div>
-            <span className="font-black text-sm text-slate-900 font-display">Greenfield SIS</span>
+            <span className="font-black text-sm text-white font-display">Greenfield SIS</span>
           </div>
 
-          <div className="hidden sm:flex items-center gap-3 text-xs text-slate-600">
-            <span className="font-bold text-slate-800">Active Scope:</span>
+          <div className="hidden sm:flex items-center gap-3 text-xs text-slate-400">
+            <span className="font-bold text-slate-200">Active Scope:</span>
             {ctx.roleKeys.map((k) => (
               <span key={k}>{roleBadge(k)}</span>
             ))}
-            <span className="text-slate-300">·</span>
-            <span className="text-[11px] font-medium text-slate-500">
-              Campus Net: <strong>Connected</strong>
+            <span className="text-slate-700">·</span>
+            <span className="text-[11px] font-medium text-slate-400">
+              Campus Net: <strong className="text-emerald-400">Connected</strong>
             </span>
           </div>
 
           <div className="ml-auto flex items-center gap-3">
             {/* User profile capsule */}
-            <div className="flex items-center gap-2.5 rounded-2xl border border-slate-200/90 bg-slate-50/80 py-1.5 pl-2 pr-3.5 shadow-subtle">
+            <div className="flex items-center gap-2.5 rounded-2xl border border-slate-700/80 bg-slate-800/80 py-1.5 pl-2 pr-3.5 shadow-subtle">
               <div className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-brand-600 to-indigo-600 font-bold text-white text-xs shadow-sm">
                 {getInitials(ctx.name)}
               </div>
               <div className="text-left hidden sm:block">
-                <div className="text-xs font-bold text-slate-900 leading-tight">{ctx.name}</div>
-                <div className="text-[10px] text-slate-500 font-mono leading-none mt-0.5 truncate max-w-[150px]">
+                <div className="text-xs font-bold text-white leading-tight">{ctx.name}</div>
+                <div className="text-[10px] text-slate-400 font-mono leading-none mt-0.5 truncate max-w-[150px]">
                   {ctx.email}
                 </div>
               </div>
@@ -141,7 +141,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             {/* Logout button */}
             <form action={logoutAction}>
               <button
-                className="btn-ghost py-1.5 px-3.5 text-xs font-bold text-slate-700 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200 transition-colors shadow-subtle"
+                className="btn-ghost py-1.5 px-3.5 text-xs font-bold text-slate-300 hover:text-rose-400 hover:bg-rose-950/60 hover:border-rose-800/80 transition-colors shadow-subtle"
                 type="submit"
                 title="Sign out of your session"
               >

@@ -151,17 +151,17 @@ export function RegisterModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in">
-      <div className="card w-full max-w-xl overflow-hidden bg-white shadow-2xl max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-in fade-in">
+      <div className="card w-full max-w-xl overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-slate-50 to-brand-50/40 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-slate-800 bg-gradient-to-r from-slate-950 to-brand-950/40 px-6 py-4">
           <div className="flex items-center gap-2.5">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 font-bold text-white shadow-sm">
               📝
             </span>
             <div>
-              <h2 className="text-base font-bold text-slate-900">School Registration Window</h2>
-              <p className="text-xs text-slate-500">
+              <h2 className="text-base font-bold text-white">School Registration Window</h2>
+              <p className="text-xs text-slate-400">
                 Register a new Student, Teacher, or Principal into Greenfield CMS
               </p>
             </div>
@@ -169,14 +169,14 @@ export function RegisterModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition"
           >
             ✕
           </button>
         </div>
 
         {/* Role Selector Tabs */}
-        <div className="border-b border-slate-200 bg-slate-50/70 px-6 pt-3">
+        <div className="border-b border-slate-800 bg-slate-950/80 px-6 pt-3">
           <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
@@ -186,8 +186,8 @@ export function RegisterModal({
               }}
               className={`flex items-center justify-center gap-2 rounded-t-lg border-b-2 py-2.5 text-xs font-semibold transition ${
                 role === "student"
-                  ? "border-brand-600 bg-white text-brand-700 shadow-sm"
-                  : "border-transparent text-slate-600 hover:bg-slate-100"
+                  ? "border-brand-500 bg-slate-900 text-brand-400 shadow-sm"
+                  : "border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200"
               }`}
             >
               <span>🎓</span> Student
@@ -200,8 +200,8 @@ export function RegisterModal({
               }}
               className={`flex items-center justify-center gap-2 rounded-t-lg border-b-2 py-2.5 text-xs font-semibold transition ${
                 role === "teacher"
-                  ? "border-brand-600 bg-white text-brand-700 shadow-sm"
-                  : "border-transparent text-slate-600 hover:bg-slate-100"
+                  ? "border-brand-500 bg-slate-900 text-brand-400 shadow-sm"
+                  : "border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200"
               }`}
             >
               <span>👩‍🏫</span> Teacher
@@ -214,8 +214,8 @@ export function RegisterModal({
               }}
               className={`flex items-center justify-center gap-2 rounded-t-lg border-b-2 py-2.5 text-xs font-semibold transition ${
                 role === "principal"
-                  ? "border-brand-600 bg-white text-brand-700 shadow-sm"
-                  : "border-transparent text-slate-600 hover:bg-slate-100"
+                  ? "border-brand-500 bg-slate-900 text-brand-400 shadow-sm"
+                  : "border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200"
               }`}
             >
               <span>👑</span> Principal
@@ -270,7 +270,7 @@ export function RegisterModal({
                 <button
                   type="button"
                   onClick={() => setPassword(`School@${Math.floor(1000 + Math.random() * 9000)}!`)}
-                  className="text-[11px] text-brand-600 hover:underline"
+                  className="text-[11px] text-brand-400 hover:underline"
                 >
                   🎲 Auto-gen
                 </button>
@@ -288,8 +288,8 @@ export function RegisterModal({
 
           {/* ROLE SPECIFIC FIELDS */}
           {role === "student" && (
-            <div className="rounded-xl border border-brand-100 bg-brand-50/30 p-3.5 space-y-3">
-              <div className="text-xs font-bold text-brand-900 flex items-center gap-1.5">
+            <div className="rounded-xl border border-brand-800/60 bg-brand-950/40 p-3.5 space-y-3">
+              <div className="text-xs font-bold text-brand-300 flex items-center gap-1.5">
                 <span>🎓</span> Student Enrollment Details
               </div>
 
@@ -300,7 +300,7 @@ export function RegisterModal({
                     <button
                       type="button"
                       onClick={() => setAdmissionNo(`ADM-${Math.floor(1000 + Math.random() * 9000)}`)}
-                      className="text-[10px] text-brand-600 hover:underline"
+                      className="text-[10px] text-brand-400 hover:underline"
                     >
                       🎲 Gen
                     </button>
@@ -347,13 +347,13 @@ export function RegisterModal({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="label text-xs">Roll Number (Optional)</label>
+                  <label className="label text-xs">Roll Number (Optional - Auto-assigned)</label>
                   <input
                     type="number"
                     min={1}
                     value={rollNumber}
                     onChange={(e) => setRollNumber(e.target.value)}
-                    placeholder="e.g. 15"
+                    placeholder="Auto-assigned if empty"
                     className="input text-xs"
                   />
                 </div>
@@ -372,8 +372,8 @@ export function RegisterModal({
           )}
 
           {role === "teacher" && (
-            <div className="rounded-xl border border-indigo-100 bg-indigo-50/30 p-3.5 space-y-3">
-              <div className="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
+            <div className="rounded-xl border border-indigo-800/60 bg-indigo-950/40 p-3.5 space-y-3">
+              <div className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
                 <span>👩‍🏫</span> Teacher Faculty Profile
               </div>
 
@@ -384,7 +384,7 @@ export function RegisterModal({
                     <button
                       type="button"
                       onClick={() => setEmployeeId(`EMP-${Math.floor(1000 + Math.random() * 9000)}`)}
-                      className="text-[10px] text-indigo-600 hover:underline"
+                      className="text-[10px] text-indigo-400 hover:underline"
                     >
                       🎲 Gen
                     </button>
@@ -440,8 +440,8 @@ export function RegisterModal({
           )}
 
           {role === "principal" && (
-            <div className="rounded-xl border border-amber-100 bg-amber-50/40 p-3.5 space-y-3">
-              <div className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+            <div className="rounded-xl border border-amber-800/60 bg-amber-950/30 p-3.5 space-y-3">
+              <div className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
                 <span>👑</span> School Leadership & Administrative Access
               </div>
 
@@ -455,7 +455,7 @@ export function RegisterModal({
                     className="input text-xs font-mono"
                     placeholder="GREENFIELD2026"
                   />
-                  <p className="mt-1 text-[10px] text-amber-700">
+                  <p className="mt-1 text-[10px] text-amber-400">
                     Default demo passcode: <code className="font-mono font-bold">GREENFIELD2026</code>
                   </p>
                 </div>
@@ -478,8 +478,8 @@ export function RegisterModal({
             <div
               className={`rounded-xl p-3.5 text-xs flex items-start gap-2.5 ${
                 feedback.type === "success"
-                  ? "border border-emerald-200 bg-emerald-50 text-emerald-800"
-                  : "border border-rose-200 bg-rose-50 text-rose-800"
+                  ? "border border-emerald-800/80 bg-emerald-950/60 text-emerald-200"
+                  : "border border-rose-800/80 bg-rose-950/60 text-rose-200"
               }`}
             >
               <span className="text-base">{feedback.type === "success" ? "✅" : "⚠️"}</span>
@@ -488,7 +488,7 @@ export function RegisterModal({
           )}
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-800">
             <button
               type="button"
               onClick={onClose}

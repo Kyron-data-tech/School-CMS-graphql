@@ -264,58 +264,58 @@ export function SchoolRegistrationClient() {
       <main className="max-w-xl w-full mx-auto my-auto">
         {successData ? (
           /* ── SUCCESS VIEW: SIMPLE & EFFECTIVE SLIP ── */
-          <div className="card p-6 sm:p-8 bg-white/95 backdrop-blur-xl shadow-2xl border border-slate-200/90 rounded-3xl text-slate-800 space-y-6 animate-in fade-in">
+          <div className="card p-6 sm:p-8 bg-slate-900/95 backdrop-blur-xl shadow-2xl border border-slate-800 rounded-3xl text-slate-100 space-y-6 animate-in fade-in">
             <div className="text-center space-y-2">
-              <div className="h-14 w-14 rounded-full bg-emerald-100 text-emerald-600 font-black text-2xl flex items-center justify-center mx-auto border border-emerald-300">
+              <div className="h-14 w-14 rounded-full bg-emerald-950/60 text-emerald-400 font-black text-2xl flex items-center justify-center mx-auto border border-emerald-800">
                 ✓
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 font-display">
+              <h2 className="text-xl sm:text-2xl font-black text-white font-display">
                 Registration Successful!
               </h2>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              <p className="text-xs text-slate-400 max-w-sm mx-auto">
                 Welcome to Greenfield International Academy. Your account has been created.
               </p>
             </div>
 
             {/* Account Details Box */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 text-xs">
-              <div className="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
-                <span className="text-slate-500 font-medium">Application Reference</span>
-                <span className="font-mono font-bold text-brand-700">{successData.applicationNo}</span>
+            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-3 text-xs">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                <span className="text-slate-400 font-medium">Application Reference</span>
+                <span className="font-mono font-bold text-brand-400">{successData.applicationNo}</span>
               </div>
 
               {successData.admissionNo && (
-                <div className="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
-                  <span className="text-slate-500 font-medium">Assigned Admission No</span>
-                  <span className="font-mono font-bold text-slate-900">{successData.admissionNo}</span>
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                  <span className="text-slate-400 font-medium">Assigned Admission No</span>
+                  <span className="font-mono font-bold text-white">{successData.admissionNo}</span>
                 </div>
               )}
 
               {successData.employeeId && (
-                <div className="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
-                  <span className="text-slate-500 font-medium">Employee ID</span>
-                  <span className="font-mono font-bold text-slate-900">{successData.employeeId}</span>
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                  <span className="text-slate-400 font-medium">Employee ID</span>
+                  <span className="font-mono font-bold text-white">{successData.employeeId}</span>
                 </div>
               )}
 
-              <div className="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
-                <span className="text-slate-500 font-medium">Applicant Name</span>
-                <span className="font-bold text-slate-900">{successData.name}</span>
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                <span className="text-slate-400 font-medium">Applicant Name</span>
+                <span className="font-bold text-white">{successData.name}</span>
               </div>
 
-              <div className="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
-                <span className="text-slate-500 font-medium">Registration Category</span>
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                <span className="text-slate-400 font-medium">Registration Category</span>
                 <Badge color="blue">{successData.role.toUpperCase()}</Badge>
               </div>
 
-              <div className="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
-                <span className="text-slate-500 font-medium">Assigned Grade / Dept</span>
-                <span className="font-semibold text-slate-800">{successData.gradeOrDept}</span>
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                <span className="text-slate-400 font-medium">Assigned Grade / Dept</span>
+                <span className="font-semibold text-slate-200">{successData.gradeOrDept}</span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-slate-500 font-medium">Login Email</span>
-                <span className="font-mono font-semibold text-brand-700">{successData.email}</span>
+                <span className="text-slate-400 font-medium">Login Email</span>
+                <span className="font-mono font-semibold text-brand-400">{successData.email}</span>
               </div>
             </div>
 
@@ -331,14 +331,14 @@ export function SchoolRegistrationClient() {
                 <button
                   type="button"
                   onClick={() => window.print()}
-                  className="btn-ghost flex-1 py-2 text-xs font-semibold text-slate-600"
+                  className="btn-ghost flex-1 py-2 text-xs font-semibold text-slate-300 hover:text-white"
                 >
                   🖨️ Print Slip
                 </button>
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="btn-ghost flex-1 py-2 text-xs font-semibold text-slate-600"
+                  className="btn-ghost flex-1 py-2 text-xs font-semibold text-slate-300 hover:text-white"
                 >
                   ← Register Another
                 </button>
@@ -347,24 +347,24 @@ export function SchoolRegistrationClient() {
           </div>
         ) : (
           /* ── STANDARD FORM CARD (LIKE OTHER WEBSITES ON THE INTERNET) ── */
-          <div className="card p-6 sm:p-8 bg-white/95 backdrop-blur-xl shadow-2xl border border-slate-200/90 rounded-3xl text-slate-800 space-y-6">
+          <div className="card p-6 sm:p-8 bg-slate-900/95 backdrop-blur-xl shadow-2xl border border-slate-800 rounded-3xl text-slate-100 space-y-6">
             {/* Header */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <h1 className="text-xl sm:text-2xl font-black text-slate-900 font-display">
+                <h1 className="text-xl sm:text-2xl font-black text-white font-display">
                   Create an Account
                 </h1>
-                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                <span className="text-[11px] font-bold text-emerald-400 bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-800">
                   Admissions 2026–27
                 </span>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-400">
                 Join Greenfield International Academy as a student, faculty member, or administrator.
               </p>
             </div>
 
             {/* Simple Role Selector Tabs */}
-            <div className="grid grid-cols-3 gap-1.5 p-1 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-bold text-center">
+            <div className="grid grid-cols-3 gap-1.5 p-1 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs font-bold text-center">
               {[
                 { id: "student", label: "Student", icon: "🎓" },
                 { id: "teacher", label: "Teacher", icon: "👩‍🏫" },
@@ -381,8 +381,8 @@ export function SchoolRegistrationClient() {
                     }}
                     className={`py-2 px-1 rounded-xl transition-all flex flex-col sm:flex-row items-center justify-center gap-1 ${
                       isActive
-                        ? "bg-white text-brand-900 shadow-sm font-black border border-slate-200/80"
-                        : "text-slate-600 hover:text-slate-900"
+                        ? "bg-brand-600 text-white shadow-sm font-black border border-brand-500"
+                        : "text-slate-400 hover:text-white"
                     }`}
                   >
                     <span>{t.icon}</span>
@@ -393,8 +393,8 @@ export function SchoolRegistrationClient() {
             </div>
 
             {/* 1-Click Fast Fill (Try Demo) Button */}
-            <div className="flex items-center justify-between text-xs bg-brand-50/70 border border-brand-200/70 p-2.5 rounded-xl text-brand-950">
-              <span className="text-[11px] text-brand-800">
+            <div className="flex items-center justify-between text-xs bg-brand-950/50 border border-brand-800/60 p-2.5 rounded-xl text-brand-200">
+              <span className="text-[11px] text-brand-300">
                 Evaluating? Fill sample data instantly:
               </span>
               <button
@@ -408,12 +408,12 @@ export function SchoolRegistrationClient() {
 
             {/* Error Message */}
             {errorMessage && (
-              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center justify-between">
+              <div className="p-3.5 rounded-xl bg-rose-950/50 border border-rose-800 text-rose-200 text-xs font-semibold flex items-center justify-between">
                 <span>⚠️ {errorMessage}</span>
                 <button
                   type="button"
                   onClick={() => setErrorMessage(null)}
-                  className="text-slate-400 hover:text-slate-700 ml-2 font-bold"
+                  className="text-slate-400 hover:text-white ml-2 font-bold"
                 >
                   ✕
                 </button>
@@ -425,7 +425,7 @@ export function SchoolRegistrationClient() {
               {/* Full Name */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="label text-xs font-bold text-slate-700">First Name *</label>
+                  <label className="label text-xs font-bold text-slate-300">First Name *</label>
                   <input
                     type="text"
                     required
@@ -436,7 +436,7 @@ export function SchoolRegistrationClient() {
                   />
                 </div>
                 <div>
-                  <label className="label text-xs font-bold text-slate-700">Last Name *</label>
+                  <label className="label text-xs font-bold text-slate-300">Last Name *</label>
                   <input
                     type="text"
                     required
@@ -450,7 +450,7 @@ export function SchoolRegistrationClient() {
 
               {/* Email Address */}
               <div>
-                <label className="label text-xs font-bold text-slate-700">Email Address *</label>
+                <label className="label text-xs font-bold text-slate-300">Email Address *</label>
                 <input
                   type="email"
                   required
@@ -465,11 +465,11 @@ export function SchoolRegistrationClient() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="label mb-0 text-xs font-bold text-slate-700">Password *</label>
+                    <label className="label mb-0 text-xs font-bold text-slate-300">Password *</label>
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="text-[10px] text-brand-600 hover:underline font-semibold"
+                      className="text-[10px] text-brand-400 hover:underline font-semibold"
                     >
                       {showPassword ? "Hide" : "Show"}
                     </button>
@@ -484,7 +484,7 @@ export function SchoolRegistrationClient() {
                   />
                 </div>
                 <div>
-                  <label className="label text-xs font-bold text-slate-700">Confirm Password *</label>
+                  <label className="label text-xs font-bold text-slate-300">Confirm Password *</label>
                   <input
                     type={showPassword ? "text" : "password"}
                     required
@@ -497,9 +497,9 @@ export function SchoolRegistrationClient() {
 
               {/* ── ROLE-SPECIFIC QUICK FIELDS ── */}
               {role === "student" && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800">
                   <div>
-                    <label className="label text-xs font-bold text-slate-700">Class / Section *</label>
+                    <label className="label text-xs font-bold text-slate-300">Class / Section *</label>
                     <select
                       value={sectionId}
                       onChange={(e) => setSectionId(e.target.value)}
@@ -513,7 +513,7 @@ export function SchoolRegistrationClient() {
                     </select>
                   </div>
                   <div>
-                    <label className="label text-xs font-bold text-slate-700">Gender</label>
+                    <label className="label text-xs font-bold text-slate-300">Gender</label>
                     <select
                       value={gender}
                       onChange={(e) => setGender(e.target.value)}
@@ -526,7 +526,7 @@ export function SchoolRegistrationClient() {
                     </select>
                   </div>
                   <div>
-                    <label className="label text-xs font-bold text-slate-700">Date of Birth</label>
+                    <label className="label text-xs font-bold text-slate-300">Date of Birth</label>
                     <input
                       type="date"
                       value={dateOfBirth}
@@ -538,9 +538,9 @@ export function SchoolRegistrationClient() {
               )}
 
               {role === "teacher" && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800">
                   <div>
-                    <label className="label text-xs font-bold text-slate-700">Department *</label>
+                    <label className="label text-xs font-bold text-slate-300">Department *</label>
                     <select
                       value={departmentId}
                       onChange={(e) => setDepartmentId(e.target.value)}
@@ -554,7 +554,7 @@ export function SchoolRegistrationClient() {
                     </select>
                   </div>
                   <div>
-                    <label className="label text-xs font-bold text-slate-700">Designation</label>
+                    <label className="label text-xs font-bold text-slate-300">Designation</label>
                     <input
                       type="text"
                       value={designation}
@@ -566,11 +566,9 @@ export function SchoolRegistrationClient() {
                 </div>
               )}
 
-
-
               {role === "principal" && (
-                <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 space-y-1.5">
-                  <label className="label text-xs font-bold text-amber-950">
+                <div className="p-3.5 rounded-2xl bg-amber-950/30 border border-amber-800/60 space-y-1.5">
+                  <label className="label text-xs font-bold text-amber-300">
                     Administrative Clearance Key *
                   </label>
                   <input
@@ -578,9 +576,9 @@ export function SchoolRegistrationClient() {
                     required
                     value={securityPasscode}
                     onChange={(e) => setSecurityPasscode(e.target.value)}
-                    className="input w-full py-2 text-xs font-mono bg-white"
+                    className="input w-full py-2 text-xs font-mono bg-slate-950 text-slate-100"
                   />
-                  <span className="text-[10px] text-amber-800 block">
+                  <span className="text-[10px] text-amber-400 block">
                     Default institutional deployment key: <code>GREENFIELD2026</code>
                   </span>
                 </div>
@@ -588,7 +586,7 @@ export function SchoolRegistrationClient() {
 
               {/* Optional Phone */}
               <div>
-                <label className="label text-xs font-bold text-slate-700">Mobile Phone (Optional)</label>
+                <label className="label text-xs font-bold text-slate-300">Mobile Phone (Optional)</label>
                 <input
                   type="tel"
                   placeholder="+91 98712 34567"
@@ -605,9 +603,9 @@ export function SchoolRegistrationClient() {
                   id="terms"
                   checked={agreedTerms}
                   onChange={(e) => setAgreedTerms(e.target.checked)}
-                  className="h-4 w-4 mt-0.5 rounded text-brand-600 border-slate-300 focus:ring-brand-500"
+                  className="h-4 w-4 mt-0.5 rounded text-brand-600 border-slate-700 bg-slate-900 focus:ring-brand-500"
                 />
-                <label htmlFor="terms" className="text-[11px] text-slate-600 select-none cursor-pointer leading-tight">
+                <label htmlFor="terms" className="text-[11px] text-slate-400 select-none cursor-pointer leading-tight">
                   I agree to the institutional rules, academic attendance policies, and code of conduct of Greenfield International Academy.
                 </label>
               </div>
@@ -634,9 +632,9 @@ export function SchoolRegistrationClient() {
               </button>
 
               {/* Sign in link */}
-              <div className="text-center pt-2 text-xs text-slate-500">
+              <div className="text-center pt-2 text-xs text-slate-400">
                 Already registered?{" "}
-                <Link href="/login" className="font-bold text-brand-600 hover:text-brand-800 hover:underline">
+                <Link href="/login" className="font-bold text-brand-400 hover:text-brand-300 hover:underline">
                   Sign in here →
                 </Link>
               </div>
@@ -646,7 +644,7 @@ export function SchoolRegistrationClient() {
       </main>
 
       {/* ── SIMPLE FOOTER ── */}
-      <footer className="max-w-xl w-full mx-auto mt-6 text-center text-xs text-slate-300">
+      <footer className="max-w-xl w-full mx-auto mt-6 text-center text-xs text-slate-400">
         © 2026 Greenfield International Academy · CBSE Affiliated (1930482)
       </footer>
     </div>

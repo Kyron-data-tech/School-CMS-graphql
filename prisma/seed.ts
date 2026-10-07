@@ -14,6 +14,14 @@ async function main() {
   console.log("Resetting demo data…");
   // Order matters for FK constraints; wipe children first.
   await db.$transaction([
+    db.feePayment.deleteMany(),
+    db.feeInvoice.deleteMany(),
+    db.feeStructure.deleteMany(),
+    db.libraryBorrowRecord.deleteMany(),
+    db.libraryBook.deleteMany(),
+    db.studentTransport.deleteMany(),
+    db.transportVehicle.deleteMany(),
+    db.transportRoute.deleteMany(),
     db.auditLog.deleteMany(),
     db.announcementRead.deleteMany(),
     db.announcement.deleteMany(),
@@ -77,7 +85,7 @@ async function main() {
       phone: "+91 22 5555 0100",
       address: "12 Banyan Road, Mumbai",
       terminology: { class: "Class", section: "Section", term: "Term", headmaster: "Headmaster" },
-      moduleFlags: { fees: false, library: true, transport: false, admissions: true, inventory: false },
+      moduleFlags: { fees: true, library: true, transport: true, admissions: true, inventory: false },
     },
   });
 
@@ -526,6 +534,284 @@ async function main() {
       authorId: hm.id,
     },
   });
+
+  // ── Transport / Buses ───────────────────────────────────────────────────
+  const route1 = await db.transportRoute.create({
+    data: {
+      schoolId: school.id,
+      name: "Route 1 - Western Express",
+      code: "RTE-01",
+      startPoint: "Bandra West",
+      endPoint: "Campus Gate 1",
+      fareAmount: 12000,
+      stops: [
+        { name: "Bandra Station (W)", time: "07:15 AM", order: 1 },
+        { name: "Khar Gymkhana", time: "07:30 AM", order: 2 },
+        { name: "Santacruz Signal", time: "07:45 AM", order: 3 },
+        { name: "Campus Gate 1", time: "08:10 AM", order: 4 },
+      ],
+    },
+  });
+
+  const route2 = await db.transportRoute.create({
+    data: {
+      schoolId: school.id,
+      name: "Route 2 - Eastern Link",
+      code: "RTE-02",
+      startPoint: "Powai Galleria",
+      endPoint: "Campus Gate 2",
+      fareAmount: 14000,
+      stops: [
+        { name: "Hiranandani Gardens", time: "07:10 AM", order: 1 },
+        { name: "JVLR Junction", time: "07:25 AM", order: 2 },
+        { name: "Marol Naka", time: "07:40 AM", order: 3 },
+        { name: "Campus Gate 2", time: "08:05 AM", order: 4 },
+      ],
+    },
+  });
+
+  await db.transportVehicle.create({
+    data: {
+      routeId: route1.id,
+      registrationNo: "MH-02-AZ-4412",
+      driverName: "Ramesh Pawar",
+      driverPhone: "+91 98201 12345",
+      capacity: 42,
+      status: "ACTIVE",
+    },
+  });
+
+  await db.transportVehicle.create({
+    data: {
+      routeId: route2.id,
+      registrationNo: "MH-03-CD-8899",
+      driverName: "Suresh Patil",
+      driverPhone: "+91 98334 56789",
+      capacity: 38,
+      status: "ACTIVE",
+    },
+  });
+
+  // Assign Arjun to Route 1 and Sara to Route 2
+  if (students.length >= 2) {
+    await db.studentTransport.create({
+      data: {
+        studentId: students[0].id,
+        routeId: route1.id,
+        stopName: "Bandra Station (W)",
+        pickupTime: "07:15 AM",
+        dropTime: "03:45 PM",
+      },
+    });
+
+    await db.studentTransport.create({
+      data: {
+        studentId: students[1].id,
+        routeId: route2.id,
+        stopName: "Hiranandani Gardens",
+        pickupTime: "07:10 AM",
+        dropTime: "03:50 PM",
+      },
+    });
+  }
+
+  // ── Library Catalog & Borrows ───────────────────────────────────────────
+  const book1 = await db.libraryBook.create({
+    data: {
+      schoolId: school.id,
+      title: "Concepts of Physics - Vol 1",
+      author: "H.C. Verma",
+      isbn: "978-8177091878",
+      category: "Science",
+      shelfLocation: "Rack S-04",
+      totalCopies: 5,
+      availableCopies: 4,
+    },
+  });
+
+  const book2 = await db.libraryBook.create({
+    data: {
+      schoolId: school.id,
+      title: "Higher Algebra",
+      author: "Hall & Knight",
+      isbn: "978-9351441311",
+      category: "Mathematics",
+      shelfLocation: "Rack M-02",
+      totalCopies: 4,
+      availableCopies: 3,
+    },
+  });
+
+  const book3 = await db.libraryBook.create({
+    data: {
+      schoolId: school.id,
+      title: "To Kill a Mockingbird",
+      author: "Harper Lee",
+      isbn: "978-0061120084",
+      category: "Literature",
+      shelfLocation: "Rack L-11",
+      totalCopies: 3,
+      availableCopies: 3,
+    },
+  });
+
+  const book4 = await db.libraryBook.create({
+    data: {
+      schoolId: school.id,
+      title: "A Brief History of Time",
+      author: "Stephen Hawking",
+      isbn: "978-0553380163",
+      category: "Science",
+      shelfLocation: "Rack S-09",
+      totalCopies: 4,
+      availableCopies: 4,
+    },
+  });
+
+  const book5 = await db.libraryBook.create({
+    data: {
+      schoolId: school.id,
+      title: "Computer Organization and Design",
+      author: "Patterson & Hennessy",
+      isbn: "978-0128122754",
+      category: "Computer Science",
+      shelfLocation: "Rack CS-01",
+      totalCopies: 3,
+      availableCopies: 2,
+    },
+  });
+
+  if (students.length >= 3) {
+    const nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    const pastWeek = new Date();
+    pastWeek.setDate(pastWeek.getDate() - 14);
+
+    await db.libraryBorrowRecord.create({
+      data: {
+        bookId: book1.id,
+        studentId: students[0].id,
+        borrowedAt: new Date(),
+        dueDate: nextWeek,
+        status: "BORROWED",
+        remarks: "Class 8 physics project reference",
+      },
+    });
+
+    await db.libraryBorrowRecord.create({
+      data: {
+        bookId: book2.id,
+        studentId: students[1].id,
+        borrowedAt: new Date(),
+        dueDate: nextWeek,
+        status: "BORROWED",
+      },
+    });
+
+    await db.libraryBorrowRecord.create({
+      data: {
+        bookId: book5.id,
+        studentId: students[2].id,
+        borrowedAt: pastWeek,
+        dueDate: new Date(),
+        returnedAt: new Date(),
+        status: "RETURNED",
+      },
+    });
+  }
+
+  // ── Fee Invoicing & Finance ─────────────────────────────────────────────
+  const feeStructure = await db.feeStructure.create({
+    data: {
+      schoolId: school.id,
+      name: "Class 8 Annual Comprehensive Fee 2026-27",
+      academicYear: "2026-27",
+      frequency: "TERMLY",
+      tuitionFee: 60000,
+      labFee: 5000,
+      libraryFee: 2500,
+      transportFee: 12000,
+      otherFee: 2500,
+      totalAmount: 82000,
+    },
+  });
+
+  if (students.length >= 4) {
+    const inv1 = await db.feeInvoice.create({
+      data: {
+        studentId: students[0].id,
+        feeStructureId: feeStructure.id,
+        invoiceNo: "INV-2026-001",
+        title: "Term 1 Comprehensive Fee (Tuition + Transport)",
+        amount: 41000,
+        paidAmount: 41000,
+        dueDate: d("2026-05-15"),
+        status: "PAID",
+        paymentMethod: "ONLINE",
+      },
+    });
+
+    await db.feePayment.create({
+      data: {
+        invoiceId: inv1.id,
+        amount: 41000,
+        transactionRef: "TXN-GF-990218",
+        paymentMethod: "NET_BANKING",
+        notes: "Full payment received for Term 1",
+      },
+    });
+
+    const inv2 = await db.feeInvoice.create({
+      data: {
+        studentId: students[1].id,
+        feeStructureId: feeStructure.id,
+        invoiceNo: "INV-2026-002",
+        title: "Term 1 Comprehensive Fee (Tuition + Transport)",
+        amount: 41000,
+        paidAmount: 41000,
+        dueDate: d("2026-05-15"),
+        status: "PAID",
+        paymentMethod: "UPI",
+      },
+    });
+
+    await db.feePayment.create({
+      data: {
+        invoiceId: inv2.id,
+        amount: 41000,
+        transactionRef: "UPI-409182390",
+        paymentMethod: "UPI",
+        notes: "UPI payment verified",
+      },
+    });
+
+    await db.feeInvoice.create({
+      data: {
+        studentId: students[2].id,
+        feeStructureId: feeStructure.id,
+        invoiceNo: "INV-2026-003",
+        title: "Term 1 Academic Fee (Tuition + Lab)",
+        amount: 35000,
+        paidAmount: 0,
+        dueDate: d("2026-10-31"),
+        status: "PENDING",
+      },
+    });
+
+    await db.feeInvoice.create({
+      data: {
+        studentId: students[3].id,
+        feeStructureId: feeStructure.id,
+        invoiceNo: "INV-2026-004",
+        title: "Term 1 Academic Fee (Tuition + Lab)",
+        amount: 35000,
+        paidAmount: 15000,
+        dueDate: d("2026-10-31"),
+        status: "PARTIAL",
+        paymentMethod: "CHEQUE",
+      },
+    });
+  }
 
   // ── Custom field example ────────────────────────────────────────────────
   await db.customField.create({

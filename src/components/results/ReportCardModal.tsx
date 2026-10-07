@@ -92,9 +92,9 @@ export function ReportCardModal({ isOpen, onClose, data }: ReportCardModalProps)
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-3 sm:p-6 overflow-y-auto">
       {/* ── MODAL CONTAINER ── */}
-      <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full border border-slate-200 overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      <div className="bg-slate-900 rounded-3xl shadow-2xl max-w-4xl w-full border border-slate-800 overflow-hidden my-auto flex flex-col max-h-[92vh]">
         {/* Modal Top Bar (Non-Printable) */}
-        <div className="print:hidden bg-slate-900 text-white px-6 py-4 flex items-center justify-between border-b border-slate-800">
+        <div className="print:hidden bg-slate-950 text-white px-6 py-4 flex items-center justify-between border-b border-slate-800">
           <div className="flex items-center gap-2.5">
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
             <h2 className="text-sm font-bold tracking-tight">
@@ -123,12 +123,12 @@ export function ReportCardModal({ isOpen, onClose, data }: ReportCardModalProps)
         </div>
 
         {/* ── SCROLLABLE DOCUMENT PREVIEW ── */}
-        <div className="overflow-y-auto p-4 sm:p-8 space-y-6 print:p-0 print:space-y-4 font-sans text-slate-800">
+        <div className="overflow-y-auto p-4 sm:p-8 space-y-6 print:p-0 print:space-y-4 font-sans text-slate-200">
           {/* Printable Official Sheet */}
-          <div className="p-6 sm:p-10 border-2 border-slate-800 rounded-2xl bg-white shadow-card print:border-none print:shadow-none print:p-0 space-y-6">
+          <div className="p-6 sm:p-10 border-2 border-slate-700 rounded-2xl bg-slate-900/90 shadow-card print:bg-white print:text-black print:border-none print:shadow-none print:p-0 space-y-6">
             
             {/* Header: School Emblem, Name, Affiliation */}
-            <div className="flex items-start justify-between border-b-2 border-slate-900 pb-5 gap-4">
+            <div className="flex items-start justify-between border-b-2 border-slate-700 print:border-slate-900 pb-5 gap-4">
               <div className="flex items-center gap-4">
                 <div className="relative h-16 w-16 p-1 rounded-2xl bg-gradient-to-tr from-amber-400 via-amber-500 to-amber-700 shadow-md shrink-0">
                   <div className="h-full w-full rounded-[12px] bg-slate-950 flex flex-col items-center justify-center p-1 text-center border border-amber-300/30">
@@ -138,10 +138,10 @@ export function ReportCardModal({ isOpen, onClose, data }: ReportCardModalProps)
                 </div>
 
                 <div>
-                  <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight font-display uppercase">
+                  <h1 className="text-xl sm:text-2xl font-black text-white print:text-slate-950 tracking-tight font-display uppercase">
                     Greenfield International Academy
                   </h1>
-                  <p className="text-xs text-slate-600 font-semibold tracking-wide">
+                  <p className="text-xs text-slate-400 print:text-slate-600 font-semibold tracking-wide">
                     Affiliated to Central Board of Secondary Education (CBSE Code: 1930482 · School No: 40219)
                   </p>
                   <p className="text-[11px] text-slate-500">
@@ -151,62 +151,62 @@ export function ReportCardModal({ isOpen, onClose, data }: ReportCardModalProps)
               </div>
 
               <div className="text-right shrink-0">
-                <div className="inline-block rounded-xl bg-slate-100 border border-slate-300 px-3 py-1.5 text-center">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Academic Session</div>
-                  <div className="font-mono font-black text-xs text-slate-900">{data.academicYear}</div>
-                  <div className="text-[10px] font-bold text-brand-700 uppercase">{data.term}</div>
+                <div className="inline-block rounded-xl bg-slate-950/80 border border-slate-800 print:bg-slate-100 print:border-slate-300 px-3 py-1.5 text-center">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Academic Session</div>
+                  <div className="font-mono font-black text-xs text-white print:text-slate-900">{data.academicYear}</div>
+                  <div className="text-[10px] font-bold text-brand-400 uppercase">{data.term}</div>
                 </div>
               </div>
             </div>
 
             {/* Document Title Banner */}
-            <div className="text-center py-2 bg-slate-100/80 rounded-xl border border-slate-200">
-              <span className="text-xs sm:text-sm font-black text-slate-900 uppercase tracking-widest font-display">
+            <div className="text-center py-2 bg-slate-950/80 rounded-xl border border-slate-800 print:bg-slate-100 print:border-slate-200">
+              <span className="text-xs sm:text-sm font-black text-white print:text-slate-900 uppercase tracking-widest font-display">
                 Continuous &amp; Comprehensive Evaluation · Academic Marksheet
               </span>
             </div>
 
             {/* Student Biographical Data Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950/80 p-4 rounded-xl border border-slate-800 print:bg-slate-50 print:border-slate-200 text-xs">
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Student Name</span>
-                <span className="font-bold text-slate-900 text-sm">{data.studentName}</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Student Name</span>
+                <span className="font-bold text-white print:text-slate-900 text-sm">{data.studentName}</span>
               </div>
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Roll Number</span>
-                <span className="font-mono font-bold text-slate-900">{data.rollNumber}</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Roll Number</span>
+                <span className="font-mono font-bold text-white print:text-slate-900">{data.rollNumber}</span>
               </div>
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Admission Number</span>
-                <span className="font-mono font-bold text-slate-900">{data.admissionNo}</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Admission Number</span>
+                <span className="font-mono font-bold text-white print:text-slate-900">{data.admissionNo}</span>
               </div>
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Class &amp; Section</span>
-                <span className="font-bold text-brand-800">{data.className}</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Class &amp; Section</span>
+                <span className="font-bold text-brand-400">{data.className}</span>
               </div>
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Term Attendance</span>
-                <span className="font-bold text-emerald-700">{data.attendanceRate} ({data.attendanceDays})</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Term Attendance</span>
+                <span className="font-bold text-emerald-400">{data.attendanceRate} ({data.attendanceDays})</span>
               </div>
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Evaluation Type</span>
-                <span className="font-semibold text-slate-800">Mid-Term Summative</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Evaluation Type</span>
+                <span className="font-semibold text-slate-300 print:text-slate-800">Mid-Term Summative</span>
               </div>
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Assessment Board</span>
-                <span className="font-semibold text-slate-800">CBSE Curriculum</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Assessment Board</span>
+                <span className="font-semibold text-slate-300 print:text-slate-800">CBSE Curriculum</span>
               </div>
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Date of Release</span>
-                <span className="font-mono text-slate-700">{new Date().toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Date of Release</span>
+                <span className="font-mono text-slate-300 print:text-slate-700">{new Date().toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}</span>
               </div>
             </div>
 
             {/* ── SUBJECT MARKS EVALUATION TABLE ── */}
-            <div className="overflow-x-auto rounded-xl border border-slate-200">
+            <div className="overflow-x-auto rounded-xl border border-slate-800 print:border-slate-200">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200 text-[11px] uppercase tracking-wider">
+                  <tr className="bg-slate-950 text-slate-300 print:bg-slate-100 print:text-slate-700 font-bold border-b border-slate-800 print:border-slate-200 text-[11px] uppercase tracking-wider">
                     <th className="py-2.5 px-3">Subject Description</th>
                     <th className="py-2.5 px-3 text-center">Max Marks</th>
                     <th className="py-2.5 px-3 text-center">Theory</th>
@@ -216,21 +216,21 @@ export function ReportCardModal({ isOpen, onClose, data }: ReportCardModalProps)
                     <th className="py-2.5 px-3 text-center">Letter Grade</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-800/80 print:divide-slate-100">
                   {data.subjects.map((s, idx) => (
-                    <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50/50"}>
-                      <td className="py-2.5 px-3 font-semibold text-slate-900">{s.subjectName}</td>
-                      <td className="py-2.5 px-3 text-center font-mono text-slate-600">{s.maxMarks}</td>
-                      <td className="py-2.5 px-3 text-center font-mono text-slate-800 font-bold">{s.theoryMarks}</td>
-                      <td className="py-2.5 px-3 text-center font-mono text-slate-600">{s.practicalMarks ?? "—"}</td>
-                      <td className="py-2.5 px-3 text-center font-mono font-bold text-brand-900 bg-brand-50/40">
+                    <tr key={idx} className={idx % 2 === 0 ? "bg-slate-900" : "bg-slate-950/60 print:bg-slate-50/50"}>
+                      <td className="py-2.5 px-3 font-semibold text-white print:text-slate-900">{s.subjectName}</td>
+                      <td className="py-2.5 px-3 text-center font-mono text-slate-400 print:text-slate-600">{s.maxMarks}</td>
+                      <td className="py-2.5 px-3 text-center font-mono text-slate-200 print:text-slate-800 font-bold">{s.theoryMarks}</td>
+                      <td className="py-2.5 px-3 text-center font-mono text-slate-400 print:text-slate-600">{s.practicalMarks ?? "—"}</td>
+                      <td className="py-2.5 px-3 text-center font-mono font-bold text-brand-300 print:text-brand-900 bg-brand-950/40 print:bg-brand-50/40">
                         {s.totalMarks}
                       </td>
-                      <td className="py-2.5 px-3 text-center font-mono text-slate-700 font-bold">{s.gradePoint}</td>
+                      <td className="py-2.5 px-3 text-center font-mono text-slate-300 print:text-slate-700 font-bold">{s.gradePoint}</td>
                       <td className="py-2.5 px-3 text-center">
                         <span className={`inline-block px-2 py-0.5 rounded text-[11px] font-black ${
-                          s.grade.startsWith("A") ? "bg-emerald-100 text-emerald-800" :
-                          s.grade.startsWith("B") ? "bg-blue-100 text-blue-800" : "bg-amber-100 text-amber-800"
+                          s.grade.startsWith("A") ? "bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 print:bg-emerald-100 print:text-emerald-800" :
+                          s.grade.startsWith("B") ? "bg-blue-950/80 text-blue-400 border border-blue-800/60 print:bg-blue-100 print:text-blue-800" : "bg-amber-950/80 text-amber-400 border border-amber-800/60 print:bg-amber-100 print:text-amber-800"
                         }`}>
                           {s.grade}
                         </span>
@@ -238,18 +238,18 @@ export function ReportCardModal({ isOpen, onClose, data }: ReportCardModalProps)
                     </tr>
                   ))}
                   {/* Aggregate Summary Row */}
-                  <tr className="bg-slate-900 text-white font-bold border-t-2 border-slate-950">
+                  <tr className="bg-slate-950 text-white font-bold border-t-2 border-slate-800 print:bg-slate-900 print:border-slate-950">
                     <td className="py-3 px-3 uppercase text-[11px] font-black tracking-wider">
                       Cumulative Aggregate Total
                     </td>
                     <td className="py-3 px-3 text-center font-mono">{totalMax}</td>
-                    <td colSpan={2} className="py-3 px-3 text-right uppercase text-[10px] text-slate-300">
+                    <td colSpan={2} className="py-3 px-3 text-right uppercase text-[10px] text-slate-400">
                       Total Marks Obtained:
                     </td>
                     <td className="py-3 px-3 text-center font-mono text-amber-300 text-sm font-black">
                       {totalScored}
                     </td>
-                    <td className="py-3 px-3 text-center font-mono text-emerald-300 font-bold">
+                    <td className="py-3 px-3 text-center font-mono text-emerald-400 font-bold">
                       {percentage}%
                     </td>
                     <td className="py-3 px-3 text-center font-black text-amber-300 text-sm">
@@ -261,29 +261,29 @@ export function ReportCardModal({ isOpen, onClose, data }: ReportCardModalProps)
             </div>
 
             {/* Performance Summary Strip */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 print:bg-slate-50 print:border-slate-200 text-xs">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-slate-500 uppercase text-[10px]">Overall Result:</span>
-                <span className="font-black text-emerald-700">{division}</span>
+                <span className="font-bold text-slate-400 uppercase text-[10px]">Overall Result:</span>
+                <span className="font-black text-emerald-400 print:text-emerald-700">{division}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-slate-500 uppercase text-[10px]">Percentage:</span>
-                <span className="font-mono font-bold text-slate-900">{percentage}%</span>
+                <span className="font-bold text-slate-400 uppercase text-[10px]">Percentage:</span>
+                <span className="font-mono font-bold text-white print:text-slate-900">{percentage}%</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-slate-500 uppercase text-[10px]">Evaluation Status:</span>
-                <span className="font-bold text-brand-700">Official &amp; Verified</span>
+                <span className="font-bold text-slate-400 uppercase text-[10px]">Evaluation Status:</span>
+                <span className="font-bold text-brand-400 print:text-brand-700">Official &amp; Verified</span>
               </div>
             </div>
 
             {/* ── TEACHER EVALUATION & AI REMARK DESK ── */}
-            <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-2">
+            <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/90 print:bg-white print:border-slate-200 space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-900">
+                  <span className="text-xs font-bold uppercase tracking-wider text-white print:text-slate-900">
                     Class Teacher Academic &amp; Behavioral Remarks
                   </span>
-                  <span className="text-[10px] font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full border border-brand-200">
+                  <span className="text-[10px] font-bold text-brand-400 bg-brand-950/80 px-2 py-0.5 rounded-full border border-brand-800/60 print:bg-brand-50 print:text-brand-700">
                     Holistic Assessment
                   </span>
                 </div>
@@ -293,52 +293,52 @@ export function ReportCardModal({ isOpen, onClose, data }: ReportCardModalProps)
                   type="button"
                   onClick={generateAiEvaluation}
                   disabled={isGeneratingAi}
-                  className="print:hidden inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 font-bold text-xs transition active:scale-95 shadow-sm"
+                  className="print:hidden inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-purple-950/80 hover:bg-purple-900/80 text-purple-300 border border-purple-800/80 font-bold text-xs transition active:scale-95 shadow-sm"
                 >
                   <span>✨</span> {isGeneratingAi ? "Generating AI Remark..." : "Generate AI Remark"}
                 </button>
               </div>
 
               {aiError && (
-                <div className="text-rose-600 text-xs font-medium">⚠️ {aiError}</div>
+                <div className="text-rose-400 text-xs font-medium">⚠️ {aiError}</div>
               )}
 
-              <p className="text-xs text-slate-700 leading-relaxed italic bg-slate-50/80 p-3 rounded-lg border border-slate-100">
+              <p className="text-xs text-slate-300 print:text-slate-700 leading-relaxed italic bg-slate-950/80 p-3 rounded-lg border border-slate-800 print:bg-slate-50/80 print:border-slate-100">
                 &ldquo;{remarks}&rdquo;
               </p>
             </div>
 
             {/* Official Signatures & Verification Seal */}
-            <div className="pt-8 border-t border-slate-200 grid grid-cols-3 items-end text-center text-xs">
+            <div className="pt-8 border-t border-slate-800 print:border-slate-200 grid grid-cols-3 items-end text-center text-xs">
               <div className="space-y-1">
-                <div className="font-serif italic text-sm text-slate-800">Sunita Rao</div>
-                <div className="border-t border-slate-400 pt-1 text-[11px] font-bold text-slate-600">
+                <div className="font-serif italic text-sm text-slate-200 print:text-slate-800">Sunita Rao</div>
+                <div className="border-t border-slate-700 print:border-slate-400 pt-1 text-[11px] font-bold text-slate-400 print:text-slate-600">
                   Class Teacher
                 </div>
               </div>
 
               {/* Institutional Seal Badge */}
               <div className="flex flex-col items-center">
-                <div className="h-16 w-16 rounded-full border-2 border-dashed border-brand-600 flex flex-col items-center justify-center p-1 text-[8px] font-black text-brand-800 tracking-wider text-center uppercase">
+                <div className="h-16 w-16 rounded-full border-2 border-dashed border-brand-500 flex flex-col items-center justify-center p-1 text-[8px] font-black text-brand-300 tracking-wider text-center uppercase">
                   <span>Greenfield</span>
-                  <span className="text-amber-600">★ ★ ★</span>
+                  <span className="text-amber-400">★ ★ ★</span>
                   <span>Seal 1984</span>
                 </div>
                 <span className="text-[9px] text-slate-400 mt-1 uppercase font-semibold">Institutional Seal</span>
               </div>
 
               <div className="space-y-1">
-                <div className="font-serif italic text-sm text-slate-800">Dr. Alistair Vance</div>
-                <div className="border-t border-slate-400 pt-1 text-[11px] font-bold text-slate-600">
+                <div className="font-serif italic text-sm text-slate-200 print:text-slate-800">Dr. Alistair Vance</div>
+                <div className="border-t border-slate-700 print:border-slate-400 pt-1 text-[11px] font-bold text-slate-400 print:text-slate-600">
                   Headmaster / Principal
                 </div>
               </div>
             </div>
 
             {/* Footer QR & Verification Stamp */}
-            <div className="pt-4 border-t border-dashed border-slate-200 flex items-center justify-between text-[10px] text-slate-400 font-mono">
+            <div className="pt-4 border-t border-dashed border-slate-800 print:border-slate-200 flex items-center justify-between text-[10px] text-slate-500 font-mono">
               <div>Verification Hash: <code>0xCB71A9F42B</code> · Central SIS Record</div>
-              <div>Generated via Greenfield Academic Portal (Next.js 15 + GraphQL Yoga)</div>
+              <div>Generated via Greenfield Academic Portal</div>
             </div>
 
           </div>

@@ -4,6 +4,7 @@ import { useState, useMemo, useTransition } from "react";
 import { Badge } from "@/components/ui";
 import { gqlRequest, GQL_MUTATIONS } from "@/lib/graphql/client";
 import { fmtDate } from "@/lib/dates";
+import { calculateDeadlineStatus } from "@/domain/homework/deadline-engine";
 
 export interface SubjectOfferingOption {
   id: string;
@@ -36,6 +37,9 @@ export interface HomeworkCardItem {
   gradeName: string;
   sectionName: string;
   teacherName: string;
+  type?: "HOMEWORK" | "QUIZ" | "TEST";
+  isStrictDeadline?: boolean;
+  timeLimitMinutes?: number;
   submissions: HomeworkSubmissionItem[];
 }
 
@@ -55,7 +59,7 @@ export function InteractiveHomeworkClient({
   currentRole: string;
 }) {
   const [homeworkList, setHomeworkList] = useState<HomeworkCardItem[]>(initialList);
-  const [filterTab, setFilterTab] = useState<"ALL" | "ACTIVE" | "PAST_DUE" | "SUBMITTED">("ALL");
+  const [filterTab, setFilterTab] = useState<"ALL" | "ACTIVE" | "QUIZZES_TESTS" | "PAST_DUE" | "SUBMITTED">("ALL");
   const [search, setSearch] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<string>("ALL");
 
@@ -65,14 +69,18 @@ export function InteractiveHomeworkClient({
   const [selectedHwToSubmit, setSelectedHwToSubmit] = useState<HomeworkCardItem | null>(null);
   const [activeReviewHw, setActiveReviewHw] = useState<HomeworkCardItem | null>(null);
 
-  // Form State: Create Homework
+  // Form State: Create Homework / Quiz / Test
   const [newOfferingId, setNewOfferingId] = useState(offerings[0]?.id || "");
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [newMaxMarks, setNewMaxMarks] = useState<number>(20);
+  const [newAssignmentType, setNewAssignmentType] = useState<"HOMEWORK" | "QUIZ" | "TEST">("HOMEWORK");
+  const [newIsStrictDeadline, setNewIsStrictDeadline] = useState<boolean>(true);
+  const [newTimeLimitMinutes, setNewTimeLimitMinutes] = useState<string>("30");
   const [newDueAt, setNewDueAt] = useState(() => {
     const d = new Date();
-    d.setDate(d.getDate() + 7);
+    d.setDate(d.getDate() + 3);
+    d.setHours(18, 0, 0, 0);
     return d.toISOString().slice(0, 16);
   });
 
@@ -121,6 +129,8 @@ export function InteractiveHomeworkClient({
       if (filterTab === "ACTIVE") {
         if (isPast) return false;
         if (userSub && (userSub.status === "SUBMITTED" || userSub.status === "REVIEWED")) return false;
+      } else if (filterTab === "QUIZZES_TESTS") {
+        if (h.type !== "QUIZ" && h.type !== "TEST") return false;
       } else if (filterTab === "PAST_DUE") {
         if (!isPast) return false;
       } else if (filterTab === "SUBMITTED") {
@@ -167,6 +177,9 @@ export function InteractiveHomeworkClient({
           gradeName: off?.gradeName || "Class",
           sectionName: off?.sectionName || "Section",
           teacherName: "You (Teacher)",
+          type: newAssignmentType,
+          isStrictDeadline: newIsStrictDeadline,
+          timeLimitMinutes: newTimeLimitMinutes ? Number(newTimeLimitMinutes) : undefined,
           submissions: [],
         };
 
@@ -174,11 +187,11 @@ export function InteractiveHomeworkClient({
         setIsCreateOpen(false);
         setNewTitle("");
         setNewDescription("");
-        setFeedback({ type: "success", message: `Assignment "${newCard.title}" published via GraphQL!` });
+        setFeedback({ type: "success", message: `Assignment "${newCard.title}" published successfully!` });
       } catch (err: any) {
         setFeedback({
           type: "error",
-          message: err.message || "Failed to create homework via GraphQL.",
+          message: err.message || "Failed to create assignment.",
         });
       }
     });
@@ -229,12 +242,12 @@ export function InteractiveHomeworkClient({
         setSubmitFileUrl("");
         setFeedback({
           type: "success",
-          message: `Submission recorded via GraphQL for "${selectedHwToSubmit.title}"!`,
+          message: `Submission recorded for "${selectedHwToSubmit.title}"!`,
         });
       } catch (err: any) {
         setFeedback({
           type: "error",
-          message: err.message || "Failed to submit assignment via GraphQL.",
+          message: err.message || "Failed to submit assignment.",
         });
       }
     });
@@ -247,9 +260,9 @@ export function InteractiveHomeworkClient({
         <div className="card p-4 flex items-center justify-between border-l-4 border-l-brand-600">
           <div>
             <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Homework</div>
-            <div className="text-2xl font-bold text-slate-800 mt-1">{homeworkList.length}</div>
+            <div className="text-2xl font-bold text-white mt-1">{homeworkList.length}</div>
           </div>
-          <div className="h-10 w-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-600 font-bold text-lg">
+          <div className="h-10 w-10 rounded-xl bg-brand-950/80 border border-brand-800/60 flex items-center justify-center text-brand-400 font-bold text-lg">
             📚
           </div>
         </div>
@@ -257,11 +270,11 @@ export function InteractiveHomeworkClient({
         <div className="card p-4 flex items-center justify-between border-l-4 border-l-emerald-500">
           <div>
             <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Active Deadlines</div>
-            <div className="text-2xl font-bold text-emerald-600 mt-1">
+            <div className="text-2xl font-bold text-emerald-400 mt-1">
               {homeworkList.filter((h) => new Date(h.dueAt).getTime() > Date.now()).length}
             </div>
           </div>
-          <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold text-lg">
+          <div className="h-10 w-10 rounded-xl bg-emerald-950/80 border border-emerald-800/60 flex items-center justify-center text-emerald-400 font-bold text-lg">
             ⏰
           </div>
         </div>
@@ -269,9 +282,9 @@ export function InteractiveHomeworkClient({
         <div className="card p-4 flex items-center justify-between border-l-4 border-l-purple-500">
           <div>
             <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Subject Coverage</div>
-            <div className="text-2xl font-bold text-purple-600 mt-1">{subjectList.length} Subjects</div>
+            <div className="text-2xl font-bold text-purple-400 mt-1">{subjectList.length} Subjects</div>
           </div>
-          <div className="h-10 w-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 font-bold text-lg">
+          <div className="h-10 w-10 rounded-xl bg-purple-950/80 border border-purple-800/60 flex items-center justify-center text-purple-400 font-bold text-lg">
             🎓
           </div>
         </div>
@@ -313,21 +326,23 @@ export function InteractiveHomeworkClient({
           </select>
 
           {/* Filter Tabs */}
-          <div className="flex items-center gap-1 border border-slate-200 rounded-lg p-0.5 bg-slate-50">
-            {(["ALL", "ACTIVE", "PAST_DUE", "SUBMITTED"] as const).map((tab) => (
+          <div className="flex items-center gap-1 border border-slate-800 rounded-lg p-0.5 bg-slate-950 overflow-x-auto">
+            {(["ALL", "ACTIVE", "QUIZZES_TESTS", "PAST_DUE", "SUBMITTED"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setFilterTab(tab)}
-                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
+                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap ${
                   filterTab === tab
-                    ? "bg-white text-slate-900 shadow-sm font-semibold"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "bg-slate-800 text-white shadow-sm font-semibold"
+                    : "text-slate-400 hover:text-white"
                 }`}
               >
                 {tab === "ALL"
                   ? "All"
                   : tab === "ACTIVE"
                   ? "Due Soon"
+                  : tab === "QUIZZES_TESTS"
+                  ? "⚡ Quizzes & Tests"
                   : tab === "PAST_DUE"
                   ? "Past Due"
                   : "Submitted"}
@@ -346,7 +361,7 @@ export function InteractiveHomeworkClient({
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            Create Assignment (GraphQL)
+            Create Assignment / Quiz
           </button>
         )}
       </div>
@@ -356,15 +371,15 @@ export function InteractiveHomeworkClient({
         <div
           className={`p-3.5 rounded-xl text-xs font-medium flex items-center justify-between transition-all ${
             feedback.type === "success"
-              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-              : "bg-rose-50 text-rose-800 border border-rose-200"
+              ? "bg-emerald-950/80 text-emerald-300 border border-emerald-800/80"
+              : "bg-rose-950/80 text-rose-300 border border-rose-800/80"
           }`}
         >
           <div className="flex items-center gap-2">
             <span>{feedback.type === "success" ? "✓" : "⚠️"}</span>
             <span>{feedback.message}</span>
           </div>
-          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-slate-700 ml-4 font-bold">
+          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-slate-200 ml-4 font-bold">
             ✕
           </button>
         </div>
@@ -372,18 +387,18 @@ export function InteractiveHomeworkClient({
 
       {/* ── HOMEWORK CARDS GRID ── */}
       {filteredList.length === 0 ? (
-        <div className="card p-12 text-center text-slate-500">
+        <div className="card p-12 text-center text-slate-400">
           <div className="text-3xl mb-2">📖</div>
-          <p className="font-semibold text-slate-700">No assignments found</p>
+          <p className="font-semibold text-white">No assignments or quizzes found</p>
           <p className="text-xs text-slate-400 mt-1">
-            Try adjusting your search filters or create a new assignment above.
+            Try adjusting your search filters or create a new assignment or quiz above.
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredList.map((h) => {
-            const dueDate = new Date(h.dueAt);
-            const isPastDue = dueDate.getTime() < Date.now();
+            const isStrict = h.isStrictDeadline ?? true;
+            const deadline = calculateDeadlineStatus(h.dueAt, isStrict);
             const totalSubmissions = h.submissions.length;
             const submittedCount = h.submissions.filter(
               (s) => s.status === "SUBMITTED" || s.status === "REVIEWED"
@@ -393,22 +408,46 @@ export function InteractiveHomeworkClient({
               ? h.submissions.find((s) => s.studentId === currentStudentId)
               : null;
 
+            const isQuizOrTest = h.type === "QUIZ" || h.type === "TEST";
+
             return (
               <div
                 key={h.id}
-                className="card p-5 flex flex-col justify-between hover:shadow-card-hover transition-all duration-200 border-l-4 border-l-brand-600 relative overflow-hidden"
+                className={`card p-5 flex flex-col justify-between hover:shadow-card-hover transition-all duration-200 border-l-4 relative overflow-hidden ${
+                  h.type === "QUIZ"
+                    ? "border-l-purple-600"
+                    : h.type === "TEST"
+                    ? "border-l-indigo-600"
+                    : "border-l-brand-600"
+                }`}
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md ${
+                        h.type === "QUIZ"
+                          ? "bg-purple-950/80 text-purple-300 border border-purple-800/60"
+                          : h.type === "TEST"
+                          ? "bg-indigo-950/80 text-indigo-300 border border-indigo-800/60"
+                          : "bg-brand-950/80 text-brand-300 border border-brand-800/60"
+                      }`}>
+                        {h.type === "QUIZ" ? "⚡ Quiz" : h.type === "TEST" ? "📝 Test" : "📚 Homework"}
+                      </span>
+
                       <Badge color="blue">
                         {h.gradeName.replace("Class ", "")}-{h.sectionName} · {h.subjectName}
                       </Badge>
-                      {isPastDue ? (
-                        <Badge color="red">Past Due</Badge>
-                      ) : (
-                        <Badge color="green">Active</Badge>
+
+                      <Badge color={deadline.badgeColor}>
+                        {deadline.displayText}
+                      </Badge>
+
+                      {isStrict && (
+                        <span className="text-[10px] font-semibold text-rose-300 bg-rose-950/80 border border-rose-800/60 px-1.5 py-0.5 rounded" title="Submissions automatically lock when deadline expires">
+                          🔒 Strict Lock
+                        </span>
                       )}
+
                       {mySubmission && (
                         <Badge color={mySubmission.status === "REVIEWED" ? "purple" : "emerald"}>
                           {mySubmission.status === "REVIEWED" ? `Graded: ${mySubmission.marks}/${h.maxMarks}` : "Submitted"}
@@ -417,42 +456,43 @@ export function InteractiveHomeworkClient({
                     </div>
 
                     {h.maxMarks && (
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 shrink-0">
                         {h.maxMarks} marks
                       </span>
                     )}
                   </div>
 
-                  <h3 className="font-bold text-base text-slate-900 mt-3">{h.title}</h3>
+                  <h3 className="font-bold text-base text-white mt-3">{h.title}</h3>
 
                   {h.description && (
-                    <p className="text-xs text-slate-600 mt-2 line-clamp-3 leading-relaxed">
+                    <p className="text-xs text-slate-300 mt-2 line-clamp-3 leading-relaxed">
                       {h.description}
                     </p>
                   )}
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
+                <div className="mt-4 pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
                   <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1 font-medium text-slate-700">
+                    <span className="flex items-center gap-1 font-medium text-slate-200">
                       📅 Due: {fmtDate(h.dueAt)}
                     </span>
                     <span>By: {h.teacherName}</span>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+
                     {/* Teacher view submissions drawer */}
                     {canCreate && (
                       <button
                         type="button"
                         onClick={() => setActiveReviewHw(h)}
-                        className="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                        className="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
                       >
                         Submissions ({submittedCount})
                       </button>
                     )}
 
-                    {/* Student submit button */}
+                    {/* Student submit button with deadline guard */}
                     {canSubmit && (
                       <button
                         type="button"
@@ -461,12 +501,20 @@ export function InteractiveHomeworkClient({
                           setIsSubmitOpen(true);
                         }}
                         className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
-                          mySubmission
-                            ? "bg-slate-100 hover:bg-slate-200 text-slate-700"
-                            : "bg-brand-600 hover:bg-brand-700 text-white shadow-sm"
+                          deadline.isExpired && isStrict
+                            ? "bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700"
+                            : mySubmission
+                            ? "bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
+                            : "bg-brand-600 hover:bg-brand-500 text-white shadow-sm"
                         }`}
                       >
-                        {mySubmission ? "Update Work" : "Submit Work"}
+                        {deadline.isExpired && isStrict
+                          ? "Closed"
+                          : mySubmission
+                          ? "Update Work"
+                          : isQuizOrTest
+                          ? "Start & Submit"
+                          : "Submit Work"}
                       </button>
                     )}
                   </div>
@@ -479,44 +527,61 @@ export function InteractiveHomeworkClient({
 
       {/* ── MODAL: CREATE HOMEWORK ── */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-4 border border-slate-100">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
-                <span>📝</span> Create New Assignment (GraphQL)
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-slate-900 rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-4 border border-slate-800 text-slate-100">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <h3 className="font-bold text-base text-white flex items-center gap-2">
+                <span>📝</span> Create New Assignment, Quiz or Test
               </h3>
               <button
                 onClick={() => setIsCreateOpen(false)}
-                className="text-slate-400 hover:text-slate-600 font-bold"
+                className="text-slate-400 hover:text-slate-200 font-bold"
               >
                 ✕
               </button>
             </div>
 
             <form onSubmit={handleCreateSubmit} className="space-y-4 text-xs">
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">
-                  Target Offering / Subject & Section
-                </label>
-                <select
-                  value={newOfferingId}
-                  onChange={(e) => setNewOfferingId(e.target.value)}
-                  className="input w-full"
-                  required
-                >
-                  {offerings.map((o) => (
-                    <option key={o.id} value={o.id}>
-                      {o.gradeName.replace("Class ", "")}-{o.sectionName} · {o.subjectName}
-                    </option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-slate-300 mb-1">
+                    Target Offering (Subject & Section)
+                  </label>
+                  <select
+                    value={newOfferingId}
+                    onChange={(e) => setNewOfferingId(e.target.value)}
+                    className="input w-full"
+                    required
+                  >
+                    {offerings.map((o) => (
+                      <option key={o.id} value={o.id}>
+                        {o.gradeName.replace("Class ", "")}-{o.sectionName} · {o.subjectName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-slate-300 mb-1">
+                    Assignment Category
+                  </label>
+                  <select
+                    value={newAssignmentType}
+                    onChange={(e) => setNewAssignmentType(e.target.value as any)}
+                    className="input w-full font-semibold"
+                  >
+                    <option value="HOMEWORK">📚 Homework Assignment</option>
+                    <option value="QUIZ">⚡ Speed Quiz</option>
+                    <option value="TEST">📝 Class Assessment Test</option>
+                  </select>
+                </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Assignment Title</label>
+                <label className="block font-semibold text-slate-300 mb-1">Title / Topic Name *</label>
                 <input
                   type="text"
-                  placeholder="e.g. Chapter 4 Thermodynamics Problem Set"
+                  placeholder="e.g. Chapter 4: Thermodynamics Problem Set"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   className="input w-full"
@@ -525,18 +590,18 @@ export function InteractiveHomeworkClient({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Instructions / Description</label>
+                <label className="block font-semibold text-slate-300 mb-1">Instructions / Guidelines</label>
                 <textarea
                   placeholder="Enter detailed problem set, guidelines, reading materials, or submission format..."
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
-                  className="input w-full h-24"
+                  className="input w-full h-20"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Max Marks</label>
+                  <label className="block font-semibold text-slate-300 mb-1">Max Marks</label>
                   <input
                     type="number"
                     min={1}
@@ -548,7 +613,7 @@ export function InteractiveHomeworkClient({
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Due Date & Time</label>
+                  <label className="block font-semibold text-slate-300 mb-1">Submission Deadline *</label>
                   <input
                     type="datetime-local"
                     value={newDueAt}
@@ -557,9 +622,20 @@ export function InteractiveHomeworkClient({
                     required
                   />
                 </div>
+                <div>
+                  <label className="block font-semibold text-slate-300 mb-1">Deadline Policy</label>
+                  <select
+                    value={newIsStrictDeadline ? "STRICT" : "GRACE"}
+                    onChange={(e) => setNewIsStrictDeadline(e.target.value === "STRICT")}
+                    className="input w-full"
+                  >
+                    <option value="STRICT">🔒 Strict (Auto-lock)</option>
+                    <option value="GRACE">⚠️ Grace Period (Late tag)</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+              <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
@@ -572,7 +648,7 @@ export function InteractiveHomeworkClient({
                   disabled={isPending}
                   className="btn-primary py-2 px-4 shadow-sm"
                 >
-                  {isPending ? "Creating via GraphQL..." : "Publish Assignment"}
+                  {isPending ? "Creating via GraphQL..." : "Publish Assignment / Quiz"}
                 </button>
               </div>
             </form>
@@ -582,30 +658,67 @@ export function InteractiveHomeworkClient({
 
       {/* ── MODAL: SUBMIT HOMEWORK ── */}
       {isSubmitOpen && selectedHwToSubmit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-4 border border-slate-100">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-slate-900 rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-4 border border-slate-800 text-slate-100">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <h3 className="font-bold text-base text-white flex items-center gap-2">
                 <span>📤</span> Submit Assignment
               </h3>
               <button
                 onClick={() => setIsSubmitOpen(false)}
-                className="text-slate-400 hover:text-slate-600 font-bold"
+                className="text-slate-400 hover:text-slate-200 font-bold"
               >
                 ✕
               </button>
             </div>
 
-            <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs">
-              <div className="font-bold text-slate-800">{selectedHwToSubmit.title}</div>
-              <div className="text-slate-500 mt-0.5">
-                {selectedHwToSubmit.subjectName} · Due {fmtDate(selectedHwToSubmit.dueAt)}
-              </div>
-            </div>
+            {(() => {
+              const isStrict = selectedHwToSubmit.isStrictDeadline ?? true;
+              const deadline = calculateDeadlineStatus(selectedHwToSubmit.dueAt, isStrict);
+
+              return (
+                <div className="space-y-2">
+                  <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800 text-xs">
+                    <div className="flex items-center justify-between">
+                      <div className="font-bold text-white">{selectedHwToSubmit.title}</div>
+                      <Badge color={deadline.badgeColor}>{deadline.displayText}</Badge>
+                    </div>
+                    <div className="text-slate-400 mt-1 flex items-center justify-between text-[11px]">
+                      <span>{selectedHwToSubmit.subjectName} · Max {selectedHwToSubmit.maxMarks} marks</span>
+                      <span>📅 Due: {fmtDate(selectedHwToSubmit.dueAt)}</span>
+                    </div>
+                  </div>
+
+                  {deadline.isExpired && isStrict ? (
+                    <div className="p-3 rounded-xl bg-rose-950/80 border border-rose-800/80 text-rose-300 text-xs flex items-center gap-2">
+                      <span className="text-base">⛔</span>
+                      <div>
+                        <div className="font-bold">Submissions Closed (Strict Deadline Enforced)</div>
+                        <div className="text-[11px] font-normal text-rose-400 mt-0.5">
+                          The deadline for this {selectedHwToSubmit.type || "assignment"} expired on {fmtDate(selectedHwToSubmit.dueAt)}. Submissions are locked.
+                        </div>
+                      </div>
+                    </div>
+                  ) : deadline.isExpired ? (
+                    <div className="p-2.5 rounded-xl bg-amber-950/80 border border-amber-800/80 text-amber-300 text-xs flex items-center gap-2">
+                      <span>⚠️</span>
+                      <span className="text-[11px]">
+                        Late Submission: The deadline has passed. Your work will be marked with a <strong>LATE</strong> tag.
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="p-2.5 rounded-xl bg-emerald-950/80 border border-emerald-800/80 text-emerald-300 text-xs flex items-center justify-between">
+                      <span className="font-medium text-[11px]">⏰ Active Countdown:</span>
+                      <span className="font-mono font-bold text-xs">{deadline.detailedCountdown}</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             <form onSubmit={handleStudentSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Submission Notes / Text Solution
                 </label>
                 <textarea
@@ -618,7 +731,7 @@ export function InteractiveHomeworkClient({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Attachment / Document URL (Optional)
                 </label>
                 <input
@@ -630,7 +743,7 @@ export function InteractiveHomeworkClient({
                 />
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+              <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsSubmitOpen(false)}
@@ -640,10 +753,25 @@ export function InteractiveHomeworkClient({
                 </button>
                 <button
                   type="submit"
-                  disabled={isPending}
-                  className="btn-primary py-2 px-4 shadow-sm"
+                  disabled={
+                    isPending ||
+                    Boolean(
+                      calculateDeadlineStatus(
+                        selectedHwToSubmit.dueAt,
+                        selectedHwToSubmit.isStrictDeadline ?? true
+                      ).isExpired && (selectedHwToSubmit.isStrictDeadline ?? true)
+                    )
+                  }
+                  className="btn-primary py-2 px-4 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isPending ? "Submitting..." : "Submit to Teacher (GraphQL)"}
+                  {isPending
+                    ? "Submitting..."
+                    : calculateDeadlineStatus(
+                        selectedHwToSubmit.dueAt,
+                        selectedHwToSubmit.isStrictDeadline ?? true
+                      ).isExpired && (selectedHwToSubmit.isStrictDeadline ?? true)
+                    ? "Locked (Deadline Passed)"
+                    : "Submit Work"}
                 </button>
               </div>
             </form>
@@ -653,34 +781,34 @@ export function InteractiveHomeworkClient({
 
       {/* ── MODAL: REVIEW SUBMISSIONS DRAWER ── */}
       {activeReviewHw && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-6 space-y-4 border border-slate-100">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-slate-900 rounded-2xl shadow-xl max-w-2xl w-full p-6 space-y-4 border border-slate-800 text-slate-100">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <div>
-                <h3 className="font-bold text-base text-slate-900">
+                <h3 className="font-bold text-base text-white">
                   Submissions: {activeReviewHw.title}
                 </h3>
-                <div className="text-xs text-slate-500 mt-0.5">
+                <div className="text-xs text-slate-400 mt-0.5">
                   Max {activeReviewHw.maxMarks} marks · {activeReviewHw.submissions.length} submissions received
                 </div>
               </div>
               <button
                 onClick={() => setActiveReviewHw(null)}
-                className="text-slate-400 hover:text-slate-600 font-bold"
+                className="text-slate-400 hover:text-slate-200 font-bold"
               >
                 ✕
               </button>
             </div>
 
             {activeReviewHw.submissions.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-500">
+              <div className="p-8 text-center text-xs text-slate-400">
                 No students have submitted this assignment yet.
               </div>
             ) : (
               <div className="overflow-x-auto max-h-96">
                 <table className="w-full text-left text-xs">
                   <thead>
-                    <tr className="border-b border-slate-100 bg-slate-50">
+                    <tr className="border-b border-slate-800 bg-slate-950/80">
                       <th className="th py-2">Student</th>
                       <th className="th py-2">Status</th>
                       <th className="th py-2">Submitted</th>
@@ -688,24 +816,24 @@ export function InteractiveHomeworkClient({
                       <th className="th py-2">Comments</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-800/80">
                     {activeReviewHw.submissions.map((sub) => (
-                      <tr key={sub.id} className="hover:bg-slate-50">
-                        <td className="td py-2 font-semibold text-slate-900">{sub.studentName}</td>
+                      <tr key={sub.id} className="hover:bg-slate-800/40">
+                        <td className="td py-2 font-semibold text-white">{sub.studentName}</td>
                         <td className="td py-2">
                           <Badge color={sub.status === "REVIEWED" ? "purple" : "green"}>
                             {sub.status}
                           </Badge>
                         </td>
-                        <td className="td py-2 text-slate-500">
+                        <td className="td py-2 text-slate-400">
                           {sub.submittedAt ? fmtDate(sub.submittedAt) : "—"}
                         </td>
-                        <td className="td py-2 font-mono font-semibold">
+                        <td className="td py-2 font-mono font-semibold text-slate-200">
                           {sub.marks !== null && sub.marks !== undefined
                             ? `${sub.marks}/${activeReviewHw.maxMarks}`
                             : "Unmarked"}
                         </td>
-                        <td className="td py-2 text-slate-600 max-w-xs truncate">
+                        <td className="td py-2 text-slate-300 max-w-xs truncate">
                           {sub.comment || "—"}
                         </td>
                       </tr>
@@ -715,7 +843,7 @@ export function InteractiveHomeworkClient({
               </div>
             )}
 
-            <div className="pt-3 border-t border-slate-100 flex justify-end">
+            <div className="pt-3 border-t border-slate-800 flex justify-end">
               <button
                 type="button"
                 onClick={() => setActiveReviewHw(null)}

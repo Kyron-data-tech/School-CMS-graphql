@@ -62,30 +62,36 @@ export default async function HomeworkPage() {
       }),
     ]);
 
-    homeworkCards = homework.map((h) => ({
-      id: h.id,
-      title: h.title,
-      description: h.description,
-      dueAt: h.dueAt.toISOString(),
-      publishAt: h.publishAt.toISOString(),
-      maxMarks: h.maxMarks,
-      offeringId: h.offeringId,
-      subjectName: h.offering.subject.name,
-      gradeName: h.offering.section.grade.name,
-      sectionName: h.offering.section.name,
-      teacherName: `${h.teacher.firstName} ${h.teacher.lastName}`,
-      submissions: h.submissions.map((s): HomeworkSubmissionItem => ({
-        id: s.id,
-        studentId: s.studentId,
-        studentName: `${s.student.firstName} ${s.student.lastName}`,
-        status: s.status as any,
-        submittedAt: s.submittedAt?.toISOString(),
-        marks: s.marks,
-        comment: s.comment,
-        fileUrl: s.fileUrl,
-        feedback: s.feedback,
-      })),
-    }));
+    homeworkCards = homework.map((h) => {
+      const titleLower = h.title.toLowerCase();
+      const detectedType = titleLower.includes("quiz") ? "QUIZ" : titleLower.includes("test") ? "TEST" : "HOMEWORK";
+      return {
+        id: h.id,
+        title: h.title,
+        description: h.description,
+        dueAt: h.dueAt.toISOString(),
+        publishAt: h.publishAt.toISOString(),
+        maxMarks: h.maxMarks,
+        offeringId: h.offeringId,
+        subjectName: h.offering.subject.name,
+        gradeName: h.offering.section.grade.name,
+        sectionName: h.offering.section.name,
+        teacherName: `${h.teacher.firstName} ${h.teacher.lastName}`,
+        type: detectedType as "HOMEWORK" | "QUIZ" | "TEST",
+        isStrictDeadline: !h.allowLate,
+        submissions: h.submissions.map((s): HomeworkSubmissionItem => ({
+          id: s.id,
+          studentId: s.studentId,
+          studentName: `${s.student.firstName} ${s.student.lastName}`,
+          status: s.status as any,
+          submittedAt: s.submittedAt?.toISOString(),
+          marks: s.marks,
+          comment: s.comment,
+          fileUrl: s.fileUrl,
+          feedback: s.feedback,
+        })),
+      };
+    });
 
     offeringOptions = allOfferings.map((o) => ({
       id: o.id,
@@ -94,7 +100,7 @@ export default async function HomeworkPage() {
       gradeName: o.section.grade.name,
     }));
   } catch (err) {
-    // Offline demo fallback
+    // Offline demo fallback showcasing Homework, Strict Quiz with countdown, and Expired Test
     homeworkCards = [
       {
         id: "hw-1",
@@ -108,6 +114,8 @@ export default async function HomeworkPage() {
         gradeName: "Class 8",
         sectionName: "A",
         teacherName: "Dr. Vikram Seth",
+        type: "HOMEWORK",
+        isStrictDeadline: false,
         submissions: [
           {
             id: "sub-1",
@@ -121,9 +129,9 @@ export default async function HomeworkPage() {
       },
       {
         id: "hw-2",
-        title: "Quadratic Equation Applications",
-        description: "Solve the 8 word problems covering projectile trajectories and profit maximization models.",
-        dueAt: new Date(Date.now() + 86400000 * 5).toISOString(),
+        title: "Chapter 4: Linear & Quadratic Equations Speed Quiz",
+        description: "Time-critical quiz covering projectile trajectories, roots, and profit maximization models. Submission closes automatically at deadline.",
+        dueAt: new Date(Date.now() + 86400000 * 1 + 3600000 * 4).toISOString(), // ~28 hours from now
         publishAt: new Date().toISOString(),
         maxMarks: 20,
         offeringId: "off-2",
@@ -131,29 +139,34 @@ export default async function HomeworkPage() {
         gradeName: "Class 8",
         sectionName: "A",
         teacherName: "Pooja Raman",
+        type: "QUIZ",
+        isStrictDeadline: true,
+        timeLimitMinutes: 30,
         submissions: [],
       },
       {
         id: "hw-3",
-        title: "Shakespeare's Julius Caesar Character Analysis",
-        description: "500-word essay comparing the rhetoric of Brutus vs. Mark Antony in Act 3 Scene 2.",
-        dueAt: new Date(Date.now() - 86400000).toISOString(),
-        publishAt: new Date().toISOString(),
+        title: "Mid-Term English Literature Assessment Test",
+        description: "500-word essay comparing the rhetoric of Brutus vs. Mark Antony in Act 3 Scene 2. Strict deadline has expired.",
+        dueAt: new Date(Date.now() - 3600000 * 2).toISOString(), // expired 2 hours ago
+        publishAt: new Date(Date.now() - 86400000 * 2).toISOString(),
         maxMarks: 30,
         offeringId: "off-3",
         subjectName: "English Literature",
         gradeName: "Class 8",
         sectionName: "B",
         teacherName: "Arundhati Roy",
+        type: "TEST",
+        isStrictDeadline: true,
         submissions: [
           {
             id: "sub-2",
             studentId: "s2",
             studentName: "Sara Kapoor",
             status: "REVIEWED",
-            submittedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+            submittedAt: new Date(Date.now() - 86400000).toISOString(),
             marks: 28,
-            comment: "Attached my rhetorical analysis essay.",
+            comment: "Attached my rhetorical analysis essay before the deadline.",
             feedback: "Exceptional analysis of irony in Antony's speech.",
           },
         ],
@@ -174,8 +187,8 @@ export default async function HomeworkPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Homework & Assignments Hub"
-        subtitle="Manage academic coursework, student submissions, and evaluations powered by GraphQL"
+        title="Homework & Quizzes Hub"
+        subtitle="Manage academic coursework, quizzes, student submissions, and evaluations"
       />
 
       <InteractiveHomeworkClient

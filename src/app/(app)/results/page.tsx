@@ -256,7 +256,7 @@ export default async function ResultsPage() {
     <div className="space-y-6">
       <PageHeader
         title={isStudentOrParent ? "My Examination Results" : "Assessment Gradebook & Marks Entry"}
-        subtitle="Manage student marks, grade boundaries, and exam publishing powered by GraphQL"
+        subtitle="Manage student marks, grade boundaries, and official exam results publishing"
       />
 
       <InteractiveResultsClient

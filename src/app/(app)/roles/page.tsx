@@ -32,16 +32,16 @@ export default async function RolesPage() {
           action={
             <span className="flex items-center gap-2">
               {r.isSystem ? <Badge color="slate">System</Badge> : <Badge color="green">Custom</Badge>}
-              <span className="text-xs text-slate-500">{r._count.userRoles} user(s)</span>
+              <span className="text-xs text-slate-400">{r._count.userRoles} user(s)</span>
             </span>
           }
         >
-          <p className="mb-3 text-sm text-slate-500">{r.description}</p>
+          <p className="mb-3 text-sm text-slate-400">{r.description}</p>
           <div className="flex flex-wrap gap-1.5">
-            {r.permissions.length === 0 && <span className="text-xs text-slate-400">No permissions granted.</span>}
+            {r.permissions.length === 0 && <span className="text-xs text-slate-500">No permissions granted.</span>}
             {r.permissions.map((p) => (
-              <span key={p.id} className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs">
-                <span className="font-medium text-slate-700">{p.module}.{p.resource}.{p.action}</span>
+              <span key={p.id} className="inline-flex items-center gap-1 rounded-md border border-slate-800 bg-slate-950/80 px-2 py-1 text-xs">
+                <span className="font-medium text-slate-300 font-mono">{p.module}.{p.resource}.{p.action}</span>
                 <Badge color={scopeColor[p.scope] ?? "slate"}>{p.scope}</Badge>
               </span>
             ))}

@@ -22,9 +22,9 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
     <div>
       <PageHeader title="Audit Log" subtitle="Immutable record of critical actions" />
       <div className="mb-4 flex flex-wrap gap-2">
-        <a href="/audit" className={`badge ${!sp.module ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-600"}`}>All</a>
+        <a href="/audit" className={`badge ${!sp.module ? "bg-brand-600 text-white" : "bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700"}`}>All</a>
         {modules.map((m) => (
-          <a key={m.module} href={`/audit?module=${m.module}`} className={`badge ${sp.module === m.module ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-600"}`}>{m.module}</a>
+          <a key={m.module} href={`/audit?module=${m.module}`} className={`badge ${sp.module === m.module ? "bg-brand-600 text-white" : "bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700"}`}>{m.module}</a>
         ))}
       </div>
 
@@ -33,14 +33,14 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
       ) : (
         <div className="card overflow-hidden">
           <table className="w-full">
-            <thead className="bg-slate-50"><tr><th className="th">When</th><th className="th">Actor</th><th className="th">Action</th><th className="th">Summary</th></tr></thead>
-            <tbody className="divide-y divide-slate-100">
+            <thead className="bg-slate-900/90 border-b border-slate-800"><tr><th className="th">When</th><th className="th">Actor</th><th className="th">Action</th><th className="th">Summary</th></tr></thead>
+            <tbody className="divide-y divide-slate-800">
               {logs.map((l) => (
-                <tr key={l.id}>
-                  <td className="td whitespace-nowrap text-xs text-slate-500">{fmtDate(l.createdAt)}</td>
-                  <td className="td">{l.actorName ?? "system"}</td>
+                <tr key={l.id} className="hover:bg-slate-800/30 transition-colors">
+                  <td className="td whitespace-nowrap text-xs text-slate-400">{fmtDate(l.createdAt)}</td>
+                  <td className="td font-medium text-white">{l.actorName ?? "system"}</td>
                   <td className="td"><Badge color="blue">{l.action}</Badge></td>
-                  <td className="td">{l.summary}</td>
+                  <td className="td text-slate-300">{l.summary}</td>
                 </tr>
               ))}
             </tbody>
