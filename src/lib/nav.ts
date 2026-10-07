@@ -21,7 +21,7 @@ const ITEMS: NavItem[] = [
   { href: "/fees", label: "Fee Invoicing", module: "*", resource: "*" },
   { href: "/activities", label: "Activities", module: "activities", resource: "activity" },
   { href: "/announcements", label: "Announcements", module: "announcements", resource: "announcement" },
-  { href: "/copilot", label: "Academic Assistant", module: "*", resource: "*" },
+  { href: "/copilot", label: "AI Academic Copilot", module: "*", resource: "*" },
   { href: "/roles", label: "Staff & Roles", module: "admin", resource: "roles" },
   { href: "/audit", label: "Audit Log", module: "admin", resource: "audit" },
 ];
@@ -35,14 +35,11 @@ export function navFor(ctx: AuthContext): NavItem[] {
   );
 
   return ITEMS.filter((item) => {
-    // Academic Assistant (AI) is only for teaching and administrative staff
-    if (item.href === "/copilot" && isStudentOrParent) {
-      return false;
-    }
     if (item.module === "*") return true;
     return can(ctx, item.module, item.resource, "view");
   }).map((item) => {
     if (isStudentOrParent) {
+      if (item.href === "/copilot") return { ...item, label: "AI Study Assistant" };
       if (item.href === "/students") {
         return {
           ...item,

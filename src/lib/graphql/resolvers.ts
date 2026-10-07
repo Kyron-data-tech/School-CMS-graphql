@@ -5,7 +5,9 @@ import {
   generateStudentRemarks,
   generateQuiz,
   generateNotice,
+  answerSchoolQuery,
   testModelConnection,
+  MODEL_CATALOG,
 } from "@/lib/ai/copilot";
 
 export const resolvers = {
@@ -370,6 +372,10 @@ export const resolvers = {
         baseUrl: args.baseUrl,
         apiKey: args.apiKey,
       });
+    },
+
+    aiSupportedModels: async () => {
+      return Object.values(MODEL_CATALOG);
     },
   },
 
@@ -749,6 +755,7 @@ export const resolvers = {
         text: res.text,
         provider: res.provider,
         model: res.model,
+        tokenStats: res.tokenStats,
         timestamp: new Date().toISOString(),
       };
     },
@@ -764,6 +771,7 @@ export const resolvers = {
         text: res.text,
         provider: res.provider,
         model: res.model,
+        tokenStats: res.tokenStats,
         timestamp: new Date().toISOString(),
       };
     },
@@ -779,6 +787,23 @@ export const resolvers = {
         text: res.text,
         provider: res.provider,
         model: res.model,
+        tokenStats: res.tokenStats,
+        timestamp: new Date().toISOString(),
+      };
+    },
+
+    aiChatQuery: async (
+      _: unknown,
+      { input }: { input: { query: string; context?: string } }
+    ) => {
+      const res = await answerSchoolQuery(input);
+      return {
+        success: true,
+        mode: "chat",
+        text: res.text,
+        provider: res.provider,
+        model: res.model,
+        tokenStats: res.tokenStats,
         timestamp: new Date().toISOString(),
       };
     },

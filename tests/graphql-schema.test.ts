@@ -35,4 +35,22 @@ describe("GraphQL Schema Validation", () => {
     expect(schema.getType("ResetPasswordInput")).toBeDefined();
     expect(schema.getType("ResetPasswordPayload")).toBeDefined();
   });
+
+  it("should contain AI Copilot GraphQL types, queries, and mutations with Context Window specs", () => {
+    const schema = buildSchema(typeDefs);
+    expect(schema.getType("AiResponse")).toBeDefined();
+    expect(schema.getType("AiTokenStats")).toBeDefined();
+    expect(schema.getType("AiModelSpec")).toBeDefined();
+    expect(schema.getType("AiModelTestResponse")).toBeDefined();
+
+    const queryFields = schema.getQueryType()?.getFields();
+    expect(queryFields?.aiTestConnection).toBeDefined();
+    expect(queryFields?.aiSupportedModels).toBeDefined();
+
+    const mutationFields = schema.getMutationType()?.getFields();
+    expect(mutationFields?.aiGenerateRemarks).toBeDefined();
+    expect(mutationFields?.aiGenerateQuiz).toBeDefined();
+    expect(mutationFields?.aiGenerateNotice).toBeDefined();
+    expect(mutationFields?.aiChatQuery).toBeDefined();
+  });
 });

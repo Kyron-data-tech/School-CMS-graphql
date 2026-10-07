@@ -293,12 +293,32 @@ export const typeDefs = /* GraphQL */ `
 
   # ── AI Copilot Types ──
 
+  type AiTokenStats {
+    promptTokens: Int
+    completionTokens: Int
+    totalTokens: Int
+    contextWindowLimit: Int
+    contextWindowRemaining: Int
+    contextWindowPercent: Float
+  }
+
+  type AiModelSpec {
+    id: String!
+    name: String!
+    provider: String!
+    contextWindow: Int!
+    maxOutputTokens: Int!
+    description: String!
+    badge: String!
+  }
+
   type AiResponse {
     success: Boolean!
     mode: String!
     text: String!
     provider: String!
     model: String
+    tokenStats: AiTokenStats
     timestamp: String!
   }
 
@@ -308,6 +328,7 @@ export const typeDefs = /* GraphQL */ `
     latencyMs: Int!
     provider: String!
     model: String!
+    contextWindow: Int
   }
 
   # ── Inputs ──
@@ -431,6 +452,11 @@ export const typeDefs = /* GraphQL */ `
     keyDetails: String
   }
 
+  input AiChatInput {
+    query: String!
+    context: String
+  }
+
   # ── ROOT QUERIES ──
 
   type Query {
@@ -462,8 +488,9 @@ export const typeDefs = /* GraphQL */ `
     announcements(audience: Audience, limit: Int): [Announcement!]!
     auditLogs(limit: Int): [AuditLog!]!
 
-    # AI Diagnostics
+    # AI Diagnostics & Models
     aiTestConnection(provider: String, modelName: String, baseUrl: String, apiKey: String): AiModelTestResponse!
+    aiSupportedModels: [AiModelSpec!]!
   }
 
   # ── ROOT MUTATIONS ──
@@ -500,5 +527,6 @@ export const typeDefs = /* GraphQL */ `
     aiGenerateRemarks(input: AiRemarksInput!): AiResponse!
     aiGenerateQuiz(input: AiQuizInput!): AiResponse!
     aiGenerateNotice(input: AiNoticeInput!): AiResponse!
+    aiChatQuery(input: AiChatInput!): AiResponse!
   }
 `;
