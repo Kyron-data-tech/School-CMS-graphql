@@ -150,5 +150,65 @@ describe("LLM Academic Copilot - Unit Test Suite", () => {
       expect(res.provider).toBeDefined();
       expect(typeof res.provider).toBe("string");
     });
+
+    it("should return token usage and context window metrics on generation calls", async () => {
+      const res = await generateStudentRemarks({
+        studentName: "Devansh Nair",
+        gradeLevel: "Class 9-B",
+        attendanceRate: "94%",
+        strengths: "Computer Programming and Robotics",
+        areasToImprove: "Essay formatting",
+      });
+
+      expect(res.tokenStats).toBeDefined();
+      expect(res.tokenStats?.promptTokens).toBeGreaterThan(0);
+      expect(res.tokenStats?.completionTokens).toBeGreaterThan(0);
+      expect(res.tokenStats?.totalTokens).toBeGreaterThan(0);
+      expect(res.tokenStats?.contextWindowLimit).toBeGreaterThan(0);
+      expect(res.tokenStats?.contextWindowRemaining).toBeGreaterThan(0);
+      expect(res.tokenStats?.contextWindowPercent).toBeGreaterThan(0);
+    });
+  });
+
+  describe("LLM Context Window Specifications & Token Economics", () => {
+    it("should accurately resolve context window token limits across all supported LLM models", async () => {
+      const { getContextWindowLimit, MODEL_CATALOG } = await import("@/lib/ai/copilot");
+
+      // Gemini: 1M - 2M tokens
+      expect(getContextWindowLimit("gemini-1.5-flash")).toBe(1000000);
+      expect(getContextWindowLimit("gemini-1.5-pro")).toBe(2000000);
+
+      // Claude: 200K tokens
+      expect(getContextWindowLimit("claude-3-5-sonnet")).toBe(200000);
+      expect(getContextWindowLimit("claude-3-haiku")).toBe(200000);
+
+      // OpenAI: 128K tokens
+      expect(getContextWindowLimit("gpt-4o")).toBe(128000);
+      expect(getContextWindowLimit("gpt-4o-mini")).toBe(128000);
+
+      // Sir's Local Model: 8K tokens
+      expect(getContextWindowLimit("llama3")).toBe(8192);
+
+      // Verify catalog metadata
+      expect(MODEL_CATALOG["gemini-1.5-flash"].badge).toBe("1M Context");
+      expect(MODEL_CATALOG["claude-3-5-sonnet"].badge).toBe("200K Context");
+      expect(MODEL_CATALOG["gpt-4o"].badge).toBe("128K Context");
+      expect(MODEL_CATALOG["llama3"].badge).toBe("8K Context");
+    });
+
+    it("should compute token metrics, headroom, and percentage correctly", async () => {
+      const { calculateTokenMetrics } = await import("@/lib/ai/copilot");
+
+      const prompt = "Please evaluate this student's performance in term exams.";
+      const completion = "The student demonstrated outstanding conceptual mastery in physics.";
+      const metrics = calculateTokenMetrics(prompt, completion, "gpt-4o");
+
+      expect(metrics.contextWindowLimit).toBe(128000);
+      expect(metrics.promptTokens).toBeGreaterThan(0);
+      expect(metrics.completionTokens).toBeGreaterThan(0);
+      expect(metrics.totalTokens).toBe(metrics.promptTokens + metrics.completionTokens);
+      expect(metrics.contextWindowRemaining).toBe(128000 - metrics.totalTokens);
+      expect(metrics.contextWindowPercent).toBeLessThan(1);
+    });
   });
 });

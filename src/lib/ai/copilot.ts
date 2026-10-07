@@ -1,12 +1,13 @@
 import { z } from "zod";
 
 export const AiModelConfigSchema = z.object({
-  provider: z.enum(["gemini", "custom", "openai", "builtin"]).default("builtin"),
+  provider: z.enum(["gemini", "custom", "openai", "claude", "builtin"]).default("builtin"),
   modelName: z.string().optional(),
   baseUrl: z.string().url().optional().or(z.literal("")),
   apiKey: z.string().optional(),
   temperature: z.number().min(0).max(1).optional(),
   customSystemPrompt: z.string().optional(),
+  maxTokens: z.number().optional(),
 });
 
 export type AiModelConfig = z.infer<typeof AiModelConfigSchema>;
@@ -20,13 +21,173 @@ export const CopilotRequestSchema = z.object({
 export type CopilotMode = "remarks" | "quiz" | "notice" | "chat";
 
 /**
- * 1. Call Custom / OpenAI-Compatible Endpoint (Sir's Side Model / Ollama / LM Studio / Groq / vLLM)
+ * Model Context Window Catalog & Capacity Specifications
+ * Context window defines the maximum number of tokens (prompt + completion)
+ * an LLM model can hold in memory in a single interaction.
+ */
+export interface ModelSpec {
+  id: string;
+  name: string;
+  provider: "openai" | "claude" | "gemini" | "custom" | "builtin";
+  contextWindow: number; // in tokens
+  maxOutputTokens: number;
+  description: string;
+  badge: string;
+}
+
+export const MODEL_CATALOG: Record<string, ModelSpec> = {
+  // 1. OpenAI ChatGPT Models
+  "gpt-4o": {
+    id: "gpt-4o",
+    name: "OpenAI ChatGPT (GPT-4o)",
+    provider: "openai",
+    contextWindow: 128000,
+    maxOutputTokens: 4096,
+    description: "Industry-standard omni reasoning model with 128K context window (~96,000 words).",
+    badge: "128K Context",
+  },
+  "gpt-4o-mini": {
+    id: "gpt-4o-mini",
+    name: "OpenAI ChatGPT (GPT-4o Mini)",
+    provider: "openai",
+    contextWindow: 128000,
+    maxOutputTokens: 4096,
+    description: "Ultra-fast and cost-effective OpenAI model with 128K context window.",
+    badge: "128K Context",
+  },
+  // 2. Anthropic Claude Models
+  "claude-3-5-sonnet": {
+    id: "claude-3-5-sonnet",
+    name: "Anthropic Claude (3.5 Sonnet)",
+    provider: "claude",
+    contextWindow: 200000,
+    maxOutputTokens: 8192,
+    description: "Exceptional analytical depth with a large 200K context window (~150,000 words).",
+    badge: "200K Context",
+  },
+  "claude-3-haiku": {
+    id: "claude-3-haiku",
+    name: "Anthropic Claude (3 Haiku)",
+    provider: "claude",
+    contextWindow: 200000,
+    maxOutputTokens: 4096,
+    description: "Rapid, lightweight Claude model with generous 200K context window.",
+    badge: "200K Context",
+  },
+  // 3. Google Gemini Models
+  "gemini-1.5-flash": {
+    id: "gemini-1.5-flash",
+    name: "Google Gemini (1.5 Flash)",
+    provider: "gemini",
+    contextWindow: 1000000,
+    maxOutputTokens: 8192,
+    description: "High speed with a massive 1 Million token context window. Fits whole books/syllabi.",
+    badge: "1M Context",
+  },
+  "gemini-1.5-pro": {
+    id: "gemini-1.5-pro",
+    name: "Google Gemini (1.5 Pro)",
+    provider: "gemini",
+    contextWindow: 2000000,
+    maxOutputTokens: 8192,
+    description: "World-record 2 Million token context window for massive student archives and curriculum sets.",
+    badge: "2M Context",
+  },
+  // 4. Sir's Custom / Local Endpoint (Ollama, LM Studio, vLLM)
+  "llama3": {
+    id: "llama3",
+    name: "Sir's Custom Endpoint (LLaMA 3)",
+    provider: "custom",
+    contextWindow: 8192,
+    maxOutputTokens: 2048,
+    description: "Local private model endpoint with 8K context window. 100% offline & zero cloud API cost.",
+    badge: "8K Context",
+  },
+  "mistral": {
+    id: "mistral",
+    name: "Sir's Custom Endpoint (Mistral 7B)",
+    provider: "custom",
+    contextWindow: 32768,
+    maxOutputTokens: 2048,
+    description: "Self-hosted high-efficiency model with 32K context window via Ollama/vLLM.",
+    badge: "32K Context",
+  },
+  // 5. Built-in Academic Domain Engine
+  "academic-domain-v1": {
+    id: "academic-domain-v1",
+    name: "Greenfield Academic Engine (Built-in)",
+    provider: "builtin",
+    contextWindow: 16384,
+    maxOutputTokens: 2048,
+    description: "Deterministic academic domain engine with instant offline response generation.",
+    badge: "Offline Safe",
+  },
+};
+
+/**
+ * Returns context window token limit for any model name
+ */
+export function getContextWindowLimit(modelName?: string): number {
+  if (!modelName) return 16384;
+  const match = MODEL_CATALOG[modelName];
+  if (match) return match.contextWindow;
+  if (modelName.includes("gemini")) return 1000000;
+  if (modelName.includes("claude")) return 200000;
+  if (modelName.includes("gpt-4") || modelName.includes("openai")) return 128000;
+  if (modelName.includes("mistral")) return 32768;
+  return 8192;
+}
+
+export interface TokenStats {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  contextWindowLimit: number;
+  contextWindowRemaining: number;
+  contextWindowPercent: number;
+}
+
+export interface LlmGenerationResult {
+  text: string;
+  provider: string;
+  model: string;
+  tokenStats?: TokenStats;
+}
+
+/**
+ * Calculates Token Metrics and Context Window Usage
+ */
+export function calculateTokenMetrics(
+  promptText: string,
+  completionText: string,
+  modelName?: string,
+  actualUsage?: { promptTokens?: number; completionTokens?: number }
+): TokenStats {
+  const limit = getContextWindowLimit(modelName);
+  const promptTokens = actualUsage?.promptTokens ?? Math.max(1, Math.ceil(promptText.length / 3.8));
+  const completionTokens = actualUsage?.completionTokens ?? Math.max(1, Math.ceil(completionText.length / 3.8));
+  const totalTokens = promptTokens + completionTokens;
+  const remaining = Math.max(0, limit - totalTokens);
+  const percent = Number(((totalTokens / limit) * 100).toFixed(2));
+
+  return {
+    promptTokens,
+    completionTokens,
+    totalTokens,
+    contextWindowLimit: limit,
+    contextWindowRemaining: remaining,
+    contextWindowPercent: percent,
+  };
+}
+
+/**
+ * 1. Call Custom / OpenAI-Compatible Endpoint (Ollama / LM Studio / Sir's Server)
  */
 async function callCustomOpenAiCompatible(
   systemPrompt: string,
   userPrompt: string,
   config: AiModelConfig
-): Promise<{ text: string; provider: string; model: string } | null> {
+): Promise<LlmGenerationResult | null> {
   const baseUrl = (config.baseUrl || process.env.CUSTOM_AI_BASE_URL || "http://localhost:11434/v1").replace(/\/$/, "");
   const apiKey = config.apiKey || process.env.CUSTOM_AI_KEY || process.env.OPENAI_API_KEY || "dummy-key";
   const model = config.modelName || process.env.CUSTOM_AI_MODEL || "llama3";
@@ -50,7 +211,7 @@ async function callCustomOpenAiCompatible(
           { role: "user", content: userPrompt },
         ],
         temperature: config.temperature ?? 0.7,
-        max_tokens: 800,
+        max_tokens: config.maxTokens || 1024,
       }),
     });
 
@@ -65,10 +226,18 @@ async function callCustomOpenAiCompatible(
     const content = data.choices?.[0]?.message?.content;
     if (!content) return null;
 
+    const tokenStats = calculateTokenMetrics(
+      `${systemPrompt}\n${userPrompt}`,
+      content,
+      model,
+      data.usage ? { promptTokens: data.usage.prompt_tokens, completionTokens: data.usage.completion_tokens } : undefined
+    );
+
     return {
       text: content,
       provider: `Custom Model Endpoint (${model})`,
       model,
+      tokenStats,
     };
   } catch (err) {
     console.warn("Custom model connection failed:", err);
@@ -77,13 +246,146 @@ async function callCustomOpenAiCompatible(
 }
 
 /**
- * 2. Call Google Gemini API
+ * 2. Call OpenAI ChatGPT API
+ */
+async function callOpenAi(
+  systemPrompt: string,
+  userPrompt: string,
+  config: AiModelConfig
+): Promise<LlmGenerationResult | null> {
+  const baseUrl = (config.baseUrl || "https://api.openai.com/v1").replace(/\/$/, "");
+  const apiKey = config.apiKey || process.env.OPENAI_API_KEY;
+  if (!apiKey) return null;
+
+  const model = config.modelName || "gpt-4o";
+
+  try {
+    const url = `${baseUrl}/chat/completions`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+    const response = await fetch(url, {
+      method: "POST",
+      signal: controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "system", content: config.customSystemPrompt || systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        temperature: config.temperature ?? 0.7,
+        max_tokens: config.maxTokens || 1024,
+      }),
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      console.warn("OpenAI API returned non-200:", response.statusText);
+      return null;
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) return null;
+
+    const tokenStats = calculateTokenMetrics(
+      `${systemPrompt}\n${userPrompt}`,
+      content,
+      model,
+      data.usage ? { promptTokens: data.usage.prompt_tokens, completionTokens: data.usage.completion_tokens } : undefined
+    );
+
+    return {
+      text: content,
+      provider: `OpenAI ChatGPT API (${model})`,
+      model,
+      tokenStats,
+    };
+  } catch (err) {
+    console.warn("OpenAI API call failed:", err);
+    return null;
+  }
+}
+
+/**
+ * 3. Call Anthropic Claude API
+ */
+async function callClaudeAnthropic(
+  systemPrompt: string,
+  userPrompt: string,
+  config: AiModelConfig
+): Promise<LlmGenerationResult | null> {
+  const apiKey = config.apiKey || process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return null;
+
+  const model = config.modelName || "claude-3-5-sonnet-20241022";
+  const baseUrl = (config.baseUrl || "https://api.anthropic.com").replace(/\/$/, "");
+
+  try {
+    const url = `${baseUrl}/v1/messages`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 14000);
+
+    const response = await fetch(url, {
+      method: "POST",
+      signal: controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: config.maxTokens || 1024,
+        system: config.customSystemPrompt || systemPrompt,
+        messages: [{ role: "user", content: userPrompt }],
+        temperature: config.temperature ?? 0.7,
+      }),
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      console.warn("Claude API returned non-200:", response.statusText);
+      return null;
+    }
+
+    const data = await response.json();
+    const content = data.content?.[0]?.text;
+    if (!content) return null;
+
+    const tokenStats = calculateTokenMetrics(
+      `${systemPrompt}\n${userPrompt}`,
+      content,
+      model,
+      data.usage ? { promptTokens: data.usage.input_tokens, completionTokens: data.usage.output_tokens } : undefined
+    );
+
+    return {
+      text: content,
+      provider: `Anthropic Claude API (${model})`,
+      model,
+      tokenStats,
+    };
+  } catch (err) {
+    console.warn("Claude API call failed:", err);
+    return null;
+  }
+}
+
+/**
+ * 4. Call Google Gemini API
  */
 async function callGemini(
   systemPrompt: string,
   userPrompt: string,
   config?: AiModelConfig
-): Promise<{ text: string; provider: string; model: string } | null> {
+): Promise<LlmGenerationResult | null> {
   const apiKey = config?.apiKey || process.env.GEMINI_API_KEY;
   if (!apiKey) return null;
 
@@ -110,7 +412,7 @@ async function callGemini(
         ],
         generationConfig: {
           temperature: config?.temperature ?? 0.7,
-          maxOutputTokens: 800,
+          maxOutputTokens: config?.maxTokens || 1024,
         },
       }),
     });
@@ -126,10 +428,23 @@ async function callGemini(
     const candidate = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!candidate) return null;
 
+    const tokenStats = calculateTokenMetrics(
+      `${systemPrompt}\n${userPrompt}`,
+      candidate,
+      model,
+      data.usageMetadata
+        ? {
+            promptTokens: data.usageMetadata.promptTokenCount,
+            completionTokens: data.usageMetadata.candidatesTokenCount,
+          }
+        : undefined
+    );
+
     return {
       text: candidate,
       provider: `Google Gemini API (${model})`,
       model,
+      tokenStats,
     };
   } catch (err) {
     console.warn("Gemini API error, falling back:", err);
@@ -139,21 +454,33 @@ async function callGemini(
 
 /**
  * Master LLM Dispatcher
+ * Coordinates requests to OpenAI, Claude, Gemini, Sir's Custom Endpoint, or falls back.
  */
 async function dispatchLlm(
   systemPrompt: string,
   userPrompt: string,
   config?: AiModelConfig
-): Promise<{ text: string; provider: string; model: string } | null> {
-  const provider = config?.provider;
+): Promise<LlmGenerationResult | null> {
+  const resolvedConfig = config || { provider: "builtin" as const };
+  const provider = resolvedConfig.provider;
 
-  if (provider === "custom" || provider === "openai") {
-    const res = await callCustomOpenAiCompatible(systemPrompt, userPrompt, config || { provider: "custom" });
+  if (provider === "openai") {
+    const res = await callOpenAi(systemPrompt, userPrompt, resolvedConfig);
     if (res) return res;
   }
 
-  if (provider === "gemini" || (!provider && process.env.GEMINI_API_KEY)) {
-    const res = await callGemini(systemPrompt, userPrompt, config);
+  if (provider === "claude") {
+    const res = await callClaudeAnthropic(systemPrompt, userPrompt, resolvedConfig);
+    if (res) return res;
+  }
+
+  if (provider === "custom") {
+    const res = await callCustomOpenAiCompatible(systemPrompt, userPrompt, resolvedConfig);
+    if (res) return res;
+  }
+
+  if (provider === "gemini" || (!config?.provider && process.env.GEMINI_API_KEY)) {
+    const res = await callGemini(systemPrompt, userPrompt, resolvedConfig);
     if (res) return res;
   }
 
@@ -161,7 +488,7 @@ async function dispatchLlm(
 }
 
 /**
- * Test Connection to Custom Model / Sir's Endpoint
+ * Test Connection to Any Model Endpoint
  */
 export async function testModelConnection(config: AiModelConfig): Promise<{
   success: boolean;
@@ -169,8 +496,10 @@ export async function testModelConnection(config: AiModelConfig): Promise<{
   latencyMs: number;
   provider: string;
   model: string;
+  contextWindow: number;
 }> {
   const start = Date.now();
+  const contextWindow = getContextWindowLimit(config.modelName);
 
   if (config.provider === "builtin" || !config.provider) {
     return {
@@ -179,6 +508,7 @@ export async function testModelConnection(config: AiModelConfig): Promise<{
       latencyMs: Date.now() - start,
       provider: "Greenfield Academic AI Engine (Built-in)",
       model: config.modelName || "academic-domain-v1",
+      contextWindow,
     };
   }
 
@@ -195,6 +525,7 @@ export async function testModelConnection(config: AiModelConfig): Promise<{
       latencyMs,
       provider: result.provider,
       model: result.model,
+      contextWindow,
     };
   }
 
@@ -204,6 +535,7 @@ export async function testModelConnection(config: AiModelConfig): Promise<{
     latencyMs,
     provider: config.provider || "custom",
     model: config.modelName || "unknown",
+    contextWindow,
   };
 }
 
@@ -220,7 +552,7 @@ export async function generateStudentRemarks(
     tone?: "encouraging" | "formal" | "constructive";
   },
   config?: AiModelConfig
-): Promise<{ text: string; provider: string; model?: string }> {
+): Promise<LlmGenerationResult> {
   const tone = data.tone || "encouraging";
   const systemPrompt = `You are a compassionate, professional school teacher and academic counsellor at Greenfield International School. You write clear, constructive, and motivating report card remarks for students.`;
   const userPrompt = `Write personalized report card remarks for:
@@ -244,10 +576,17 @@ Format: Provide 2 polished paragraphs followed by a short motivating one-line cl
     `To build upon this solid foundation, ${data.studentName} is encouraged to allocate dedicated time for systematic practice in ${data.areasToImprove || "mathematical problem-solving and structured revisions"}. Strengthening independent study habits will further unlock their remarkable academic potential.\n\n` +
     `*Teacher's Note: It is a distinct privilege to guide ${data.studentName}'s academic journey. We look forward to their continued growth and excellence next term.*`;
 
+  const tokenStats = calculateTokenMetrics(
+    `${systemPrompt}\n${userPrompt}`,
+    fallback,
+    config?.modelName || "academic-domain-v1"
+  );
+
   return {
     text: fallback,
     provider: "Greenfield Academic AI Engine (Built-in)",
-    model: "academic-domain-v1",
+    model: config?.modelName || "academic-domain-v1",
+    tokenStats,
   };
 }
 
@@ -262,7 +601,7 @@ export async function generateQuiz(
     questionCount?: number;
   },
   config?: AiModelConfig
-): Promise<{ text: string; provider: string; model?: string }> {
+): Promise<LlmGenerationResult> {
   const count = data.questionCount || 5;
   const systemPrompt = `You are an expert curriculum developer and teacher at Greenfield International School. You generate educational, age-appropriate quizzes with answer keys.`;
   const userPrompt = `Create a ${count}-question quiz for ${data.gradeLevel || "Class 8"} on the subject of "${data.subject}" focusing on the topic "${data.topic}".
@@ -295,10 +634,17 @@ Format with clear Question numbers, multiple choice options (A, B, C, D), and an
     `2. **Answer: C** — Applied force and rate of change directly determine the resultant outcomes.\n` +
     `3. **Answer: D** — Each scenario demonstrates foundational principles applied across scientific disciplines.`;
 
+  const tokenStats = calculateTokenMetrics(
+    `${systemPrompt}\n${userPrompt}`,
+    fallback,
+    config?.modelName || "academic-domain-v1"
+  );
+
   return {
     text: fallback,
     provider: "Greenfield Academic AI Engine (Built-in)",
-    model: "academic-domain-v1",
+    model: config?.modelName || "academic-domain-v1",
+    tokenStats,
   };
 }
 
@@ -313,7 +659,7 @@ export async function generateNotice(
     keyDetails?: string;
   },
   config?: AiModelConfig
-): Promise<{ text: string; provider: string; model?: string }> {
+): Promise<LlmGenerationResult> {
   const audience = data.audience || "Parents & Guardians";
   const systemPrompt = `You are the Administrative Communication Director at Greenfield International School. You draft dignified, clear, and professional notices and circulars.`;
   const userPrompt = `Draft a formal school circular on the topic: "${data.topic}"
@@ -346,10 +692,17 @@ Include school header, reference number, greeting, body, action points, and sign
     `Principal & Headmaster\n` +
     `Greenfield International School`;
 
+  const tokenStats = calculateTokenMetrics(
+    `${systemPrompt}\n${userPrompt}`,
+    fallback,
+    config?.modelName || "academic-domain-v1"
+  );
+
   return {
     text: fallback,
     provider: "Greenfield Academic AI Engine (Built-in)",
-    model: "academic-domain-v1",
+    model: config?.modelName || "academic-domain-v1",
+    tokenStats,
   };
 }
 
@@ -362,7 +715,7 @@ export async function answerSchoolQuery(
     context?: string;
   },
   config?: AiModelConfig
-): Promise<{ text: string; provider: string; model?: string }> {
+): Promise<LlmGenerationResult> {
   const systemPrompt = `You are the AI Academic Copilot for Greenfield International School CMS. You help administrators, teachers, and students understand school schedules, grading policies, student directories, and academic operations. Be helpful, concise, and professional.`;
   const userPrompt = `User Query: "${data.query}"\n${data.context ? `Database Context: ${data.context}` : ""}`;
 
@@ -384,9 +737,16 @@ export async function answerSchoolQuery(
     answer = `Hello! I am your **Greenfield AI Academic Copilot**. I can help you with student academic remarks, question/quiz generation, drafting parent circulars, or finding information in your School-CMS database. Try asking about attendance policies, grading schemes, or student profiles!`;
   }
 
+  const tokenStats = calculateTokenMetrics(
+    `${systemPrompt}\n${userPrompt}`,
+    answer,
+    config?.modelName || "academic-domain-v1"
+  );
+
   return {
     text: answer,
     provider: "Greenfield Academic AI Engine (Built-in)",
-    model: "academic-domain-v1",
+    model: config?.modelName || "academic-domain-v1",
+    tokenStats,
   };
 }

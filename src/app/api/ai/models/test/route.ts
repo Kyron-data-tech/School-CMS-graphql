@@ -14,6 +14,7 @@ export async function POST(request: Request) {
       latencyMs: result.latencyMs,
       provider: result.provider,
       model: result.model,
+      contextWindow: result.contextWindow,
       timestamp: new Date().toISOString(),
     });
   } catch (err: any) {
@@ -30,12 +31,11 @@ export async function POST(request: Request) {
 export async function GET() {
   return NextResponse.json({
     endpoint: "/api/ai/models/test",
-    description: "Ping and verify connection to any custom LLM endpoint, Gemini, or local model.",
+    description: "Ping and verify connection to any custom LLM endpoint, OpenAI, Claude, Gemini, or local model.",
     examplePayload: {
-      provider: "custom",
-      baseUrl: "http://localhost:11434/v1",
-      modelName: "llama3",
-      apiKey: "optional-key",
+      provider: "openai",
+      modelName: "gpt-4o",
+      apiKey: "sk-...",
       temperature: 0.7,
     },
   });

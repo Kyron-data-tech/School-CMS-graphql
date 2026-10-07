@@ -5,6 +5,7 @@ import {
   generateQuiz,
   generateNotice,
   answerSchoolQuery,
+  LlmGenerationResult,
 } from "@/lib/ai/copilot";
 
 export async function POST(request: Request) {
@@ -12,7 +13,7 @@ export async function POST(request: Request) {
     const json = await request.json();
     const { mode, payload, modelConfig } = CopilotRequestSchema.parse(json);
 
-    let result: { text: string; provider: string; model?: string };
+    let result: LlmGenerationResult;
 
     switch (mode) {
       case "remarks":
@@ -37,6 +38,7 @@ export async function POST(request: Request) {
       text: result.text,
       provider: result.provider,
       model: result.model || "default",
+      tokenStats: result.tokenStats,
       timestamp: new Date().toISOString(),
     });
   } catch (err: any) {
@@ -54,11 +56,14 @@ export async function GET() {
   return NextResponse.json({
     status: "active",
     name: "Greenfield AI Academic Copilot API",
-    version: "2.0.0",
+    version: "2.1.0",
     features: [
-      "Custom Model Endpoint Integration (Ollama, LM Studio, vLLM, Groq, OpenAI)",
-      "Google Gemini 1.5 Flash / Pro",
+      "OpenAI ChatGPT Integration (GPT-4o, GPT-4o-mini - 128K context)",
+      "Anthropic Claude Integration (Claude 3.5 Sonnet, Haiku - 200K context)",
+      "Google Gemini Integration (Gemini 1.5 Flash, Pro - 1M to 2M context)",
+      "Sir's Custom Endpoint Integration (Ollama, LM Studio, vLLM - 8K context)",
       "Greenfield Academic AI Built-in Domain Engine",
+      "Real-time Context Window & Token Tracking Engine",
     ],
     supportedModes: ["remarks", "quiz", "notice", "chat"],
   });
