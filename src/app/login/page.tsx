@@ -31,6 +31,7 @@ export default function LoginPage() {
   const [regLastName, setRegLastName] = useState("");
   const [regEmail, setRegEmail] = useState("");
   const [regPassword, setRegPassword] = useState("SchoolPass2026!");
+  const [showRegPassword, setShowRegPassword] = useState(false);
   const [regAdmissionNo, setRegAdmissionNo] = useState(`ADM-${Math.floor(1000 + Math.random() * 9000)}`);
   const [regGender, setRegGender] = useState<"MALE" | "FEMALE" | "OTHER">("FEMALE");
   const [regSectionId, setRegSectionId] = useState("");
@@ -47,6 +48,7 @@ export default function LoginPage() {
   const [showResetModal, setShowResetModal] = useState(false);
   const [resetEmail, setResetEmail] = useState("principal@greenfield.edu");
   const [newPassword, setNewPassword] = useState("NewPass2026!");
+  const [showResetPassword, setShowResetPassword] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [resetFeedback, setResetFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -416,15 +418,37 @@ export default function LoginPage() {
 
             {/* Password Field */}
             <div>
-              <label className="label text-[11px] font-bold text-slate-400">Password * (Min 8 chars)</label>
-              <input
-                required
-                minLength={8}
-                type="password"
-                value={regPassword}
-                onChange={(e) => setRegPassword(e.target.value)}
-                className="input w-full font-mono text-xs"
-              />
+              <div className="flex items-center justify-between pb-1">
+                <label className="label text-[11px] font-bold text-slate-400">Password * (Min 8 chars)</label>
+                <button
+                  type="button"
+                  onClick={() => setShowRegPassword((prev) => !prev)}
+                  className="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition"
+                >
+                  <span>{showRegPassword ? "🙈 Hide" : "👁️ Show"}</span>
+                </button>
+              </div>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔒</span>
+                <input
+                  required
+                  minLength={8}
+                  type={showRegPassword ? "text" : "password"}
+                  value={regPassword}
+                  onChange={(e) => setRegPassword(e.target.value)}
+                  placeholder="Enter secure password"
+                  className="input w-full pl-10 pr-10 font-mono text-xs"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowRegPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                  aria-label={showRegPassword ? "Hide password" : "Show password"}
+                  title={showRegPassword ? "Hide password" : "Show password"}
+                >
+                  {showRegPassword ? "🙈" : "👁️"}
+                </button>
+              </div>
             </div>
 
             {/* Role-Specific Field */}
@@ -599,15 +623,37 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label className="label text-xs text-slate-300">New Password * (Min 8 chars)</label>
-                <input
-                  required
-                  minLength={8}
-                  type="text"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="input w-full font-mono text-xs"
-                />
+                <div className="flex items-center justify-between pb-1">
+                  <label className="label text-xs text-slate-300">New Password * (Min 8 chars)</label>
+                  <button
+                    type="button"
+                    onClick={() => setShowResetPassword((prev) => !prev)}
+                    className="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition"
+                  >
+                    <span>{showResetPassword ? "🙈 Hide" : "👁️ Show"}</span>
+                  </button>
+                </div>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔒</span>
+                  <input
+                    required
+                    minLength={8}
+                    type={showResetPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password"
+                    className="input w-full pl-10 pr-10 font-mono text-xs"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowResetPassword((prev) => !prev)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                    aria-label={showResetPassword ? "Hide password" : "Show password"}
+                    title={showResetPassword ? "Hide password" : "Show password"}
+                  >
+                    {showResetPassword ? "🙈" : "👁️"}
+                  </button>
+                </div>
               </div>
 
               {resetFeedback && (
