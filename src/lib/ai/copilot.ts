@@ -612,27 +612,12 @@ Format with clear Question numbers, multiple choice options (A, B, C, D), and an
     return llmRes;
   }
 
-  const fallback = `### 📝 Practice Quiz: ${data.subject} — ${data.topic} (${data.gradeLevel || "Class 8"})\n\n` +
-    `**Q1. What is the fundamental concept underlying ${data.topic}?**\n` +
-    `* A) Basic observational principles\n` +
-    `* B) Systematic measurement and conservation\n` +
-    `* C) Randomized dynamic variables\n` +
-    `* D) Equilibrium states only\n\n` +
-    `**Q2. In practical applications of ${data.topic}, which factor has the most direct impact?**\n` +
-    `* A) Ambient pressure\n` +
-    `* B) Structural alignment\n` +
-    `* C) Applied force and rate of change\n` +
-    `* D) Inertial dampening\n\n` +
-    `**Q3. Which of the following best exemplifies a real-world scenario of ${data.topic}?**\n` +
-    `* A) Motion of a swinging pendulum\n` +
-    `* B) Heat transfer across a copper rod\n` +
-    `* C) Photosynthetic cellular energy synthesis\n` +
-    `* D) All of the above depending on the domain\n\n` +
-    `---\n\n` +
-    `### 🔑 Answer Key & Explanations:\n` +
-    `1. **Answer: B** — Conservation laws and systematic measurement govern this phenomenon.\n` +
-    `2. **Answer: C** — Applied force and rate of change directly determine the resultant outcomes.\n` +
-    `3. **Answer: D** — Each scenario demonstrates foundational principles applied across scientific disciplines.`;
+  const fallback = buildDomainQuizFallback(
+    data.subject,
+    data.topic,
+    data.gradeLevel || "Class 9",
+    count
+  );
 
   const tokenStats = calculateTokenMetrics(
     `${systemPrompt}\n${userPrompt}`,
@@ -646,6 +631,234 @@ Format with clear Question numbers, multiple choice options (A, B, C, D), and an
     model: config?.modelName || "academic-domain-v1",
     tokenStats,
   };
+}
+
+/**
+ * Domain-specific Quiz Generator Fallback
+ * Generates rigorous, subject-accurate questions for Computer Science, Math, Science, and other subjects.
+ */
+function buildDomainQuizFallback(
+  subject: string,
+  topic: string,
+  gradeLevel: string = "Class 9",
+  questionCount: number = 3
+): string {
+  const topicLower = topic.toLowerCase();
+  const subjectLower = subject.toLowerCase();
+
+  // 1. Computer Science: Trees, Graphs, Data Structures, Algorithms
+  if (
+    topicLower.includes("tree") ||
+    topicLower.includes("graph") ||
+    topicLower.includes("data structure") ||
+    topicLower.includes("algorithm") ||
+    subjectLower.includes("computer")
+  ) {
+    const csQuestions = [
+      {
+        q: "What is the primary structural difference between a Tree and a Graph data structure?",
+        options: [
+          "A) Trees are linear data structures, while graphs are non-linear",
+          "B) A Tree is a connected, acyclic graph with exactly N - 1 edges for N vertices, while a Graph can contain cycles and multiple disconnected components",
+          "C) Graphs cannot have weighted edges, whereas trees always require weights",
+          "D) Trees can only store numerical values, whereas graphs store objects",
+        ],
+        answer: "B",
+        explanation: "By mathematical and computational definition, a tree is a connected, acyclic graph. Any graph that contains cycles or disconnected vertices cannot be classified as a tree.",
+      },
+      {
+        q: "Which traversal algorithm utilizes a Queue (FIFO) to explore nodes level-by-level in a Tree or Graph?",
+        options: [
+          "A) Depth-First Search (DFS)",
+          "B) Breadth-First Search (BFS)",
+          "C) In-Order Traversal",
+          "D) Post-Order Traversal",
+        ],
+        answer: "B",
+        explanation: "Breadth-First Search (BFS) utilizes a Queue data structure to traverse tree or graph vertices level-by-level starting from a source vertex.",
+      },
+      {
+        q: "In a Binary Search Tree (BST), what is the worst-case time complexity for searching an element if the tree becomes completely skewed?",
+        options: [
+          "A) O(1)",
+          "B) O(log N)",
+          "C) O(N)",
+          "D) O(N log N)",
+        ],
+        answer: "C",
+        explanation: "When a Binary Search Tree becomes completely skewed (all nodes inserted in ascending or descending sorted order), it degenerates into a linear linked list with O(N) search time.",
+      },
+      {
+        q: "Which graph representation is most memory-efficient for storing a sparse graph with V vertices and E edges?",
+        options: [
+          "A) Adjacency Matrix (V x V matrix)",
+          "B) Adjacency List using linked lists or dynamic arrays",
+          "C) 3D Static Matrix",
+          "D) Monolithic Binary Heap",
+        ],
+        answer: "B",
+        explanation: "For sparse graphs where E << V^2, an Adjacency List takes only O(V + E) memory space, whereas an Adjacency Matrix requires O(V^2) memory regardless of edge density.",
+      },
+      {
+        q: "In a connected undirected graph with V vertices, what is the minimum number of edges needed to form a Spanning Tree?",
+        options: [
+          "A) V",
+          "B) V - 1",
+          "C) V + 1",
+          "D) V * (V - 1) / 2",
+        ],
+        answer: "B",
+        explanation: "A spanning tree that connects all V vertices without forming any cycles contains exactly V - 1 edges.",
+      },
+    ];
+
+    const selected = csQuestions.slice(0, Math.min(questionCount, csQuestions.length));
+    let text = `### 📝 Practice Quiz: ${subject} — ${topic} (${gradeLevel})\n\n`;
+    selected.forEach((item, idx) => {
+      text += `**Q${idx + 1}. ${item.q}**\n`;
+      item.options.forEach((opt) => {
+        text += `* ${opt}\n`;
+      });
+      text += `\n`;
+    });
+    text += `---\n\n### 🔑 Answer Key & Explanations:\n`;
+    selected.forEach((item, idx) => {
+      text += `${idx + 1}. **Answer: ${item.answer}** — ${item.explanation}\n`;
+    });
+    return text.trim();
+  }
+
+  // 2. Mathematics: Equations, Algebra, Geometry
+  if (
+    subjectLower.includes("math") ||
+    topicLower.includes("equation") ||
+    topicLower.includes("algebra") ||
+    topicLower.includes("geometry")
+  ) {
+    const mathQuestions = [
+      {
+        q: `In the mathematical analysis of ${topic}, what is the standard method to solve for unknown variables?`,
+        options: [
+          "A) Balancing equations by performing inverse operations on both sides",
+          "B) Random substitution without validation",
+          "C) Graphical approximation only",
+          "D) Eliminating constants arbitrarily",
+        ],
+        answer: "A",
+        explanation: "Maintaining mathematical equality requires applying balanced inverse operations across both sides of the equation.",
+      },
+      {
+        q: `Which algebraic property ensures that a(b + c) = ab + ac when simplifying expressions in ${topic}?`,
+        options: [
+          "A) Associative Property",
+          "B) Distributive Property of Multiplication over Addition",
+          "C) Commutative Property",
+          "D) Identity Property",
+        ],
+        answer: "B",
+        explanation: "The Distributive Property allows multiplying a single term over a parenthetical sum.",
+      },
+      {
+        q: `When analyzing linear relationships relevant to ${topic}, what does the slope (m) represent?`,
+        options: [
+          "A) The point where the line crosses the y-axis",
+          "B) The rate of change of y with respect to x (rise over run)",
+          "C) The total area under the linear curve",
+          "D) The perimeter of the coordinate plane",
+        ],
+        answer: "B",
+        explanation: "Slope measures the steepness and direction of a line, defined by the ratio of vertical change to horizontal change.",
+      },
+    ];
+    const selected = mathQuestions.slice(0, Math.min(questionCount, mathQuestions.length));
+    let text = `### 📝 Practice Quiz: ${subject} — ${topic} (${gradeLevel})\n\n`;
+    selected.forEach((item, idx) => {
+      text += `**Q${idx + 1}. ${item.q}**\n`;
+      item.options.forEach((opt) => {
+        text += `* ${opt}\n`;
+      });
+      text += `\n`;
+    });
+    text += `---\n\n### 🔑 Answer Key & Explanations:\n`;
+    selected.forEach((item, idx) => {
+      text += `${idx + 1}. **Answer: ${item.answer}** — ${item.explanation}\n`;
+    });
+    return text.trim();
+  }
+
+  // 3. Science: Biology, Chemistry, Physics
+  if (
+    subjectLower.includes("science") ||
+    topicLower.includes("photo") ||
+    topicLower.includes("cell") ||
+    topicLower.includes("bio") ||
+    topicLower.includes("physics")
+  ) {
+    const sciQuestions = [
+      {
+        q: `In the biological study of ${topic}, which cellular organelle is primarily responsible for energy conversion?`,
+        options: [
+          "A) Endoplasmic Reticulum",
+          "B) Chloroplast in plant cells and Mitochondria in eukaryotic cells",
+          "C) Golgi Apparatus",
+          "D) Nuclear envelope",
+        ],
+        answer: "B",
+        explanation: "Chloroplasts conduct photosynthesis in plant cells, while mitochondria synthesize ATP across eukaryotic cells.",
+      },
+      {
+        q: `What is the primary chemical reactant consumed during photosynthetic reactions related to ${topic}?`,
+        options: [
+          "A) Methane and Nitrogen",
+          "B) Carbon dioxide (CO2) and Water (H2O) in the presence of sunlight",
+          "C) Pure Carbon Monoxide",
+          "D) Glucose and Oxygen only",
+        ],
+        answer: "B",
+        explanation: "Plants convert carbon dioxide and water into glucose and oxygen utilizing light energy.",
+      },
+      {
+        q: `Which pigment is directly responsible for capturing photon energy in ${topic}?`,
+        options: [
+          "A) Carotenoids only",
+          "B) Chlorophyll a and b",
+          "C) Anthocyanin",
+          "D) Hemoglobin",
+        ],
+        answer: "B",
+        explanation: "Chlorophyll pigments absorb blue and red light wavelengths while reflecting green light.",
+      },
+    ];
+    const selected = sciQuestions.slice(0, Math.min(questionCount, sciQuestions.length));
+    let text = `### 📝 Practice Quiz: ${subject} — ${topic} (${gradeLevel})\n\n`;
+    selected.forEach((item, idx) => {
+      text += `**Q${idx + 1}. ${item.q}**\n`;
+      item.options.forEach((opt) => {
+        text += `* ${opt}\n`;
+      });
+      text += `\n`;
+    });
+    text += `---\n\n### 🔑 Answer Key & Explanations:\n`;
+    selected.forEach((item, idx) => {
+      text += `${idx + 1}. **Answer: ${item.answer}** — ${item.explanation}\n`;
+    });
+    return text.trim();
+  }
+
+  // 4. Default Subject Fallback
+  let text = `### 📝 Practice Quiz: ${subject} — ${topic} (${gradeLevel})\n\n`;
+  for (let i = 1; i <= Math.min(questionCount, 5); i++) {
+    text += `**Q${i}. What is the primary conceptual principle of ${topic} in ${subject}?**\n`;
+    text += `* A) Foundational theoretical definitions and core taxonomy\n`;
+    text += `* B) Systematic classification and practical implementation guidelines\n`;
+    text += `* C) Randomized dynamic empirical observations\n`;
+    text += `* D) Both A and B\n\n`;
+  }
+  text += `---\n\n### 🔑 Answer Key & Explanations:\n`;
+  for (let i = 1; i <= Math.min(questionCount, 5); i++) {
+    text += `${i}. **Answer: D** — Foundational taxonomy and practical guidelines form the baseline knowledge of ${topic}.\n`;
+  }
+  return text.trim();
 }
 
 /**
