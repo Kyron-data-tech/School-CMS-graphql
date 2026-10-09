@@ -30,7 +30,19 @@ const DEFAULT_SETTINGS: ModelSettings = {
   maxTokens: 1024,
 };
 
-export function AiCopilotClient({ students = [] }: { students?: StudentSummary[] }) {
+export function AiCopilotClient({
+  students = [],
+  initialIsPrincipal = true,
+  initialUserRole = "principal",
+  userName = "Dr. Anita Desai (Principal)",
+  initialInstitutionalConfig,
+}: {
+  students?: StudentSummary[];
+  initialIsPrincipal?: boolean;
+  initialUserRole?: string;
+  userName?: string;
+  initialInstitutionalConfig?: any;
+}) {
   const [activeTab, setActiveTab] = useState<"remarks" | "quiz" | "notice" | "chat" | "settings">("remarks");
   const [loading, setLoading] = useState(false);
   const [resultText, setResultText] = useState<string | null>(null);
@@ -38,6 +50,14 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
   const [lastTokenStats, setLastTokenStats] = useState<TokenStats | null>(null);
   const [copied, setCopied] = useState(false);
   const [showContextInfo, setShowContextInfo] = useState(false);
+
+  // Institutional License & Role Authority Simulation
+  const [activeRole, setActiveRole] = useState<"principal" | "teacher" | "student">(
+    initialIsPrincipal ? "principal" : (initialUserRole as any) || "teacher"
+  );
+  const [institutionalConfig, setInstitutionalConfig] = useState<any>(initialInstitutionalConfig || null);
+  const [savingInstitutional, setSavingInstitutional] = useState(false);
+  const [saveSuccessMessage, setSaveSuccessMessage] = useState<string | null>(null);
 
   // Model Settings State
   const [settings, setSettings] = useState<ModelSettings>(DEFAULT_SETTINGS);
@@ -49,8 +69,25 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
     contextWindow?: number;
   } | null>(null);
 
-  // Load saved settings from localStorage on client mount
+  // Load saved settings from server and localStorage on client mount
   useEffect(() => {
+    fetch("/api/ai/models/config")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.config) {
+          setInstitutionalConfig(data.config);
+          if (data.config.isConfigured) {
+            setSettings((prev) => ({
+              ...prev,
+              provider: data.config.provider,
+              modelName: data.config.modelName,
+              baseUrl: data.config.baseUrl,
+            }));
+          }
+        }
+      })
+      .catch((_) => {});
+
     try {
       const saved = localStorage.getItem("greenfield_ai_model_config");
       if (saved) {
@@ -64,6 +101,38 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
     try {
       localStorage.setItem("greenfield_ai_model_config", JSON.stringify(newSettings));
     } catch (_) {}
+  }
+
+  async function handleSaveSchoolApiKey() {
+    setSavingInstitutional(true);
+    setSaveSuccessMessage(null);
+    try {
+      const res = await fetch("/api/ai/models/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider: settings.provider,
+          modelName: settings.modelName,
+          baseUrl: settings.baseUrl,
+          apiKey: settings.apiKey,
+          temperature: settings.temperature,
+          customSystemPrompt: settings.customSystemPrompt,
+          maxTokens: settings.maxTokens,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setInstitutionalConfig(data.config);
+        setSaveSuccessMessage("✓ Principal Authority: School-wide AI Key saved! All teachers and students can now use this model.");
+        setTimeout(() => setSaveSuccessMessage(null), 5000);
+      } else {
+        alert(data.error || "Failed to save institutional API key.");
+      }
+    } catch (err: any) {
+      alert("Network error saving configuration: " + err.message);
+    } finally {
+      setSavingInstitutional(false);
+    }
   }
 
   // Helper to switch active model preset
@@ -339,8 +408,69 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
           </div>
         </div>
 
+        {/* Role Authority & Institutional License Status Strip */}
+        <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-slate-300 font-semibold text-xs">Authority Level:</span>
+            <div className="inline-flex rounded-lg bg-black/50 p-1 border border-white/15">
+              <button
+                type="button"
+                onClick={() => setActiveRole("principal")}
+                className={`px-3 py-1 rounded-md text-xs font-bold transition flex items-center gap-1.5 ${
+                  activeRole === "principal"
+                    ? "bg-amber-400 text-slate-950 shadow-md ring-1 ring-amber-300"
+                    : "text-slate-300 hover:text-white"
+                }`}
+              >
+                <span>👑</span> Principal (Add & Manage Key)
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveRole("teacher")}
+                className={`px-3 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5 ${
+                  activeRole === "teacher"
+                    ? "bg-indigo-600 text-white shadow-md ring-1 ring-indigo-400"
+                    : "text-slate-300 hover:text-white"
+                }`}
+              >
+                <span>👨‍🏫</span> Teacher (Uses School Key)
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveRole("student")}
+                className={`px-3 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5 ${
+                  activeRole === "student"
+                    ? "bg-emerald-600 text-white shadow-md ring-1 ring-emerald-400"
+                    : "text-slate-300 hover:text-white"
+                }`}
+              >
+                <span>🎓</span> Student (Uses School Key)
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {institutionalConfig?.hasKey || institutionalConfig?.isConfigured ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 px-3 py-1 text-[11px] font-medium text-emerald-300">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                School AI License: <strong>Active (Configured by Principal)</strong>
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 px-3 py-1 text-[11px] font-medium text-amber-300">
+                <span className="h-2 w-2 rounded-full bg-amber-400"></span>
+                Institutional Key: <strong>Needs Principal Setup</strong>
+              </span>
+            )}
+            {activeRole !== "principal" && (
+              <span className="text-[11px] text-slate-400 italic hidden sm:inline">
+                (Inherits school key • No individual key required)
+              </span>
+            )}
+          </div>
+        </div>
+
         {/* 2. Interactive LLM Preset Selector Chips */}
-        <div className="mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center gap-2">
+        <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center gap-2">
           <span className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mr-1">
             Select Active LLM:
           </span>
@@ -611,6 +741,102 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
           </div>
 
           <div className="space-y-5">
+            {/* 👑 Institutional License & School-Wide API Key Card */}
+            {activeRole === "principal" ? (
+              <div className="rounded-2xl border border-amber-500/50 bg-gradient-to-br from-amber-950/40 via-slate-900 to-slate-950 p-5 space-y-3.5 shadow-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-300 text-lg">
+                        👑
+                      </span>
+                      <h4 className="text-sm font-bold text-amber-200">
+                        Principal Authority: School-Wide AI License Management
+                      </h4>
+                      <span className="rounded bg-amber-500/20 border border-amber-400/30 px-2 py-0.5 text-[10px] font-mono text-amber-300 font-semibold">
+                        ADMIN AUTHORITY
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+                      As Principal, enter your school&apos;s API key below and click <strong>&quot;Save School-Wide API Key&quot;</strong>. The key is securely stored on the server so <strong>all Teachers and Students</strong> automatically inherit this AI license without needing their own accounts or keys.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleSaveSchoolApiKey}
+                    disabled={savingInstitutional}
+                    className="btn bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs shrink-0 shadow-lg hover:shadow-amber-500/20 transition flex items-center gap-2 px-4 py-2.5 rounded-xl border border-amber-200 disabled:opacity-50"
+                  >
+                    <span>💾</span>
+                    <span>{savingInstitutional ? "Saving..." : "Save School-Wide API Key"}</span>
+                  </button>
+                </div>
+
+                {saveSuccessMessage && (
+                  <div className="rounded-xl bg-emerald-950/80 border border-emerald-500/60 p-3 text-xs text-emerald-200 font-medium flex items-center gap-2">
+                    <span>✓</span>
+                    <span>{saveSuccessMessage}</span>
+                  </div>
+                )}
+
+                {institutionalConfig && (
+                  <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
+                    <div className="flex items-center gap-2">
+                      <span>Authority: <strong className="text-white">{institutionalConfig.configuredBy || "Dr. Anita Desai (Principal)"}</strong></span>
+                      <span>•</span>
+                      <span>Configured Model: <strong className="text-indigo-300 uppercase">{institutionalConfig.provider}</strong> ({institutionalConfig.modelName})</span>
+                    </div>
+                    {institutionalConfig.maskedKey && (
+                      <div className="font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2.5 py-0.5 rounded">
+                        Key: {institutionalConfig.maskedKey}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-indigo-500/40 bg-gradient-to-br from-indigo-950/40 via-slate-900 to-slate-950 p-5 space-y-3 shadow-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-500/20 text-indigo-300 text-lg">
+                        {activeRole === "teacher" ? "👨‍🏫" : "🎓"}
+                      </span>
+                      <h4 className="text-sm font-bold text-indigo-200">
+                        School-Wide AI License Inherited ({activeRole === "teacher" ? "Teacher Mode" : "Student Mode"})
+                      </h4>
+                      <span className="rounded bg-emerald-500/20 border border-emerald-400/30 px-2 py-0.5 text-[10px] font-mono text-emerald-300 font-semibold">
+                        PROTECTED LICENSE
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+                      You are logged in as a <strong>{activeRole === "teacher" ? "Teacher" : "Student"}</strong>. Your AI requests automatically use the school license configured centrally by the Principal (<strong>Dr. Anita Desai</strong>). You have full access to generate student remarks, quizzes, notices, and chat without buying or entering an API key.
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-black/50 border border-indigo-400/30 px-3.5 py-2 text-center shrink-0">
+                    <div className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Your AI Status</div>
+                    <div className="text-xs font-bold text-emerald-300 mt-0.5 flex items-center justify-center gap-1">
+                      <span>✓</span> Active & Covered
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
+                  <div className="flex items-center gap-2">
+                    <span>Active Engine: <strong className="text-white">{settings.provider.toUpperCase()} ({settings.modelName})</strong></span>
+                    <span>•</span>
+                    <span>License Managed by: <strong className="text-slate-200">{institutionalConfig?.configuredBy || "Principal"}</strong></span>
+                  </div>
+                  <div className="font-mono text-slate-300 bg-slate-900 border border-slate-700 px-2.5 py-0.5 rounded flex items-center gap-1.5">
+                    <span>🔒</span>
+                    <span>{institutionalConfig?.maskedKey || "sk-•••••••••••••••• (Protected)"}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Provider Picker Cards */}
             <div>
               <label className="label text-xs">Choose LLM Engine</label>
@@ -752,14 +978,35 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
                     </select>
                   </div>
                   <div>
-                    <label className="label text-xs">OpenAI API Key (or env OPENAI_API_KEY)</label>
-                    <input
-                      type="password"
-                      className="input text-xs font-mono"
-                      value={settings.apiKey}
-                      onChange={(e) => saveSettings({ ...settings, apiKey: e.target.value })}
-                      placeholder="sk-proj-..."
-                    />
+                    <div className="flex items-center justify-between">
+                      <label className="label text-xs">OpenAI API Key</label>
+                      {activeRole === "principal" ? (
+                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal Editable</span>
+                      ) : (
+                        <span className="text-[10px] text-emerald-400 font-medium">🔒 Inherited from Principal</span>
+                      )}
+                    </div>
+                    {activeRole === "principal" ? (
+                      <input
+                        type="password"
+                        className="input text-xs font-mono"
+                        value={settings.apiKey}
+                        onChange={(e) => saveSettings({ ...settings, apiKey: e.target.value })}
+                        placeholder="sk-proj-..."
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        disabled
+                        className="input text-xs font-mono bg-slate-900/80 text-slate-400 cursor-not-allowed border-dashed"
+                        value={institutionalConfig?.maskedKey || "sk-•••••••••••••••• (Managed by Principal)"}
+                      />
+                    )}
+                    {activeRole === "principal" && (
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        Enter key and click &quot;Save School-Wide API Key&quot; above to enable for all teachers and students.
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
@@ -779,14 +1026,35 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
                     </select>
                   </div>
                   <div>
-                    <label className="label text-xs">Anthropic API Key (or env ANTHROPIC_API_KEY)</label>
-                    <input
-                      type="password"
-                      className="input text-xs font-mono"
-                      value={settings.apiKey}
-                      onChange={(e) => saveSettings({ ...settings, apiKey: e.target.value })}
-                      placeholder="sk-ant-api03-..."
-                    />
+                    <div className="flex items-center justify-between">
+                      <label className="label text-xs">Anthropic API Key</label>
+                      {activeRole === "principal" ? (
+                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal Editable</span>
+                      ) : (
+                        <span className="text-[10px] text-emerald-400 font-medium">🔒 Inherited from Principal</span>
+                      )}
+                    </div>
+                    {activeRole === "principal" ? (
+                      <input
+                        type="password"
+                        className="input text-xs font-mono"
+                        value={settings.apiKey}
+                        onChange={(e) => saveSettings({ ...settings, apiKey: e.target.value })}
+                        placeholder="sk-ant-api03-..."
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        disabled
+                        className="input text-xs font-mono bg-slate-900/80 text-slate-400 cursor-not-allowed border-dashed"
+                        value={institutionalConfig?.maskedKey || "sk-•••••••••••••••• (Managed by Principal)"}
+                      />
+                    )}
+                    {activeRole === "principal" && (
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        Enter key and click &quot;Save School-Wide API Key&quot; above to enable for all teachers and students.
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
@@ -806,14 +1074,35 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
                     </select>
                   </div>
                   <div>
-                    <label className="label text-xs">Google Gemini API Key (or env GEMINI_API_KEY)</label>
-                    <input
-                      type="password"
-                      className="input text-xs font-mono"
-                      value={settings.apiKey}
-                      onChange={(e) => saveSettings({ ...settings, apiKey: e.target.value })}
-                      placeholder="AIzaSy..."
-                    />
+                    <div className="flex items-center justify-between">
+                      <label className="label text-xs">Google Gemini API Key</label>
+                      {activeRole === "principal" ? (
+                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal Editable</span>
+                      ) : (
+                        <span className="text-[10px] text-emerald-400 font-medium">🔒 Inherited from Principal</span>
+                      )}
+                    </div>
+                    {activeRole === "principal" ? (
+                      <input
+                        type="password"
+                        className="input text-xs font-mono"
+                        value={settings.apiKey}
+                        onChange={(e) => saveSettings({ ...settings, apiKey: e.target.value })}
+                        placeholder="AIzaSy..."
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        disabled
+                        className="input text-xs font-mono bg-slate-900/80 text-slate-400 cursor-not-allowed border-dashed"
+                        value={institutionalConfig?.maskedKey || "AIza•••••••••••• (Managed by Principal)"}
+                      />
+                    )}
+                    {activeRole === "principal" && (
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        Enter key and click &quot;Save School-Wide API Key&quot; above to enable for all teachers and students.
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
@@ -842,14 +1131,30 @@ export function AiCopilotClient({ students = [] }: { students?: StudentSummary[]
                     </div>
                   </div>
                   <div>
-                    <label className="label text-xs">API Key (Optional for local Ollama / LM Studio)</label>
-                    <input
-                      type="password"
-                      className="input text-xs font-mono"
-                      value={settings.apiKey}
-                      onChange={(e) => saveSettings({ ...settings, apiKey: e.target.value })}
-                      placeholder="Optional server bearer token"
-                    />
+                    <div className="flex items-center justify-between">
+                      <label className="label text-xs">API Key (Optional for local Ollama / LM Studio)</label>
+                      {activeRole === "principal" ? (
+                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal Editable</span>
+                      ) : (
+                        <span className="text-[10px] text-emerald-400 font-medium">🔒 Inherited from Principal</span>
+                      )}
+                    </div>
+                    {activeRole === "principal" ? (
+                      <input
+                        type="password"
+                        className="input text-xs font-mono"
+                        value={settings.apiKey}
+                        onChange={(e) => saveSettings({ ...settings, apiKey: e.target.value })}
+                        placeholder="Optional server bearer token"
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        disabled
+                        className="input text-xs font-mono bg-slate-900/80 text-slate-400 cursor-not-allowed border-dashed"
+                        value={institutionalConfig?.maskedKey || "None required / Protected"}
+                      />
+                    )}
                   </div>
                 </div>
               )}

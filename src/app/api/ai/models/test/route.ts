@@ -1,12 +1,22 @@
 import { NextResponse } from "next/server";
 import { AiModelConfigSchema, testModelConnection } from "@/lib/ai/copilot";
+import { getInstitutionalAiConfig } from "@/lib/ai/institutionalConfig";
 
 export async function POST(request: Request) {
   try {
     const json = await request.json();
     const config = AiModelConfigSchema.parse(json);
 
-    const result = await testModelConnection(config);
+    // Merge institutional key if client key is masked or omitted
+    const institutional = getInstitutionalAiConfig();
+    const rawKey = (config.apiKey || "").trim();
+    const isMaskedOrEmpty = !rawKey || rawKey.includes("••");
+    const effectiveKey = !isMaskedOrEmpty ? rawKey : institutional.apiKey;
+
+    const result = await testModelConnection({
+      ...config,
+      apiKey: effectiveKey,
+    });
 
     return NextResponse.json({
       success: result.success,

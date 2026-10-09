@@ -2,9 +2,15 @@ import { getAuthContext } from "@/lib/auth/context";
 import { PageHeader } from "@/components/ui";
 import { AiCopilotClient, type StudentSummary } from "@/components/ai/AiCopilotClient";
 import { db } from "@/lib/db";
+import { getPublicInstitutionalAiConfig, isPrincipalOrAdmin } from "@/lib/ai/institutionalConfig";
 
 export default async function CopilotPage() {
   const ctx = await getAuthContext();
+
+  const isPrincipal = ctx ? isPrincipalOrAdmin(ctx) : true;
+  const userRole = isPrincipal ? "principal" : ctx?.roleKeys?.[0] || "teacher";
+  const userName = ctx?.name || (isPrincipal ? "Dr. Anita Desai (Principal)" : "Academic Staff");
+  const institutionalConfig = getPublicInstitutionalAiConfig();
 
   let studentSummaries: StudentSummary[] = [];
 
@@ -52,7 +58,13 @@ export default async function CopilotPage() {
         subtitle="LLM-assisted student evaluations, smart curriculum quizzes, and circular generation"
       />
 
-      <AiCopilotClient students={studentSummaries} />
+      <AiCopilotClient
+        students={studentSummaries}
+        initialIsPrincipal={isPrincipal}
+        initialUserRole={userRole}
+        userName={userName}
+        initialInstitutionalConfig={institutionalConfig}
+      />
     </div>
   );
 }

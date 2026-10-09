@@ -211,4 +211,67 @@ describe("LLM Academic Copilot - Unit Test Suite", () => {
       expect(metrics.contextWindowPercent).toBeLessThan(1);
     });
   });
+
+  describe("Principal Authority & School-Wide API Key Inheritance", () => {
+    it("should authorize Principal and Admin roles while restricting Teachers and Students", async () => {
+      const { isPrincipalOrAdmin } = await import("@/lib/ai/institutionalConfig");
+
+      // Principal & Admin -> Authorized
+      expect(isPrincipalOrAdmin({ userId: "1", roleKeys: ["principal"] } as any)).toBe(true);
+      expect(isPrincipalOrAdmin({ userId: "2", roleKeys: ["admin"] } as any)).toBe(true);
+      expect(isPrincipalOrAdmin({ userId: "3", roleKeys: ["superadmin"] } as any)).toBe(true);
+
+      // Teacher & Student -> Not Authorized to configure keys
+      expect(isPrincipalOrAdmin({ userId: "4", roleKeys: ["teacher"] } as any)).toBe(false);
+      expect(isPrincipalOrAdmin({ userId: "5", roleKeys: ["student"] } as any)).toBe(false);
+      expect(isPrincipalOrAdmin(null)).toBe(false);
+    });
+
+    it("should safely mask API keys for public / teacher / student consumption", async () => {
+      const { saveInstitutionalAiConfig, getPublicInstitutionalAiConfig } = await import(
+        "@/lib/ai/institutionalConfig"
+      );
+
+      // Save a mock principal key
+      saveInstitutionalAiConfig(
+        {
+          provider: "openai",
+          modelName: "gpt-4o",
+          apiKey: "sk-proj-supersecretprincipalapikey123456789",
+        },
+        "Principal (Dr. Anita Desai)"
+      );
+
+      const publicConfig = getPublicInstitutionalAiConfig();
+      expect(publicConfig.hasKey).toBe(true);
+      expect(publicConfig.isConfigured).toBe(true);
+      expect(publicConfig.maskedKey).toContain("••••");
+      // Must not expose the full raw secret
+      expect(publicConfig.maskedKey).not.toBe("sk-proj-supersecretprincipalapikey123456789");
+      expect((publicConfig as any).apiKey).toBeUndefined();
+    });
+
+    it("should allow Principal to configure school-wide AI provider and track attribution", async () => {
+      const { saveInstitutionalAiConfig, getInstitutionalAiConfig } = await import(
+        "@/lib/ai/institutionalConfig"
+      );
+
+      const updated = saveInstitutionalAiConfig(
+        {
+          provider: "claude",
+          modelName: "claude-3-5-sonnet",
+          apiKey: "sk-ant-api03-principaltestkey9999",
+        },
+        "Principal (Dr. Anita Desai)"
+      );
+
+      expect(updated.provider).toBe("claude");
+      expect(updated.modelName).toBe("claude-3-5-sonnet");
+      expect(updated.configuredBy).toBe("Principal (Dr. Anita Desai)");
+      expect(updated.isConfigured).toBe(true);
+
+      const retrieved = getInstitutionalAiConfig();
+      expect(retrieved.apiKey).toBe("sk-ant-api03-principaltestkey9999");
+    });
+  });
 });
