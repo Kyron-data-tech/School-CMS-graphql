@@ -92,51 +92,6 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
               Academic Term 1 is in active session. All campus sections, biometric attendance registers, and CBSE grading workflows are operational.
             </p>
 
-            {/* Quick operational launchpad pills */}
-            <div className="flex flex-wrap items-center gap-2 pt-2 text-xs">
-              <Link
-                href="/attendance"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold backdrop-blur-md border border-white/10 transition"
-              >
-                <span>📅</span> Attendance Register
-              </Link>
-              <Link
-                href="/results"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-200 font-bold backdrop-blur-md border border-purple-400/30 transition"
-              >
-                <span>📄</span> Official Marksheets
-              </Link>
-              <Link
-                href="/fees"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold backdrop-blur-md border border-emerald-400/30 transition"
-              >
-                <span>💳</span> Fee Invoicing
-              </Link>
-              <Link
-                href="/transport"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold backdrop-blur-md border border-amber-400/30 transition"
-              >
-                <span>🚌</span> Transport Fleet
-              </Link>
-              <Link
-                href="/library"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-200 font-bold backdrop-blur-md border border-indigo-400/30 transition"
-              >
-                <span>📚</span> Library Catalog
-              </Link>
-              <Link
-                href="/copilot"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 font-bold backdrop-blur-md border border-amber-400/30 transition"
-              >
-                <span>🤖</span> AI Copilot &amp; License
-              </Link>
-              <Link
-                href="/register"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold backdrop-blur-md border border-white/10 transition"
-              >
-                <span>⚡</span> Admissions Desk
-              </Link>
-            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 self-start lg:self-auto">
@@ -144,25 +99,25 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
               href="/copilot"
               className="inline-flex items-center gap-2 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 text-xs shadow-md transition active:scale-95"
             >
-              <span>👑</span> AI Key Authority
+              <span>👑</span> AI Copilot &amp; Key
+            </Link>
+            <Link
+              href="/fees"
+              className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-2.5 text-xs shadow-md transition active:scale-95"
+            >
+              <span>💳</span> Fee Invoicing
             </Link>
             <Link
               href="/results"
-              className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-brand-600 px-4 py-2.5 text-xs font-black text-white shadow-glow hover:from-purple-500 hover:to-indigo-500 transition-all active:scale-95"
+              className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 px-4 py-2.5 text-xs font-black text-white shadow-md transition active:scale-95"
             >
-              <span>📄</span> View Marksheets
+              <span>📄</span> Marksheets
             </Link>
             <Link
               href="/announcements"
               className="inline-flex items-center gap-2 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md px-4 py-2.5 text-xs font-bold text-white border border-white/15 transition active:scale-95"
             >
               <span>📢</span> Post Circular
-            </Link>
-            <Link
-              href="/students"
-              className="inline-flex items-center gap-2 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md px-4 py-2.5 text-xs font-bold text-white border border-white/15 transition active:scale-95"
-            >
-              <span>👥</span> Student Directory
             </Link>
           </div>
         </div>

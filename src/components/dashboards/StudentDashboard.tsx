@@ -98,31 +98,19 @@ export async function StudentDashboard({ ctx }: { ctx: AuthContext }) {
           <div className="flex flex-wrap items-center gap-2">
             <Link
               href="/copilot"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 px-3.5 py-2 text-xs font-black shadow-md transition active:scale-95"
+              className="inline-flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 text-slate-950 px-3.5 py-2 text-xs font-black shadow-md transition active:scale-95"
             >
               <span>🤖</span> AI Study Copilot
             </Link>
             <Link
               href="/fees"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3.5 py-2 text-xs font-black shadow-md transition active:scale-95"
+              className="inline-flex items-center gap-1.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/20 px-3.5 py-2 text-xs font-bold transition active:scale-95"
             >
-              <span>💳</span> Fee Clearance
-            </Link>
-            <Link
-              href="/transport"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/20 px-3 py-2 text-xs font-bold transition active:scale-95"
-            >
-              <span>🚌</span> Bus Route
-            </Link>
-            <Link
-              href="/library"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/20 px-3 py-2 text-xs font-bold transition active:scale-95"
-            >
-              <span>📚</span> Library Books
+              <span>💳</span> Fees &amp; Receipts
             </Link>
             <Link
               href="/notes"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/20 px-3 py-2 text-xs font-bold transition active:scale-95"
+              className="inline-flex items-center gap-1.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/20 px-3.5 py-2 text-xs font-bold transition active:scale-95"
             >
               <span>📖</span> Subject Notes
             </Link>
