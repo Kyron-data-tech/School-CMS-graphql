@@ -43,7 +43,16 @@ export function AiCopilotClient({
   userName?: string;
   initialInstitutionalConfig?: any;
 }) {
-  const [activeTab, setActiveTab] = useState<"remarks" | "quiz" | "notice" | "chat" | "settings">("remarks");
+  const initialRoleNormalized: "principal" | "teacher" | "student" = initialIsPrincipal
+    ? "principal"
+    : initialUserRole === "student"
+    ? "student"
+    : "teacher";
+
+  const [activeRole, setActiveRole] = useState<"principal" | "teacher" | "student">(initialRoleNormalized);
+  const [activeTab, setActiveTab] = useState<"remarks" | "quiz" | "notice" | "chat" | "settings">(
+    initialRoleNormalized === "student" ? "quiz" : "remarks"
+  );
   const [loading, setLoading] = useState(false);
   const [resultText, setResultText] = useState<string | null>(null);
   const [providerUsed, setProviderUsed] = useState<string | null>(null);
@@ -52,12 +61,16 @@ export function AiCopilotClient({
   const [showContextInfo, setShowContextInfo] = useState(false);
 
   // Institutional License & Role Authority Simulation
-  const [activeRole, setActiveRole] = useState<"principal" | "teacher" | "student">(
-    initialIsPrincipal ? "principal" : (initialUserRole as any) || "teacher"
-  );
   const [institutionalConfig, setInstitutionalConfig] = useState<any>(initialInstitutionalConfig || null);
   const [savingInstitutional, setSavingInstitutional] = useState(false);
   const [saveSuccessMessage, setSaveSuccessMessage] = useState<string | null>(null);
+
+  // Automatically switch away from teacher-only tabs if student role is active
+  useEffect(() => {
+    if (activeRole === "student" && (activeTab === "remarks" || activeTab === "notice")) {
+      setActiveTab("quiz");
+    }
+  }, [activeRole, activeTab]);
 
   // Model Settings State
   const [settings, setSettings] = useState<ModelSettings>(DEFAULT_SETTINGS);
@@ -378,13 +391,17 @@ export function AiCopilotClient({
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500/30 text-xl">🤖</span>
-              <h2 className="text-xl font-bold tracking-tight">Greenfield AI Academic Copilot</h2>
+              <h2 className="text-xl font-bold tracking-tight">
+                {activeRole === "student" ? "Greenfield AI Study Assistant" : "Greenfield AI Academic Copilot"}
+              </h2>
               <span className="rounded-full bg-emerald-400/20 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300 border border-emerald-400/30">
-                Multi-LLM GUI Coordinator
+                {activeRole === "student" ? "Student Learning & Practice Mode" : "Multi-LLM GUI Coordinator"}
               </span>
             </div>
             <p className="text-xs text-slate-300 max-w-2xl">
-              Coordinate effortlessly between **OpenAI ChatGPT**, **Anthropic Claude**, **Google Gemini**, and **Sir&apos;s Local Endpoints** with real-time **Content Window** monitoring.
+              {activeRole === "student"
+                ? "Self-assessment practice quizzes (Arrays, Linked Lists, Trees, Graphs), curriculum revision, and interactive AI tutor doubt-solving."
+                : "Coordinate effortlessly between OpenAI ChatGPT, Anthropic Claude, Google Gemini, and Sir's Local Endpoints with real-time Content Window monitoring."}
             </p>
           </div>
 
@@ -403,7 +420,7 @@ export function AiCopilotClient({
               className="rounded-lg bg-white/20 hover:bg-white/30 px-3 py-1.5 text-xs font-medium text-white transition border border-white/20 flex items-center gap-1.5"
             >
               <span>⚙️</span>
-              <span>Model Settings</span>
+              <span>{activeRole === "student" ? "AI Settings" : "Model Settings"}</span>
             </button>
           </div>
         </div>
@@ -422,7 +439,7 @@ export function AiCopilotClient({
                     : "text-slate-300 hover:text-white"
                 }`}
               >
-                <span>👑</span> Principal (Add & Manage Key)
+                <span>👑</span> Principal (Add &amp; Manage Key)
               </button>
               <button
                 type="button"
@@ -433,18 +450,23 @@ export function AiCopilotClient({
                     : "text-slate-300 hover:text-white"
                 }`}
               >
-                <span>👨‍🏫</span> Teacher (Uses School Key)
+                <span>👨‍🏫</span> Teacher (Assignments &amp; Remarks)
               </button>
               <button
                 type="button"
-                onClick={() => setActiveRole("student")}
+                onClick={() => {
+                  setActiveRole("student");
+                  if (activeTab === "remarks" || activeTab === "notice") {
+                    setActiveTab("quiz");
+                  }
+                }}
                 className={`px-3 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5 ${
                   activeRole === "student"
                     ? "bg-emerald-600 text-white shadow-md ring-1 ring-emerald-400"
                     : "text-slate-300 hover:text-white"
                 }`}
               >
-                <span>🎓</span> Student (Uses School Key)
+                <span>🎓</span> Student (Practice Quizzes &amp; AI Tutor)
               </button>
             </div>
           </div>
@@ -643,23 +665,27 @@ export function AiCopilotClient({
           </div>
         )}
 
-        {/* 5. Navigation Tabs */}
+        {/* 5. Navigation Tabs - Filtered for Student Authority */}
         <div className="mt-5 flex flex-wrap gap-2 border-t border-white/10 pt-4">
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTab("remarks");
-              setResultText(null);
-            }}
-            className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition ${
-              activeTab === "remarks"
-                ? "bg-brand-600 text-white shadow-md font-semibold"
-                : "text-slate-300 hover:bg-white/10 hover:text-white"
-            }`}
-          >
-            📝 Report Card Remarks
-          </button>
+          {/* Remarks Tab: Only for Principal & Teacher */}
+          {activeRole !== "student" && (
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("remarks");
+                setResultText(null);
+              }}
+              className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition ${
+                activeTab === "remarks"
+                  ? "bg-brand-600 text-white shadow-md font-semibold"
+                  : "text-slate-300 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              📝 Report Card Remarks
+            </button>
+          )}
 
+          {/* Quiz Tab: For All (Tailored label for Student) */}
           <button
             type="button"
             onClick={() => {
@@ -672,24 +698,28 @@ export function AiCopilotClient({
                 : "text-slate-300 hover:bg-white/10 hover:text-white"
             }`}
           >
-            📋 Quiz & Assignment Maker
+            {activeRole === "student" ? "📚 Practice Quizzes & Revision" : "📋 Quiz & Assignment Maker"}
           </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTab("notice");
-              setResultText(null);
-            }}
-            className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition ${
-              activeTab === "notice"
-                ? "bg-brand-600 text-white shadow-md font-semibold"
-                : "text-slate-300 hover:bg-white/10 hover:text-white"
-            }`}
-          >
-            📢 Circular & Notice Drafter
-          </button>
+          {/* Notice Tab: Only for Principal & Teacher */}
+          {activeRole !== "student" && (
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("notice");
+                setResultText(null);
+              }}
+              className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition ${
+                activeTab === "notice"
+                  ? "bg-brand-600 text-white shadow-md font-semibold"
+                  : "text-slate-300 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              📢 Circular & Notice Drafter
+            </button>
+          )}
 
+          {/* Chat Tab: For All */}
           <button
             type="button"
             onClick={() => {
@@ -702,7 +732,7 @@ export function AiCopilotClient({
                 : "text-slate-300 hover:bg-white/10 hover:text-white"
             }`}
           >
-            💬 Interactive AI Chat
+            {activeRole === "student" ? "💬 AI Study Tutor & Doubt Solver" : "💬 Interactive AI Chat"}
           </button>
 
           <button
@@ -717,7 +747,7 @@ export function AiCopilotClient({
                 : "bg-white/10 text-amber-200 hover:bg-white/20"
             }`}
           >
-            ⚙️ Model & AI Settings
+            ⚙️ {activeRole === "student" ? "AI Settings & Key" : "Model & AI Settings"}
           </button>
         </div>
       </div>
@@ -795,30 +825,70 @@ export function AiCopilotClient({
                   </div>
                 )}
               </div>
+            ) : activeRole === "student" ? (
+              <div className="rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950/40 via-slate-900 to-slate-950 p-5 space-y-3 shadow-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-300 text-lg">
+                        🎓
+                      </span>
+                      <h4 className="text-sm font-bold text-emerald-200">
+                        Student Learning Authority &amp; AI License
+                      </h4>
+                      <span className="rounded bg-emerald-500/20 border border-emerald-400/30 px-2 py-0.5 text-[10px] font-mono text-emerald-300 font-semibold">
+                        STUDENT AUTHORIZED
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+                      You are logged in as a <strong>Student</strong>. You have full authority to practice quizzes, consult the AI Study Tutor, and choose AI models. You automatically inherit the <strong>Principal&apos;s School License</strong> for free access, or you can optionally configure your <strong>own personal API key</strong> below if you want your own private quota.
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-black/50 border border-emerald-400/30 px-3.5 py-2 text-center shrink-0">
+                    <div className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Your AI Access</div>
+                    <div className="text-xs font-bold text-emerald-300 mt-0.5 flex items-center justify-center gap-1">
+                      <span>✓</span> Free &amp; Unrestricted
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
+                  <div className="flex items-center gap-2">
+                    <span>Active Engine: <strong className="text-white">{settings.provider.toUpperCase()} ({settings.modelName})</strong></span>
+                    <span>•</span>
+                    <span>School License: <strong className="text-slate-200">{institutionalConfig?.configuredBy || "Principal"}</strong></span>
+                  </div>
+                  <div className="font-mono text-slate-300 bg-slate-900 border border-slate-700 px-2.5 py-0.5 rounded flex items-center gap-1.5">
+                    <span>🔒</span>
+                    <span>{settings.apiKey ? "Personal Key Active" : (institutionalConfig?.maskedKey || "School License Active")}</span>
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className="rounded-2xl border border-indigo-500/40 bg-gradient-to-br from-indigo-950/40 via-slate-900 to-slate-950 p-5 space-y-3 shadow-lg">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-500/20 text-indigo-300 text-lg">
-                        {activeRole === "teacher" ? "👨‍🏫" : "🎓"}
+                        👨‍🏫
                       </span>
                       <h4 className="text-sm font-bold text-indigo-200">
-                        School-Wide AI License Inherited ({activeRole === "teacher" ? "Teacher Mode" : "Student Mode"})
+                        School-Wide AI License Inherited (Teacher Mode)
                       </h4>
                       <span className="rounded bg-emerald-500/20 border border-emerald-400/30 px-2 py-0.5 text-[10px] font-mono text-emerald-300 font-semibold">
                         PROTECTED LICENSE
                       </span>
                     </div>
                     <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
-                      You are logged in as a <strong>{activeRole === "teacher" ? "Teacher" : "Student"}</strong>. Your AI requests automatically use the school license configured centrally by the Principal (<strong>Dr. Anita Desai</strong>). You have full access to generate student remarks, quizzes, notices, and chat without buying or entering an API key.
+                      You are logged in as a <strong>Teacher</strong>. Your AI requests automatically use the school license configured centrally by the Principal (<strong>Dr. Anita Desai</strong>). You have full access to generate student remarks, quizzes, notices, and chat without buying or entering an API key.
                     </p>
                   </div>
 
                   <div className="rounded-xl bg-black/50 border border-indigo-400/30 px-3.5 py-2 text-center shrink-0">
                     <div className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Your AI Status</div>
                     <div className="text-xs font-bold text-emerald-300 mt-0.5 flex items-center justify-center gap-1">
-                      <span>✓</span> Active & Covered
+                      <span>✓</span> Active &amp; Covered
                     </div>
                   </div>
                 </div>
@@ -974,25 +1044,27 @@ export function AiCopilotClient({
                       onChange={(e) => saveSettings({ ...settings, modelName: e.target.value })}
                     >
                       <option value="gpt-4o">gpt-4o (Flagship Omni - 128K)</option>
-                      <option value="gpt-4o-mini">gpt-4o-mini (Fast & Efficient - 128K)</option>
+                      <option value="gpt-4o-mini">gpt-4o-mini (Fast &amp; Efficient - 128K)</option>
                     </select>
                   </div>
                   <div>
                     <div className="flex items-center justify-between">
                       <label className="label text-xs">OpenAI API Key</label>
                       {activeRole === "principal" ? (
-                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal Editable</span>
+                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal School Key</span>
+                      ) : activeRole === "student" ? (
+                        <span className="text-[10px] text-emerald-400 font-semibold">🎓 Student Personal Key (Optional)</span>
                       ) : (
-                        <span className="text-[10px] text-emerald-400 font-medium">🔒 Inherited from Principal</span>
+                        <span className="text-[10px] text-slate-400 font-medium">🔒 Inherited from Principal</span>
                       )}
                     </div>
-                    {activeRole === "principal" ? (
+                    {activeRole === "principal" || activeRole === "student" ? (
                       <input
                         type="password"
                         className="input text-xs font-mono"
                         value={settings.apiKey}
                         onChange={(e) => saveSettings({ ...settings, apiKey: e.target.value })}
-                        placeholder="sk-proj-..."
+                        placeholder={activeRole === "principal" ? "sk-proj-..." : "Optional: paste personal sk-proj- key, or leave blank to use school key"}
                       />
                     ) : (
                       <input
@@ -1005,6 +1077,11 @@ export function AiCopilotClient({
                     {activeRole === "principal" && (
                       <p className="text-[10px] text-slate-400 mt-1">
                         Enter key and click &quot;Save School-Wide API Key&quot; above to enable for all teachers and students.
+                      </p>
+                    )}
+                    {activeRole === "student" && (
+                      <p className="text-[10px] text-emerald-400/80 mt-1">
+                        {settings.apiKey ? "✓ Using your custom student API key." : "✓ Using Principal's school key. You can leave this blank."}
                       </p>
                     )}
                   </div>
@@ -1029,18 +1106,20 @@ export function AiCopilotClient({
                     <div className="flex items-center justify-between">
                       <label className="label text-xs">Anthropic API Key</label>
                       {activeRole === "principal" ? (
-                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal Editable</span>
+                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal School Key</span>
+                      ) : activeRole === "student" ? (
+                        <span className="text-[10px] text-emerald-400 font-semibold">🎓 Student Personal Key (Optional)</span>
                       ) : (
-                        <span className="text-[10px] text-emerald-400 font-medium">🔒 Inherited from Principal</span>
+                        <span className="text-[10px] text-slate-400 font-medium">🔒 Inherited from Principal</span>
                       )}
                     </div>
-                    {activeRole === "principal" ? (
+                    {activeRole === "principal" || activeRole === "student" ? (
                       <input
                         type="password"
                         className="input text-xs font-mono"
                         value={settings.apiKey}
                         onChange={(e) => saveSettings({ ...settings, apiKey: e.target.value })}
-                        placeholder="sk-ant-api03-..."
+                        placeholder={activeRole === "principal" ? "sk-ant-api03-..." : "Optional: paste personal sk-ant- key, or leave blank to use school key"}
                       />
                     ) : (
                       <input
@@ -1053,6 +1132,11 @@ export function AiCopilotClient({
                     {activeRole === "principal" && (
                       <p className="text-[10px] text-slate-400 mt-1">
                         Enter key and click &quot;Save School-Wide API Key&quot; above to enable for all teachers and students.
+                      </p>
+                    )}
+                    {activeRole === "student" && (
+                      <p className="text-[10px] text-emerald-400/80 mt-1">
+                        {settings.apiKey ? "✓ Using your custom student API key." : "✓ Using Principal's school key. You can leave this blank."}
                       </p>
                     )}
                   </div>
@@ -1069,26 +1153,28 @@ export function AiCopilotClient({
                       value={settings.modelName}
                       onChange={(e) => saveSettings({ ...settings, modelName: e.target.value })}
                     >
-                      <option value="gemini-1.5-flash">gemini-1.5-flash (Fast & 1M Window)</option>
-                      <option value="gemini-1.5-pro">gemini-1.5-pro (Deep Reasoning & 2M Window)</option>
+                      <option value="gemini-1.5-flash">gemini-1.5-flash (Fast &amp; 1M Window)</option>
+                      <option value="gemini-1.5-pro">gemini-1.5-pro (Deep Reasoning &amp; 2M Window)</option>
                     </select>
                   </div>
                   <div>
                     <div className="flex items-center justify-between">
                       <label className="label text-xs">Google Gemini API Key</label>
                       {activeRole === "principal" ? (
-                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal Editable</span>
+                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal School Key</span>
+                      ) : activeRole === "student" ? (
+                        <span className="text-[10px] text-emerald-400 font-semibold">🎓 Student Personal Key (Optional)</span>
                       ) : (
-                        <span className="text-[10px] text-emerald-400 font-medium">🔒 Inherited from Principal</span>
+                        <span className="text-[10px] text-slate-400 font-medium">🔒 Inherited from Principal</span>
                       )}
                     </div>
-                    {activeRole === "principal" ? (
+                    {activeRole === "principal" || activeRole === "student" ? (
                       <input
                         type="password"
                         className="input text-xs font-mono"
                         value={settings.apiKey}
                         onChange={(e) => saveSettings({ ...settings, apiKey: e.target.value })}
-                        placeholder="AIzaSy..."
+                        placeholder={activeRole === "principal" ? "AIzaSy..." : "Optional: paste personal Gemini key, or leave blank to use school key"}
                       />
                     ) : (
                       <input
@@ -1101,6 +1187,11 @@ export function AiCopilotClient({
                     {activeRole === "principal" && (
                       <p className="text-[10px] text-slate-400 mt-1">
                         Enter key and click &quot;Save School-Wide API Key&quot; above to enable for all teachers and students.
+                      </p>
+                    )}
+                    {activeRole === "student" && (
+                      <p className="text-[10px] text-emerald-400/80 mt-1">
+                        {settings.apiKey ? "✓ Using your custom student API key." : "✓ Using Principal's school key. You can leave this blank."}
                       </p>
                     )}
                   </div>
@@ -1134,12 +1225,14 @@ export function AiCopilotClient({
                     <div className="flex items-center justify-between">
                       <label className="label text-xs">API Key (Optional for local Ollama / LM Studio)</label>
                       {activeRole === "principal" ? (
-                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal Editable</span>
+                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal School Key</span>
+                      ) : activeRole === "student" ? (
+                        <span className="text-[10px] text-emerald-400 font-semibold">🎓 Student Personal Key (Optional)</span>
                       ) : (
-                        <span className="text-[10px] text-emerald-400 font-medium">🔒 Inherited from Principal</span>
+                        <span className="text-[10px] text-slate-400 font-medium">🔒 Inherited from Principal</span>
                       )}
                     </div>
-                    {activeRole === "principal" ? (
+                    {activeRole === "principal" || activeRole === "student" ? (
                       <input
                         type="password"
                         className="input text-xs font-mono"
@@ -1337,9 +1430,17 @@ export function AiCopilotClient({
 
               {activeTab === "quiz" && (
                 <form onSubmit={handleGenerateQuiz} className="space-y-4">
-                  <h3 className="text-sm font-semibold text-white flex items-center gap-1.5">
-                    <span>📋</span> Smart Quiz Generator
-                  </h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-semibold text-white flex items-center gap-1.5">
+                      <span>{activeRole === "student" ? "📚" : "📋"}</span>
+                      <span>{activeRole === "student" ? "Practice Quiz & Self-Assessment" : "Smart Quiz & Assignment Generator"}</span>
+                    </h3>
+                    {activeRole === "student" && (
+                      <span className="rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 text-[10px] font-bold">
+                        STUDENT LEARNING MODE
+                      </span>
+                    )}
+                  </div>
                   <div>
                     <label className="label text-xs">Subject</label>
                     <select
@@ -1347,23 +1448,73 @@ export function AiCopilotClient({
                       value={quizSubject}
                       onChange={(e) => setQuizSubject(e.target.value)}
                     >
+                      <option value="Computer Science">Computer Science (Data Structures)</option>
                       <option value="Science">Science</option>
                       <option value="Mathematics">Mathematics</option>
                       <option value="English">English</option>
-                      <option value="Computer Science">Computer Science</option>
                       <option value="History">History</option>
                       <option value="Geography">Geography</option>
                     </select>
                   </div>
                   <div>
-                    <label className="label text-xs">Lesson / Topic</label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="label text-xs m-0 p-0">Lesson / Topic</label>
+                      <span className="text-[10px] text-slate-400 font-mono">Select or type custom</span>
+                    </div>
                     <input
-                      className="input text-xs"
+                      className="input text-xs font-medium"
                       value={quizTopic}
                       onChange={(e) => setQuizTopic(e.target.value)}
-                      placeholder="e.g. Photosynthesis, Linear Equations"
+                      placeholder="e.g. Arrays & Linked Lists, Trees & Graphs"
                       required
                     />
+
+                    {/* Quick Topic Chips for Students */}
+                    <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                      <span className="text-[10px] text-slate-400 font-semibold mr-0.5">Quick Pick:</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setQuizSubject("Computer Science");
+                          setQuizTopic("Arrays & Linked Lists");
+                        }}
+                        className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                          quizTopic === "Arrays & Linked Lists"
+                            ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                            : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                        }`}
+                      >
+                        🔗 Arrays &amp; Linked Lists
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setQuizSubject("Computer Science");
+                          setQuizTopic("Trees & Graphs");
+                        }}
+                        className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                          quizTopic === "Trees & Graphs"
+                            ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                            : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                        }`}
+                      >
+                        🌲 Trees &amp; Graphs
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setQuizSubject("Science");
+                          setQuizTopic("Cell Structure & Photosynthesis");
+                        }}
+                        className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                          quizTopic === "Cell Structure & Photosynthesis"
+                            ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                            : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                        }`}
+                      >
+                        🔬 Photosynthesis
+                      </button>
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -1382,9 +1533,9 @@ export function AiCopilotClient({
                         value={questionCount}
                         onChange={(e) => setQuestionCount(Number(e.target.value))}
                       >
-                        <option value={3}>3 Questions (Quick Quiz)</option>
-                        <option value={5}>5 Questions (Standard)</option>
-                        <option value={10}>10 Questions (Full Test)</option>
+                        <option value={3}>3 Questions (Quick Practice)</option>
+                        <option value={5}>5 Questions (Standard Practice)</option>
+                        <option value={10}>10 Questions (Complete Test)</option>
                       </select>
                     </div>
                   </div>
@@ -1393,7 +1544,11 @@ export function AiCopilotClient({
                     disabled={loading}
                     className="btn bg-brand-600 text-white w-full text-xs font-semibold hover:bg-brand-700 disabled:opacity-50"
                   >
-                    {loading ? `Crafting Quiz with ${activeSpec.name}...` : `⚡ Generate Quiz with Answer Key`}
+                    {loading
+                      ? `Generating with ${activeSpec.name}...`
+                      : activeRole === "student"
+                      ? `⚡ Generate My Practice Quiz & Solutions`
+                      : `⚡ Generate Quiz with Answer Key`}
                   </button>
                 </form>
               )}
@@ -1614,7 +1769,11 @@ export function AiCopilotClient({
                   type="text"
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
-                  placeholder="Ask about school policies, student performance, grading schemes..."
+                  placeholder={
+                    activeRole === "student"
+                      ? "Ask your AI Study Tutor about Data Structures, coding, science, or math..."
+                      : "Ask about school policies, student performance, grading schemes..."
+                  }
                   className="input flex-1 text-xs"
                   disabled={loading}
                 />
@@ -1630,33 +1789,67 @@ export function AiCopilotClient({
               {/* Quick Prompts */}
               <div className="mt-2 flex flex-wrap gap-1.5 items-center">
                 <span className="text-[10px] text-slate-400">Quick prompts:</span>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setChatInput("What is the minimum attendance required for Class 8 exams?")
-                  }
-                  className="rounded bg-slate-900 border border-slate-800 px-2 py-0.5 text-[10px] text-slate-300 hover:border-brand-500 hover:text-white transition-colors"
-                >
-                  Attendance policy
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setChatInput("Explain the letter grading scale used in report cards")
-                  }
-                  className="rounded bg-slate-900 border border-slate-800 px-2 py-0.5 text-[10px] text-slate-300 hover:border-brand-500 hover:text-white transition-colors"
-                >
-                  Grading scale
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setChatInput("How can I register a new student for admissions?")
-                  }
-                  className="rounded bg-slate-900 border border-slate-800 px-2 py-0.5 text-[10px] text-slate-300 hover:border-brand-500 hover:text-white transition-colors"
-                >
-                  Student registration
-                </button>
+                {activeRole === "student" ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setChatInput("Explain difference between Array and Linked List in simple terms")
+                      }
+                      className="rounded bg-slate-900 border border-slate-800 px-2 py-0.5 text-[10px] text-slate-300 hover:border-brand-500 hover:text-white transition-colors"
+                    >
+                      🔗 Array vs Linked List
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setChatInput("How does Breadth-First Search (BFS) traverse a Graph?")
+                      }
+                      className="rounded bg-slate-900 border border-slate-800 px-2 py-0.5 text-[10px] text-slate-300 hover:border-brand-500 hover:text-white transition-colors"
+                    >
+                      🌲 Graph BFS Traversal
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setChatInput("Explain the photosynthesis light and dark reaction stages")
+                      }
+                      className="rounded bg-slate-900 border border-slate-800 px-2 py-0.5 text-[10px] text-slate-300 hover:border-brand-500 hover:text-white transition-colors"
+                    >
+                      🔬 Photosynthesis stages
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setChatInput("What is the minimum attendance required for Class 8 exams?")
+                      }
+                      className="rounded bg-slate-900 border border-slate-800 px-2 py-0.5 text-[10px] text-slate-300 hover:border-brand-500 hover:text-white transition-colors"
+                    >
+                      Attendance policy
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setChatInput("Explain the letter grading scale used in report cards")
+                      }
+                      className="rounded bg-slate-900 border border-slate-800 px-2 py-0.5 text-[10px] text-slate-300 hover:border-brand-500 hover:text-white transition-colors"
+                    >
+                      Grading scale
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setChatInput("How can I register a new student for admissions?")
+                      }
+                      className="rounded bg-slate-900 border border-slate-800 px-2 py-0.5 text-[10px] text-slate-300 hover:border-brand-500 hover:text-white transition-colors"
+                    >
+                      Student registration
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
