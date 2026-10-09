@@ -646,13 +646,91 @@ function buildDomainQuizFallback(
   const topicLower = topic.toLowerCase();
   const subjectLower = subject.toLowerCase();
 
-  // 1. Computer Science: Trees, Graphs, Data Structures, Algorithms
+  // 1A. Computer Science: Arrays & Linked Lists
+  if (
+    topicLower.includes("array") ||
+    topicLower.includes("linked") ||
+    topicLower.includes("list")
+  ) {
+    const arrayListQuestions = [
+      {
+        q: "What is the primary memory allocation difference between an Array and a Linked List?",
+        options: [
+          "A) Arrays use contiguous memory blocks, whereas Linked Lists allocate individual nodes dynamically linked via pointers",
+          "B) Linked Lists use static contiguous memory, whereas arrays use dynamic heap pointers",
+          "C) Arrays can expand infinitely without resizing, while Linked Lists have a fixed capacity",
+          "D) Linked Lists have O(1) random access by numerical index",
+        ],
+        answer: "A",
+        explanation: "Arrays store elements in consecutive (contiguous) memory addresses, enabling instant index calculation. In contrast, Linked Lists store elements in non-contiguous memory locations where each node maintains a reference (pointer) to the next node.",
+      },
+      {
+        q: "What is the time complexity to access an element by its index in an Array versus a Singly Linked List?",
+        options: [
+          "A) Array: O(1) constant time, Linked List: O(N) linear time",
+          "B) Array: O(N) linear time, Linked List: O(1) constant time",
+          "C) Array: O(log N) logarithmic time, Linked List: O(N) linear time",
+          "D) Both provide O(1) random access",
+        ],
+        answer: "A",
+        explanation: "Arrays support O(1) direct indexing arithmetic (base_address + index * element_size). Linked Lists must be traversed from the head node one pointer at a time, taking O(N) time in the worst case.",
+      },
+      {
+        q: "In a Singly Linked List, what is the time complexity of inserting a new node at the head (beginning) if a head pointer is maintained?",
+        options: [
+          "A) O(N)",
+          "B) O(1)",
+          "C) O(log N)",
+          "D) O(N^2)",
+        ],
+        answer: "B",
+        explanation: "Inserting at the head simply requires pointing the new node's next pointer to the current head and updating the head pointer, which takes O(1) constant time.",
+      },
+      {
+        q: "What is the primary disadvantage of a Doubly Linked List compared to a Singly Linked List?",
+        options: [
+          "A) Cannot be traversed backwards",
+          "B) Extra memory overhead per node to store both next and previous pointers",
+          "C) Deletion of a known node takes O(N) time instead of O(1)",
+          "D) Does not allow dynamic insertion",
+        ],
+        answer: "B",
+        explanation: "Every node in a Doubly Linked List must store an additional pointer (previous), increasing memory consumption per node.",
+      },
+      {
+        q: "Which error occurs in languages like C/Java when attempting to read an Array index that exceeds its allocated length?",
+        options: [
+          "A) Array Index Out Of Bounds / Segmentation Fault",
+          "B) Deadlock Exception",
+          "C) Infinite Recursion",
+          "D) Garbage Collection Freeze",
+        ],
+        answer: "A",
+        explanation: "Attempting to access an index outside [0, length - 1] leads to an ArrayIndexOutOfBoundsException or Segmentation Fault due to unauthorized memory access.",
+      },
+    ];
+
+    const selected = arrayListQuestions.slice(0, Math.min(questionCount, arrayListQuestions.length));
+    let text = `### 📝 Practice Quiz: ${subject} — ${topic} (${gradeLevel})\n\n`;
+    selected.forEach((item, idx) => {
+      text += `**Q${idx + 1}. ${item.q}**\n`;
+      item.options.forEach((opt) => {
+        text += `* ${opt}\n`;
+      });
+      text += `\n`;
+    });
+    text += `---\n\n### 🔑 Answer Key & Explanations:\n`;
+    selected.forEach((item, idx) => {
+      text += `${idx + 1}. **Answer: ${item.answer}** — ${item.explanation}\n`;
+    });
+    return text.trim();
+  }
+
+  // 1B. Computer Science: Trees & Graphs
   if (
     topicLower.includes("tree") ||
     topicLower.includes("graph") ||
-    topicLower.includes("data structure") ||
-    topicLower.includes("algorithm") ||
-    subjectLower.includes("computer")
+    topicLower.includes("bst")
   ) {
     const csQuestions = [
       {
@@ -713,6 +791,62 @@ function buildDomainQuizFallback(
     ];
 
     const selected = csQuestions.slice(0, Math.min(questionCount, csQuestions.length));
+    let text = `### 📝 Practice Quiz: ${subject} — ${topic} (${gradeLevel})\n\n`;
+    selected.forEach((item, idx) => {
+      text += `**Q${idx + 1}. ${item.q}**\n`;
+      item.options.forEach((opt) => {
+        text += `* ${opt}\n`;
+      });
+      text += `\n`;
+    });
+    text += `---\n\n### 🔑 Answer Key & Explanations:\n`;
+    selected.forEach((item, idx) => {
+      text += `${idx + 1}. **Answer: ${item.answer}** — ${item.explanation}\n`;
+    });
+    return text.trim();
+  }
+
+  // 1C. Computer Science: Stacks & Queues
+  if (
+    topicLower.includes("stack") ||
+    topicLower.includes("queue")
+  ) {
+    const sqQuestions = [
+      {
+        q: "Which fundamental data access principle governs a Stack data structure?",
+        options: [
+          "A) First-In, First-Out (FIFO)",
+          "B) Last-In, First-Out (LIFO)",
+          "C) Random Direct Access",
+          "D) Lowest-Value First",
+        ],
+        answer: "B",
+        explanation: "A Stack operates on the Last-In, First-Out (LIFO) principle: the most recently pushed element is the first one removed via pop().",
+      },
+      {
+        q: "Which real-world computing mechanism relies directly on a Stack data structure?",
+        options: [
+          "A) Function call stack and recursion management",
+          "B) Print queue spooling",
+          "C) CPU round-robin scheduling",
+          "D) Network packet routing",
+        ],
+        answer: "A",
+        explanation: "The call stack manages active function calls, local variables, and return addresses using LIFO stack semantics.",
+      },
+      {
+        q: "What principle governs a Queue data structure?",
+        options: [
+          "A) Last-In, First-Out (LIFO)",
+          "B) First-In, First-Out (FIFO)",
+          "C) Binary Priority Heap",
+          "D) Hash Collisions",
+        ],
+        answer: "B",
+        explanation: "A standard Queue enforces First-In, First-Out (FIFO) ordering: elements are enqueued at the rear and dequeued from the front.",
+      },
+    ];
+    const selected = sqQuestions.slice(0, Math.min(questionCount, sqQuestions.length));
     let text = `### 📝 Practice Quiz: ${subject} — ${topic} (${gradeLevel})\n\n`;
     selected.forEach((item, idx) => {
       text += `**Q${idx + 1}. ${item.q}**\n`;
