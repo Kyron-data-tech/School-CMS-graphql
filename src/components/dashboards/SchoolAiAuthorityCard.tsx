@@ -10,17 +10,17 @@ export function SchoolAiAuthorityCard({ ctx }: { ctx: AuthContext }) {
 
   if (isPrincipal) {
     return (
-      <div className="relative overflow-hidden rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-950/40 via-slate-900 to-indigo-950/40 p-5 shadow-lg">
+      <div className="relative overflow-hidden rounded-2xl border border-brand-500/30 bg-gradient-to-r from-slate-900 via-brand-950/40 to-slate-900 p-5 shadow-lg">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5 max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-300 text-lg">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-500/20 text-brand-300 text-lg">
                 👑
               </span>
               <h3 className="text-sm sm:text-base font-bold text-white font-display">
                 Principal Authority: School-Wide AI API Key &amp; Multi-Member License
               </h3>
-              <span className="rounded-full bg-amber-400/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-mono font-bold text-amber-300">
+              <span className="rounded-full bg-brand-500/10 border border-brand-500/30 px-2.5 py-0.5 text-[10px] font-mono font-bold text-brand-300">
                 PRINCIPAL PRIVILEGE
               </span>
             </div>
@@ -30,7 +30,7 @@ export function SchoolAiAuthorityCard({ ctx }: { ctx: AuthContext }) {
                 Status: <strong className="text-emerald-300 font-semibold">{config.hasKey || config.isConfigured ? "Active & Inherited by All Members" : "Ready for Principal Configuration"}</strong>
               </span>
               <span>•</span>
-              <span>Model: <strong className="text-indigo-200 uppercase">{config.provider} ({config.modelName})</strong></span>
+              <span>Model: <strong className="text-slate-200 uppercase">{config.provider} ({config.modelName})</strong></span>
               {config.maskedKey && (
                 <>
                   <span>•</span>
@@ -45,7 +45,7 @@ export function SchoolAiAuthorityCard({ ctx }: { ctx: AuthContext }) {
           <div className="flex flex-wrap items-center gap-2 shrink-0">
             <Link
               href="/copilot"
-              className="inline-flex items-center gap-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 text-xs shadow-md transition active:scale-95"
+              className="inline-flex items-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold px-4 py-2.5 text-xs shadow-md transition active:scale-95"
             >
               <span>⚙️</span> Manage Key &amp; Open Copilot ➔
             </Link>

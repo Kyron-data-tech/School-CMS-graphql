@@ -435,7 +435,7 @@ export function AiCopilotClient({
                 onClick={() => setActiveRole("principal")}
                 className={`px-3 py-1 rounded-md text-xs font-bold transition flex items-center gap-1.5 ${
                   activeRole === "principal"
-                    ? "bg-amber-400 text-slate-950 shadow-md ring-1 ring-amber-300"
+                    ? "bg-brand-600 text-white shadow-md ring-1 ring-brand-400"
                     : "text-slate-300 hover:text-white"
                 }`}
               >
@@ -478,8 +478,8 @@ export function AiCopilotClient({
                 School AI License: <strong>Active (Configured by Principal)</strong>
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 px-3 py-1 text-[11px] font-medium text-amber-300">
-                <span className="h-2 w-2 rounded-full bg-amber-400"></span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-800 border border-slate-700 px-3 py-1 text-[11px] font-medium text-slate-300">
+                <span className="h-2 w-2 rounded-full bg-slate-400"></span>
                 Institutional Key: <strong>Needs Principal Setup</strong>
               </span>
             )}
@@ -548,13 +548,13 @@ export function AiCopilotClient({
             onClick={() => selectPreset("custom")}
             className={`rounded-xl px-3 py-1.5 text-xs font-medium transition flex items-center gap-1.5 border ${
               settings.provider === "custom"
-                ? "bg-amber-600/30 border-amber-400 text-amber-200 font-bold shadow-sm ring-1 ring-amber-400/50"
+                ? "bg-slate-700/60 border-slate-400 text-slate-100 font-bold shadow-sm ring-1 ring-slate-400/50"
                 : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
             }`}
           >
             <span>⚡</span>
             <span>Sir&apos;s Local Endpoint (LLaMA 3)</span>
-            <span className="rounded bg-black/40 px-1.5 py-0.2 text-[10px] text-amber-300 font-mono">8K</span>
+            <span className="rounded bg-black/40 px-1.5 py-0.2 text-[10px] text-slate-300 font-mono">8K</span>
           </button>
 
           {/* Built-in Academic Engine */}
@@ -600,7 +600,7 @@ export function AiCopilotClient({
             </div>
             <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700">
               <div
-                className="h-full bg-gradient-to-r from-emerald-500 via-indigo-500 to-amber-500 rounded-full transition-all duration-500"
+                className="h-full bg-gradient-to-r from-brand-500 to-indigo-500 rounded-full transition-all duration-500"
                 style={{
                   width: `${Math.min(100, Math.max(2, lastTokenStats?.contextWindowPercent || (totalChatTokens / activeSpec.contextWindow) * 100))}%`,
                 }}
@@ -743,8 +743,8 @@ export function AiCopilotClient({
             }}
             className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition ml-auto ${
               activeTab === "settings"
-                ? "bg-amber-500 text-slate-950 shadow-md font-bold"
-                : "bg-white/10 text-amber-200 hover:bg-white/20"
+                ? "bg-brand-600 text-white shadow-md font-bold"
+                : "bg-white/10 text-slate-200 hover:bg-white/20"
             }`}
           >
             ⚙️ {activeRole === "student" ? "AI Settings & Key" : "Model & AI Settings"}
@@ -773,17 +773,17 @@ export function AiCopilotClient({
           <div className="space-y-5">
             {/* 👑 Institutional License & School-Wide API Key Card */}
             {activeRole === "principal" ? (
-              <div className="rounded-2xl border border-amber-500/50 bg-gradient-to-br from-amber-950/40 via-slate-900 to-slate-950 p-5 space-y-3.5 shadow-lg">
+              <div className="rounded-2xl border border-brand-500/30 bg-gradient-to-br from-slate-900 via-brand-950/30 to-slate-950 p-5 space-y-3.5 shadow-lg">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-300 text-lg">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-500/20 text-brand-300 text-lg">
                         👑
                       </span>
-                      <h4 className="text-sm font-bold text-amber-200">
+                      <h4 className="text-sm font-bold text-white">
                         Principal Authority: School-Wide AI License Management
                       </h4>
-                      <span className="rounded bg-amber-500/20 border border-amber-400/30 px-2 py-0.5 text-[10px] font-mono text-amber-300 font-semibold">
+                      <span className="rounded bg-brand-500/20 border border-brand-400/30 px-2 py-0.5 text-[10px] font-mono text-brand-300 font-semibold">
                         ADMIN AUTHORITY
                       </span>
                     </div>
@@ -796,7 +796,7 @@ export function AiCopilotClient({
                     type="button"
                     onClick={handleSaveSchoolApiKey}
                     disabled={savingInstitutional}
-                    className="btn bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs shrink-0 shadow-lg hover:shadow-amber-500/20 transition flex items-center gap-2 px-4 py-2.5 rounded-xl border border-amber-200 disabled:opacity-50"
+                    className="btn bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shrink-0 shadow-lg transition flex items-center gap-2 px-4 py-2.5 rounded-xl border border-brand-400/40 disabled:opacity-50"
                   >
                     <span>💾</span>
                     <span>{savingInstitutional ? "Saving..." : "Save School-Wide API Key"}</span>
@@ -980,7 +980,7 @@ export function AiCopilotClient({
                   onClick={() => selectPreset("custom")}
                   className={`rounded-xl border p-3.5 text-left transition ${
                     settings.provider === "custom"
-                      ? "border-amber-500 bg-amber-950/50 ring-2 ring-amber-500/40"
+                      ? "border-brand-500/60 bg-slate-800/80 ring-2 ring-brand-500/30"
                       : "border-slate-800 bg-slate-950/60 hover:bg-slate-800/50"
                   }`}
                 >
@@ -988,7 +988,7 @@ export function AiCopilotClient({
                     <span className="text-xs font-bold text-white flex items-center gap-1.5">
                       <span>⚡</span> Sir&apos;s Custom Endpoint
                     </span>
-                    <span className="rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-mono text-amber-400">
+                    <span className="rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-mono text-slate-300">
                       8K – 32K
                     </span>
                   </div>
@@ -1051,7 +1051,7 @@ export function AiCopilotClient({
                     <div className="flex items-center justify-between">
                       <label className="label text-xs">OpenAI API Key</label>
                       {activeRole === "principal" ? (
-                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal School Key</span>
+                        <span className="text-[10px] text-brand-300 font-semibold">👑 Principal School Key</span>
                       ) : activeRole === "student" ? (
                         <span className="text-[10px] text-emerald-400 font-semibold">🎓 Student Personal Key (Optional)</span>
                       ) : (
@@ -1106,7 +1106,7 @@ export function AiCopilotClient({
                     <div className="flex items-center justify-between">
                       <label className="label text-xs">Anthropic API Key</label>
                       {activeRole === "principal" ? (
-                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal School Key</span>
+                        <span className="text-[10px] text-brand-300 font-semibold">👑 Principal School Key</span>
                       ) : activeRole === "student" ? (
                         <span className="text-[10px] text-emerald-400 font-semibold">🎓 Student Personal Key (Optional)</span>
                       ) : (
@@ -1161,7 +1161,7 @@ export function AiCopilotClient({
                     <div className="flex items-center justify-between">
                       <label className="label text-xs">Google Gemini API Key</label>
                       {activeRole === "principal" ? (
-                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal School Key</span>
+                        <span className="text-[10px] text-brand-300 font-semibold">👑 Principal School Key</span>
                       ) : activeRole === "student" ? (
                         <span className="text-[10px] text-emerald-400 font-semibold">🎓 Student Personal Key (Optional)</span>
                       ) : (
@@ -1225,7 +1225,7 @@ export function AiCopilotClient({
                     <div className="flex items-center justify-between">
                       <label className="label text-xs">API Key (Optional for local Ollama / LM Studio)</label>
                       {activeRole === "principal" ? (
-                        <span className="text-[10px] text-amber-400 font-semibold">👑 Principal School Key</span>
+                        <span className="text-[10px] text-brand-300 font-semibold">👑 Principal School Key</span>
                       ) : activeRole === "student" ? (
                         <span className="text-[10px] text-emerald-400 font-semibold">🎓 Student Personal Key (Optional)</span>
                       ) : (
@@ -1325,7 +1325,7 @@ export function AiCopilotClient({
                 className={`rounded-xl p-3.5 text-xs ${
                   testResult.success
                     ? "border border-emerald-800/80 bg-emerald-950/60 text-emerald-200"
-                    : "border border-amber-800/80 bg-amber-950/60 text-amber-200"
+                    : "border border-rose-800/80 bg-rose-950/60 text-rose-200"
                 }`}
               >
                 <div className="font-semibold flex items-center gap-1.5">

@@ -97,25 +97,25 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
           <div className="flex flex-wrap items-center gap-2.5 self-start lg:self-auto">
             <Link
               href="/copilot"
-              className="inline-flex items-center gap-2 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 text-xs shadow-md transition active:scale-95"
+              className="inline-flex items-center gap-2 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-bold px-4 py-2.5 text-xs shadow-md transition active:scale-95"
             >
-              <span>👑</span> AI Copilot &amp; Key
+              <span>🤖</span> AI Copilot &amp; Key
             </Link>
             <Link
               href="/fees"
-              className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-2.5 text-xs shadow-md transition active:scale-95"
+              className="inline-flex items-center gap-2 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-white font-medium border border-slate-700 px-4 py-2.5 text-xs transition active:scale-95"
             >
               <span>💳</span> Fee Invoicing
             </Link>
             <Link
               href="/results"
-              className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 px-4 py-2.5 text-xs font-black text-white shadow-md transition active:scale-95"
+              className="inline-flex items-center gap-2 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-white font-medium border border-slate-700 px-4 py-2.5 text-xs transition active:scale-95"
             >
               <span>📄</span> Marksheets
             </Link>
             <Link
               href="/announcements"
-              className="inline-flex items-center gap-2 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md px-4 py-2.5 text-xs font-bold text-white border border-white/15 transition active:scale-95"
+              className="inline-flex items-center gap-2 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-white font-medium border border-slate-700 px-4 py-2.5 text-xs transition active:scale-95"
             >
               <span>📢</span> Post Circular
             </Link>
