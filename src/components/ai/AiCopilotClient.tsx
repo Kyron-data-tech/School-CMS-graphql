@@ -400,7 +400,7 @@ export function AiCopilotClient({
             </div>
             <p className="text-xs text-slate-300 max-w-2xl">
               {activeRole === "student"
-                ? "Self-assessment practice quizzes (Arrays, Linked Lists, Trees, Graphs), curriculum revision, and interactive AI tutor doubt-solving."
+                ? "Self-assessment practice quizzes (Science, Photosynthesis, Force & Motion), curriculum revision, and interactive AI tutor doubt-solving."
                 : "Coordinate effortlessly between OpenAI ChatGPT, Anthropic Claude, Google Gemini, and Sir's Local Endpoints with real-time Content Window monitoring."}
             </p>
           </div>
@@ -1465,55 +1465,75 @@ export function AiCopilotClient({
                       className="input text-xs font-medium"
                       value={quizTopic}
                       onChange={(e) => setQuizTopic(e.target.value)}
-                      placeholder="e.g. Arrays & Linked Lists, Trees & Graphs"
+                      placeholder={quizSubject === "Science" ? "e.g. Cell Structure & Photosynthesis, Force & Motion" : "e.g. Arrays & Linked Lists, Trees & Graphs"}
                       required
                     />
 
-                    {/* Quick Topic Chips for Students */}
+                    {/* Quick Topic Chips - Filtered for Active Subject */}
                     <div className="flex flex-wrap items-center gap-1.5 mt-2">
                       <span className="text-[10px] text-slate-400 font-semibold mr-0.5">Quick Pick:</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setQuizSubject("Computer Science");
-                          setQuizTopic("Arrays & Linked Lists");
-                        }}
-                        className={`px-2 py-0.5 rounded text-[10px] border transition ${
-                          quizTopic === "Arrays & Linked Lists"
-                            ? "bg-indigo-600 border-indigo-400 text-white font-bold"
-                            : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
-                        }`}
-                      >
-                        🔗 Arrays &amp; Linked Lists
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setQuizSubject("Computer Science");
-                          setQuizTopic("Trees & Graphs");
-                        }}
-                        className={`px-2 py-0.5 rounded text-[10px] border transition ${
-                          quizTopic === "Trees & Graphs"
-                            ? "bg-indigo-600 border-indigo-400 text-white font-bold"
-                            : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
-                        }`}
-                      >
-                        🌲 Trees &amp; Graphs
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setQuizSubject("Science");
-                          setQuizTopic("Cell Structure & Photosynthesis");
-                        }}
-                        className={`px-2 py-0.5 rounded text-[10px] border transition ${
-                          quizTopic === "Cell Structure & Photosynthesis"
-                            ? "bg-indigo-600 border-indigo-400 text-white font-bold"
-                            : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
-                        }`}
-                      >
-                        🔬 Photosynthesis
-                      </button>
+                      {quizSubject === "Science" ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Cell Structure & Photosynthesis")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Cell Structure & Photosynthesis"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🔬 Cell Structure &amp; Photosynthesis
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Force, Motion & Newton's Laws")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Force, Motion & Newton's Laws"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            ⚡ Force &amp; Motion
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Acids, Bases & Chemical Reactions")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Acids, Bases & Chemical Reactions"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🧪 Chemical Reactions
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Arrays & Linked Lists")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Arrays & Linked Lists"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🔗 Arrays &amp; Linked Lists
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Trees & Graphs")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Trees & Graphs"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🌲 Trees &amp; Graphs
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
