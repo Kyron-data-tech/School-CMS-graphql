@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import type { AuthContext } from "@/lib/auth/context";
 import { StatCard, Section, Empty, Badge } from "@/components/ui";
+import { SchoolAiAuthorityCard } from "./SchoolAiAuthorityCard";
 import Link from "next/link";
 
 const DAYS = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -82,6 +83,12 @@ export async function TeacherDashboard({ ctx }: { ctx: AuthContext }) {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Link
+              href="/copilot"
+              className="inline-flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white px-3.5 py-2 text-xs font-black shadow-md transition active:scale-95"
+            >
+              <span>🤖</span> AI Copilot
+            </Link>
+            <Link
               href="/notes"
               className="inline-flex items-center gap-1.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-2 text-xs font-black shadow-md transition active:scale-95"
             >
@@ -108,6 +115,9 @@ export async function TeacherDashboard({ ctx }: { ctx: AuthContext }) {
           </div>
         </div>
       </div>
+
+      {/* ── SCHOOL-WIDE AI LICENSE (INHERITED FROM PRINCIPAL) ── */}
+      <SchoolAiAuthorityCard ctx={ctx} />
 
       {/* Stats row */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

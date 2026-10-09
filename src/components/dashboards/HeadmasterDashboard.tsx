@@ -3,6 +3,7 @@ import type { AuthContext } from "@/lib/auth/context";
 import { StatCard, Section, Badge, Empty } from "@/components/ui";
 import { dayRange, fmtDate } from "@/lib/dates";
 import { InteractiveStudentPanel } from "./InteractiveStudentPanel";
+import { SchoolAiAuthorityCard } from "./SchoolAiAuthorityCard";
 import Link from "next/link";
 
 export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
@@ -124,6 +125,12 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
                 <span>📚</span> Library Catalog
               </Link>
               <Link
+                href="/copilot"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 font-bold backdrop-blur-md border border-amber-400/30 transition"
+              >
+                <span>🤖</span> AI Copilot &amp; License
+              </Link>
+              <Link
                 href="/register"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold backdrop-blur-md border border-white/10 transition"
               >
@@ -133,6 +140,12 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 self-start lg:self-auto">
+            <Link
+              href="/copilot"
+              className="inline-flex items-center gap-2 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 text-xs shadow-md transition active:scale-95"
+            >
+              <span>👑</span> AI Key Authority
+            </Link>
             <Link
               href="/results"
               className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-brand-600 px-4 py-2.5 text-xs font-black text-white shadow-glow hover:from-purple-500 hover:to-indigo-500 transition-all active:scale-95"
@@ -154,6 +167,9 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
           </div>
         </div>
       </div>
+
+      {/* ── SCHOOL-WIDE AI LICENSE & PRINCIPAL AUTHORITY ── */}
+      <SchoolAiAuthorityCard ctx={ctx} />
 
       {/* ── HIGH-IMPACT KPI METRICS CARDS ── */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

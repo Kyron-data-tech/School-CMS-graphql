@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import type { AuthContext } from "@/lib/auth/context";
 import { StatCard, Section, Empty, Badge } from "@/components/ui";
 import { fmtDate } from "@/lib/dates";
+import { SchoolAiAuthorityCard } from "./SchoolAiAuthorityCard";
 import Link from "next/link";
 
 export async function StudentDashboard({ ctx }: { ctx: AuthContext }) {
@@ -96,6 +97,12 @@ export async function StudentDashboard({ ctx }: { ctx: AuthContext }) {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Link
+              href="/copilot"
+              className="inline-flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 px-3.5 py-2 text-xs font-black shadow-md transition active:scale-95"
+            >
+              <span>🤖</span> AI Study Copilot
+            </Link>
+            <Link
               href="/fees"
               className="inline-flex items-center gap-1.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3.5 py-2 text-xs font-black shadow-md transition active:scale-95"
             >
@@ -122,6 +129,9 @@ export async function StudentDashboard({ ctx }: { ctx: AuthContext }) {
           </div>
         </div>
       </div>
+
+      {/* ── SCHOOL-WIDE AI LEARNING ASSISTANT (PROVIDED BY PRINCIPAL) ── */}
+      <SchoolAiAuthorityCard ctx={ctx} />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
