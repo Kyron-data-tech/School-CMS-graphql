@@ -24,9 +24,6 @@ export function SchoolAiAuthorityCard({ ctx }: { ctx: AuthContext }) {
                 PRINCIPAL PRIVILEGE
               </span>
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              <strong>Only the Principal</strong> has authority to add and configure the school-wide AI API Key. Once saved, <strong>all Teachers and Students</strong> automatically inherit and use this AI license across the school without needing their own accounts or keys.
-            </p>
             <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] text-slate-400">
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -74,9 +71,6 @@ export function SchoolAiAuthorityCard({ ctx }: { ctx: AuthContext }) {
                 NO KEY REQUIRED FOR TEACHERS
               </span>
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              The School Principal (<strong>Dr. Anita Desai</strong>) has configured the institutional AI API key. You have full access to generate student report card remarks, curriculum quizzes, and official notices without buying or entering an API key.
-            </p>
             <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] text-slate-400">
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
@@ -116,14 +110,13 @@ export function SchoolAiAuthorityCard({ ctx }: { ctx: AuthContext }) {
               FREE FOR STUDENTS
             </span>
           </div>
-          <p className="text-xs text-slate-300 leading-relaxed">
-            School-wide AI learning tools are provided and licensed centrally by the School Principal. You can practice data structure quizzes and ask curriculum questions anytime.
-          </p>
           <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] text-slate-400">
             <span className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
               License Authority: <strong className="text-white">{config.configuredBy || "School Principal"}</strong>
             </span>
+            <span>•</span>
+            <span>Engine: <strong className="text-emerald-200 uppercase">{config.provider} ({config.modelName})</strong></span>
           </div>
         </div>
 
