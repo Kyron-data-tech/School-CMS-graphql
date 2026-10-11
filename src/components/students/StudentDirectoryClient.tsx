@@ -51,6 +51,9 @@ export function StudentDirectoryClient({
 
   // Multi-role Registration Modal state
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [registerInitialRole, setRegisterInitialRole] = useState<
+    "student" | "teacher" | "staff" | "parent" | "principal"
+  >("student");
 
   // Filters state
   const [search, setSearch] = useState("");
@@ -249,15 +252,30 @@ export function StudentDirectoryClient({
               </button>
             )}
 
-            {/* Single Official New Student Admission Button (Staff / Admins only) */}
+            {/* Onboarding Action Buttons (Staff / Admins only) */}
             {canCreate && (
-              <button
-                onClick={() => setIsRegisterModalOpen(true)}
-                className="btn bg-brand-600 text-xs font-bold text-white hover:bg-brand-500 shadow-sm flex items-center gap-1.5 rounded-xl px-3.5 py-2 transition"
-                title="Enroll a new student with login account, roll number & automatic fee invoice"
-              >
-                ＋ New Student Admission
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => {
+                    setRegisterInitialRole("student");
+                    setIsRegisterModalOpen(true);
+                  }}
+                  className="btn bg-brand-600 text-xs font-bold text-white hover:bg-brand-500 shadow-sm flex items-center gap-1.5 rounded-xl px-3 py-2 transition"
+                  title="Enroll a new student with login account, roll number & automatic fee invoice"
+                >
+                  ＋ Student Admission
+                </button>
+                <button
+                  onClick={() => {
+                    setRegisterInitialRole("staff");
+                    setIsRegisterModalOpen(true);
+                  }}
+                  className="btn bg-indigo-600 text-xs font-semibold text-white hover:bg-indigo-500 shadow-sm flex items-center gap-1.5 rounded-xl px-3 py-2 transition"
+                  title="Onboard Teacher or Non-Teaching Staff"
+                >
+                  ＋ Add Teacher / Staff
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -443,6 +461,7 @@ export function StudentDirectoryClient({
       {/* Multi-Role Registration Window Modal */}
       <RegisterModal
         isOpen={isRegisterModalOpen}
+        initialRole={registerInitialRole}
         onClose={() => setIsRegisterModalOpen(false)}
         onSuccess={() => {
           router.refresh();

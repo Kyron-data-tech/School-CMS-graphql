@@ -6,7 +6,7 @@ export interface RegisterModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: (account: { email: string; role: string; name: string }) => void;
-  initialRole?: "student" | "teacher" | "principal";
+  initialRole?: "student" | "teacher" | "staff" | "parent" | "principal";
 }
 
 interface Metadata {
@@ -20,7 +20,7 @@ export function RegisterModal({
   onSuccess,
   initialRole = "student",
 }: RegisterModalProps) {
-  const [role, setRole] = useState<"student" | "teacher" | "principal">(initialRole);
+  const [role, setRole] = useState<"student" | "teacher" | "staff" | "parent" | "principal">(initialRole);
   const [loadingMeta, setLoadingMeta] = useState(false);
   const [metadata, setMetadata] = useState<Metadata>({ sections: [], departments: [] });
 
@@ -42,12 +42,28 @@ export function RegisterModal({
   const [departmentId, setDepartmentId] = useState("");
   const [designation, setDesignation] = useState("Subject Teacher");
 
+  // Non-Teaching Staff specific
+  const [staffEmployeeId, setStaffEmployeeId] = useState(`STF-${Math.floor(1000 + Math.random() * 9000)}`);
+  const [staffDepartmentId, setStaffDepartmentId] = useState("");
+  const [staffDesignation, setStaffDesignation] = useState("School Accountant");
+
+  // Parent specific
+  const [parentAdmissionNo, setParentAdmissionNo] = useState("");
+  const [parentRelationship, setParentRelationship] = useState("Father");
+
   // Principal specific
   const [securityPasscode, setSecurityPasscode] = useState("GREENFIELD2026");
 
   // Status & Feedback
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  // Sync initialRole if changed
+  useEffect(() => {
+    if (initialRole) {
+      setRole(initialRole);
+    }
+  }, [initialRole, isOpen]);
 
   // Fetch sections and departments on open
   useEffect(() => {
@@ -61,8 +77,9 @@ export function RegisterModal({
             if (data.data.sections?.length > 0 && !sectionId) {
               setSectionId(data.data.sections[0].id);
             }
-            if (data.data.departments?.length > 0 && !departmentId) {
-              setDepartmentId(data.data.departments[0].id);
+            if (data.data.departments?.length > 0) {
+              if (!departmentId) setDepartmentId(data.data.departments[0].id);
+              if (!staffDepartmentId) setStaffDepartmentId(data.data.departments[0].id);
             }
           }
         })
@@ -108,6 +125,13 @@ export function RegisterModal({
       payload.employeeId = employeeId.trim();
       payload.departmentId = departmentId || undefined;
       payload.designation = designation.trim();
+    } else if (role === "staff") {
+      payload.employeeId = staffEmployeeId.trim();
+      payload.departmentId = staffDepartmentId || undefined;
+      payload.designation = staffDesignation.trim();
+    } else if (role === "parent") {
+      payload.studentAdmissionNo = parentAdmissionNo.trim() || undefined;
+      payload.relationship = parentRelationship.trim();
     } else if (role === "principal") {
       payload.securityPasscode = securityPasscode.trim();
     }
@@ -127,9 +151,14 @@ export function RegisterModal({
           text: data.error || "Registration failed. Please check inputs.",
         });
       } else {
+        const roleLabel =
+          role === "staff"
+            ? `NON-TEACHING STAFF (${staffDesignation})`
+            : role.toUpperCase();
+
         setFeedback({
           type: "success",
-          text: `🎉 Registration successful! Created ${role.toUpperCase()} account for "${payload.firstName} ${payload.lastName}" (${data.user.email}).`,
+          text: `🎉 Registration successful! Created ${roleLabel} account for "${payload.firstName} ${payload.lastName}" (${data.user.email}).`,
         });
 
         if (onSuccess) {
@@ -160,9 +189,9 @@ export function RegisterModal({
               📝
             </span>
             <div>
-              <h2 className="text-base font-bold text-white">School Registration Window</h2>
+              <h2 className="text-base font-bold text-white">School Registration &amp; Onboarding Window</h2>
               <p className="text-xs text-slate-400">
-                Register a new Student, Teacher, or Principal into Greenfield CMS
+                Principal Authority: Register Students, Teachers, Non-Teaching Staff, Parents, or Administrators
               </p>
             </div>
           </div>
@@ -176,15 +205,15 @@ export function RegisterModal({
         </div>
 
         {/* Role Selector Tabs */}
-        <div className="border-b border-slate-800 bg-slate-950/80 px-6 pt-3">
-          <div className="grid grid-cols-3 gap-2">
+        <div className="border-b border-slate-800 bg-slate-950/80 px-4 pt-3">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
             <button
               type="button"
               onClick={() => {
                 setRole("student");
                 setFeedback(null);
               }}
-              className={`flex items-center justify-center gap-2 rounded-t-lg border-b-2 py-2.5 text-xs font-semibold transition ${
+              className={`flex items-center justify-center gap-1.5 rounded-t-lg border-b-2 py-2 text-xs font-semibold transition ${
                 role === "student"
                   ? "border-brand-500 bg-slate-900 text-brand-400 shadow-sm"
                   : "border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200"
@@ -198,7 +227,7 @@ export function RegisterModal({
                 setRole("teacher");
                 setFeedback(null);
               }}
-              className={`flex items-center justify-center gap-2 rounded-t-lg border-b-2 py-2.5 text-xs font-semibold transition ${
+              className={`flex items-center justify-center gap-1.5 rounded-t-lg border-b-2 py-2 text-xs font-semibold transition ${
                 role === "teacher"
                   ? "border-brand-500 bg-slate-900 text-brand-400 shadow-sm"
                   : "border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200"
@@ -209,10 +238,38 @@ export function RegisterModal({
             <button
               type="button"
               onClick={() => {
+                setRole("staff");
+                setFeedback(null);
+              }}
+              className={`flex items-center justify-center gap-1.5 rounded-t-lg border-b-2 py-2 text-xs font-semibold transition ${
+                role === "staff"
+                  ? "border-brand-500 bg-slate-900 text-brand-400 shadow-sm"
+                  : "border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+              }`}
+            >
+              <span>💼</span> Staff (Non-Teaching)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setRole("parent");
+                setFeedback(null);
+              }}
+              className={`flex items-center justify-center gap-1.5 rounded-t-lg border-b-2 py-2 text-xs font-semibold transition ${
+                role === "parent"
+                  ? "border-brand-500 bg-slate-900 text-brand-400 shadow-sm"
+                  : "border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+              }`}
+            >
+              <span>👨‍👩‍👧</span> Parent
+            </button>
+            <button
+              type="button"
+              onClick={() => {
                 setRole("principal");
                 setFeedback(null);
               }}
-              className={`flex items-center justify-center gap-2 rounded-t-lg border-b-2 py-2.5 text-xs font-semibold transition ${
+              className={`flex items-center justify-center gap-1.5 rounded-t-lg border-b-2 py-2 text-xs font-semibold transition ${
                 role === "principal"
                   ? "border-brand-500 bg-slate-900 text-brand-400 shadow-sm"
                   : "border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200"
@@ -423,6 +480,164 @@ export function RegisterModal({
                     placeholder="e.g. Senior Teacher"
                     className="input text-xs"
                   />
+                </div>
+              </div>
+
+              <div>
+                <label className="label text-xs">Contact Phone</label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+91 98765 43210"
+                  className="input text-xs"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* NON-TEACHING STAFF PROFILE */}
+          {role === "staff" && (
+            <div className="rounded-xl border border-indigo-800/60 bg-indigo-950/40 p-3.5 space-y-3">
+              <div className="text-xs font-bold text-indigo-300 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <span>💼</span> Non-Teaching Staff Profile
+                </span>
+                <span className="rounded bg-indigo-900/60 border border-indigo-700/60 px-2 py-0.5 text-[10px] font-mono text-indigo-300 font-semibold">
+                  OPERATIONS &amp; ADMIN
+                </span>
+              </div>
+
+              {/* Quick Preset Designation Pills */}
+              <div>
+                <label className="label text-[11px] text-slate-300 mb-1.5 block">Quick Designation Presets:</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { label: "💰 Accountant / Fees", val: "School Accountant / Fee Cashier" },
+                    { label: "📚 Librarian", val: "Senior Librarian" },
+                    { label: "🚌 Transport In-charge", val: "Transport Coordinator" },
+                    { label: "📋 Office Admin", val: "Office Administrator" },
+                    { label: "🔬 Lab Assistant", val: "Laboratory Technician" },
+                    { label: "💻 IT Support", val: "IT & Systems Support" },
+                  ].map((preset) => (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      onClick={() => setStaffDesignation(preset.val)}
+                      className={`text-[10px] px-2 py-1 rounded-md border transition ${
+                        staffDesignation === preset.val
+                          ? "bg-brand-600 border-brand-400 text-white font-bold shadow-sm"
+                          : "bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-700"
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <label className="label text-xs">Employee ID *</label>
+                    <button
+                      type="button"
+                      onClick={() => setStaffEmployeeId(`STF-${Math.floor(1000 + Math.random() * 9000)}`)}
+                      className="text-[10px] text-indigo-400 hover:underline"
+                    >
+                      🎲 Gen
+                    </button>
+                  </div>
+                  <input
+                    required
+                    type="text"
+                    value={staffEmployeeId}
+                    onChange={(e) => setStaffEmployeeId(e.target.value)}
+                    className="input text-xs font-mono uppercase"
+                  />
+                </div>
+
+                <div>
+                  <label className="label text-xs">Department *</label>
+                  <select
+                    value={staffDepartmentId}
+                    onChange={(e) => setStaffDepartmentId(e.target.value)}
+                    className="input text-xs"
+                    disabled={loadingMeta}
+                  >
+                    {metadata.departments.map((dept) => (
+                      <option key={dept.id} value={dept.id}>
+                        {dept.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="label text-xs">Designation / Role Title *</label>
+                  <input
+                    required
+                    type="text"
+                    value={staffDesignation}
+                    onChange={(e) => setStaffDesignation(e.target.value)}
+                    placeholder="e.g. Senior Librarian"
+                    className="input text-xs"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="label text-xs">Contact Phone</label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+91 98765 43210"
+                  className="input text-xs"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* PARENT / GUARDIAN PROFILE */}
+          {role === "parent" && (
+            <div className="rounded-xl border border-emerald-800/60 bg-emerald-950/40 p-3.5 space-y-3">
+              <div className="text-xs font-bold text-emerald-300 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <span>👨‍👩‍👧</span> Parent / Guardian Profile
+                </span>
+                <span className="rounded bg-emerald-900/60 border border-emerald-700/60 px-2 py-0.5 text-[10px] font-mono text-emerald-300 font-semibold">
+                  FAMILY PORTAL
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="label text-xs">Link Student Admission No (Optional)</label>
+                  <input
+                    type="text"
+                    value={parentAdmissionNo}
+                    onChange={(e) => setParentAdmissionNo(e.target.value)}
+                    placeholder="e.g. ADM-1001"
+                    className="input text-xs font-mono uppercase"
+                  />
+                  <p className="text-[10px] text-slate-400 mt-1">
+                    Directly links parent to student for fees, report cards &amp; attendance.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="label text-xs">Relationship *</label>
+                  <select
+                    value={parentRelationship}
+                    onChange={(e) => setParentRelationship(e.target.value)}
+                    className="input text-xs"
+                  >
+                    <option value="Father">Father</option>
+                    <option value="Mother">Mother</option>
+                    <option value="Guardian">Guardian</option>
+                    <option value="Foster Parent">Foster Parent</option>
+                  </select>
                 </div>
               </div>
 

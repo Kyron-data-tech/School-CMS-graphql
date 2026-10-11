@@ -26,7 +26,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   // Registration Form States
-  const [regRole, setRegRole] = useState<"student" | "teacher" | "principal">("student");
+  const [regRole, setRegRole] = useState<"student" | "teacher" | "staff" | "principal">("student");
   const [regFirstName, setRegFirstName] = useState("");
   const [regLastName, setRegLastName] = useState("");
   const [regEmail, setRegEmail] = useState("");
@@ -37,6 +37,7 @@ export default function LoginPage() {
   const [regSectionId, setRegSectionId] = useState("");
   const [regEmployeeId, setRegEmployeeId] = useState(`EMP-${Math.floor(1000 + Math.random() * 9000)}`);
   const [regDepartmentId, setRegDepartmentId] = useState("");
+  const [regStaffDesignation, setRegStaffDesignation] = useState("School Accountant");
   const [regPasscode, setRegPasscode] = useState("GREENFIELD2026");
   const [regSubmitting, setRegSubmitting] = useState(false);
   const [regFeedback, setRegFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -114,6 +115,10 @@ export default function LoginPage() {
       payload.employeeId = regEmployeeId.trim();
       payload.departmentId = regDepartmentId || undefined;
       payload.designation = "Subject Teacher";
+    } else if (regRole === "staff") {
+      payload.employeeId = regEmployeeId.trim();
+      payload.departmentId = regDepartmentId || undefined;
+      payload.designation = regStaffDesignation.trim();
     } else if (regRole === "principal") {
       payload.securityPasscode = regPasscode.trim();
     }
@@ -349,12 +354,13 @@ export default function LoginPage() {
             {/* Role Switcher */}
             <div>
               <label className="label text-[11px] font-bold text-slate-400 mb-1">
-                Select Role
+                Select Role to Register
               </label>
-              <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-slate-950 border border-slate-800 text-center font-bold">
+              <div className="grid grid-cols-4 gap-1 p-1 rounded-xl bg-slate-950 border border-slate-800 text-center font-bold">
                 {[
                   { id: "student", label: "Student", icon: "🎓" },
                   { id: "teacher", label: "Teacher", icon: "👩‍🏫" },
+                  { id: "staff", label: "Staff", icon: "💼" },
                   { id: "principal", label: "Admin", icon: "👑" },
                 ].map((r) => (
                   <button
@@ -534,6 +540,47 @@ export default function LoginPage() {
                       </option>
                     ))}
                   </select>
+                </div>
+              </div>
+            )}
+
+            {regRole === "staff" && (
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="label text-[11px] font-bold text-slate-400">Employee ID</label>
+                    <input
+                      type="text"
+                      value={regEmployeeId}
+                      onChange={(e) => setRegEmployeeId(e.target.value)}
+                      className="input w-full font-mono text-xs uppercase"
+                    />
+                  </div>
+                  <div>
+                    <label className="label text-[11px] font-bold text-slate-400">Department</label>
+                    <select
+                      value={regDepartmentId}
+                      onChange={(e) => setRegDepartmentId(e.target.value)}
+                      className="input w-full text-xs"
+                    >
+                      {metadata.departments.map((d) => (
+                        <option key={d.id} value={d.id}>
+                          {d.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="label text-[11px] font-bold text-slate-400">Designation / Role Title *</label>
+                  <input
+                    type="text"
+                    required
+                    value={regStaffDesignation}
+                    onChange={(e) => setRegStaffDesignation(e.target.value)}
+                    placeholder="e.g. School Accountant, Librarian, Transport Coordinator"
+                    className="input w-full text-xs"
+                  />
                 </div>
               </div>
             )}

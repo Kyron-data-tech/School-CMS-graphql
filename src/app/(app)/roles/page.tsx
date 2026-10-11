@@ -1,53 +1,85 @@
 import { getAuthContext } from "@/lib/auth/context";
-import { assertCan } from "@/lib/permissions/engine";
+import { assertCan, can } from "@/lib/permissions/engine";
 import { db } from "@/lib/db";
-import { PageHeader, Section, Badge } from "@/components/ui";
-
-const scopeColor: Record<string, "green" | "blue" | "amber" | "slate" | "red"> = {
-  SCHOOL: "green", CAMPUS: "green", ASSIGNED_CLASS: "blue", ASSIGNED_SECTION: "blue",
-  ASSIGNED_SUBJECT: "blue", ASSIGNED_STUDENTS: "blue", DEPARTMENT: "amber",
-  OWN: "slate", OWN_CHILDREN: "slate", NONE: "red",
-};
+import { PageHeader } from "@/components/ui";
+import { RolesDirectoryClient } from "@/components/roles/RolesDirectoryClient";
 
 export default async function RolesPage() {
   const ctx = (await getAuthContext())!;
   assertCan(ctx, "admin", "roles", "view");
 
-  const roles = await db.role.findMany({
-    where: { schoolId: ctx.schoolId },
-    include: {
-      permissions: { orderBy: [{ module: "asc" }, { resource: "asc" }] },
-      _count: { select: { userRoles: true } },
-    },
-    orderBy: { name: "asc" },
-  });
+  const [roles, users] = await Promise.all([
+    db.role.findMany({
+      where: { schoolId: ctx.schoolId },
+      include: {
+        permissions: { orderBy: [{ module: "asc" }, { resource: "asc" }] },
+        _count: { select: { userRoles: true } },
+      },
+      orderBy: { name: "asc" },
+    }),
+    db.user.findMany({
+      where: { schoolId: ctx.schoolId },
+      include: {
+        userRoles: { include: { role: true } },
+        teacher: { select: { employeeId: true, designation: true } },
+        student: { select: { admissionNo: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    }),
+  ]);
+
+  const canManage =
+    can(ctx, "admin", "roles", "edit") ||
+    can(ctx, "admin", "roles", "create") ||
+    ctx.roleKeys.includes("headmaster") ||
+    ctx.roleKeys.includes("admin") ||
+    ctx.roleKeys.includes("principal");
+
+  const formattedUsers = users.map((u) => ({
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    isActive: u.isActive,
+    createdAt: u.createdAt,
+    roles: u.userRoles.map((ur) => ({
+      id: ur.role.id,
+      name: ur.role.name,
+      key: ur.role.key,
+    })),
+    teacher: u.teacher,
+    student: u.student,
+  }));
+
+  const formattedRoles = roles.map((r) => ({
+    id: r.id,
+    name: r.name,
+    key: r.key,
+    description: r.description,
+    isSystem: r.isSystem,
+    userCount: r._count.userRoles,
+    permissions: r.permissions.map((p) => ({
+      id: p.id,
+      module: p.module,
+      resource: p.resource,
+      action: p.action,
+      scope: p.scope,
+    })),
+  }));
 
   return (
     <div className="space-y-5">
-      <PageHeader title="Users & Roles" subtitle="Roles combine into effective permissions. Scope is resolved against real relationships." />
-      {roles.map((r) => (
-        <Section
-          key={r.id}
-          title={r.name}
-          action={
-            <span className="flex items-center gap-2">
-              {r.isSystem ? <Badge color="slate">System</Badge> : <Badge color="green">Custom</Badge>}
-              <span className="text-xs text-slate-400">{r._count.userRoles} user(s)</span>
-            </span>
-          }
-        >
-          <p className="mb-3 text-sm text-slate-400">{r.description}</p>
-          <div className="flex flex-wrap gap-1.5">
-            {r.permissions.length === 0 && <span className="text-xs text-slate-500">No permissions granted.</span>}
-            {r.permissions.map((p) => (
-              <span key={p.id} className="inline-flex items-center gap-1 rounded-md border border-slate-800 bg-slate-950/80 px-2 py-1 text-xs">
-                <span className="font-medium text-slate-300 font-mono">{p.module}.{p.resource}.{p.action}</span>
-                <Badge color={scopeColor[p.scope] ?? "slate"}>{p.scope}</Badge>
-              </span>
-            ))}
-          </div>
-        </Section>
-      ))}
+      <PageHeader
+        title="Users, Staff & Roles Management"
+        subtitle="Principal Authority: Onboard and manage teachers, non-teaching staff, students, and administrators with role-based access control."
+      />
+
+      <RolesDirectoryClient
+        users={formattedUsers}
+        roles={formattedRoles}
+        canManage={canManage}
+      />
     </div>
   );
 }
+

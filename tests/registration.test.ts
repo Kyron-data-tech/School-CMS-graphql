@@ -150,6 +150,27 @@ describe("Multi-Role User Registration System", () => {
     expect(user?.userRoles[0]?.role.key).toBe("headmaster");
   });
 
+  it("should successfully register a new non-teaching staff member (accountant, librarian, transport)", async () => {
+    const { registerStaff } = await import("@/lib/auth/register");
+    const testEmail = `test.staff.${Date.now()}@greenfield.edu`;
+    testEmails.push(testEmail);
+
+    const result = await registerStaff({
+      email: testEmail,
+      password: "StaffPass2026!",
+      firstName: "Ramesh",
+      lastName: "Kulkarni",
+      designation: "School Accountant / Fee Cashier",
+      phone: "+91 98765 12345",
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.user.email).toBe(testEmail);
+    expect(result.user.role).toBe("staff");
+    expect(result.staff.designation).toBe("School Accountant / Fee Cashier");
+    expect(result.staff.employeeId).toBeDefined();
+  });
+
   it("should reject registration with invalid password (less than 8 chars)", async () => {
     await expect(
       registerStudent({

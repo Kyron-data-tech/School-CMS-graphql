@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   registerStudent,
   registerTeacher,
+  registerStaff,
   registerPrincipal,
   registerParent,
   getRegistrationMetadata,
@@ -35,15 +36,22 @@ export async function POST(request: Request) {
       result = await registerStudent(body);
     } else if (role === "teacher") {
       result = await registerTeacher(body);
+    } else if (
+      role === "staff" ||
+      role === "non_teaching_staff" ||
+      role === "non-teaching" ||
+      role === "admin_staff"
+    ) {
+      result = await registerStaff(body);
     } else if (role === "parent" || role === "guardian") {
       result = await registerParent(body);
-    } else if (role === "principal" || role === "headmaster") {
+    } else if (role === "principal" || role === "headmaster" || role === "admin") {
       result = await registerPrincipal(body);
     } else {
       return NextResponse.json(
         {
           success: false,
-          error: `Invalid registration role: "${role}". Must be one of: "student", "teacher", "parent", "principal".`,
+          error: `Invalid registration role: "${role}". Must be one of: "student", "teacher", "staff", "parent", "principal".`,
         },
         { status: 400 }
       );
@@ -55,6 +63,7 @@ export async function POST(request: Request) {
       user: result.user,
       ...("student" in result ? { student: result.student } : {}),
       ...("teacher" in result ? { teacher: result.teacher } : {}),
+      ...("staff" in result ? { staff: result.staff } : {}),
     });
   } catch (error: any) {
     const isValidationError =
