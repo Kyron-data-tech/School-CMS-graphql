@@ -158,40 +158,52 @@ export function InteractiveAnnouncementsClient({
     <div className="space-y-6">
       {/* ── METRICS & AI BANNER ── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="card p-4 flex items-center justify-between border-l-4 border-l-brand-600">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Bulletins</div>
-            <div className="text-2xl font-bold text-slate-800 mt-1">{announcements.length}</div>
-          </div>
-          <div className="h-10 w-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-600 font-bold text-lg">
-            📢
-          </div>
-        </div>
-
-        <div className="card p-4 flex items-center justify-between border-l-4 border-l-rose-500">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Urgent Notices</div>
-            <div className="text-2xl font-bold text-rose-600 mt-1">
-              {announcements.filter((a) => a.priority > 0).length}
+        <div className="card-hover p-5 rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Bulletins</div>
+              <div className="text-2xl font-bold text-white mt-1.5 font-display">{announcements.length}</div>
+            </div>
+            <div className="h-11 w-11 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 group-hover:scale-110 transition-transform">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+              </svg>
             </div>
           </div>
-          <div className="h-10 w-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 font-bold text-lg">
-            🚨
+        </div>
+
+        <div className="card-hover p-5 rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Urgent Notices</div>
+              <div className="text-2xl font-bold text-rose-400 mt-1.5 font-display">
+                {announcements.filter((a) => a.priority > 0).length}
+              </div>
+            </div>
+            <div className="h-11 w-11 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 group-hover:scale-110 transition-transform">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
           </div>
         </div>
 
-        <div className="card p-4 flex items-center justify-between border-l-4 border-l-emerald-500">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">AI Assistant</div>
-            <Link
-              href="/copilot"
-              className="text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1 mt-1"
-            >
-              Draft Circulars ↗
-            </Link>
-          </div>
-          <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold text-lg">
-            ✨
+        <div className="card-hover p-5 rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">AI Assistant</div>
+              <Link
+                href="/copilot"
+                className="text-xs font-bold text-brand-400 hover:text-brand-300 flex items-center gap-1 mt-2.5 transition"
+              >
+                Draft Circulars →
+              </Link>
+            </div>
+            <div className="h-11 w-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -292,55 +304,84 @@ export function InteractiveAnnouncementsClient({
             return (
               <article
                 key={a.id}
-                className={`card p-5 transition-all duration-200 border-l-4 relative ${
+                className={`card p-6 transition-all duration-200 relative overflow-hidden rounded-2xl border ${
                   a.priority > 0
-                    ? "border-l-rose-500 bg-rose-50/10"
+                    ? "border-rose-500/30 bg-rose-950/10 shadow-[0_4px_24px_-4px_rgba(244,63,94,0.12)]"
                     : isPinned
-                    ? "border-l-brand-600 bg-brand-50/10"
-                    : "border-l-slate-300"
+                    ? "border-brand-500/30 bg-brand-950/10 shadow-[0_4px_24px_-4px_rgba(99,102,241,0.12)]"
+                    : "border-white/[0.08] bg-slate-900/40"
                 } ${isRead ? "opacity-75" : "opacity-100"}`}
               >
-                <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100">
+                <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-white/[0.06]">
                   <div className="flex flex-wrap items-center gap-2">
-                    {isPinned && <Badge color="indigo">📌 Pinned</Badge>}
-                    {a.priority > 0 && <Badge color="red">🚨 Important Notice</Badge>}
+                    {isPinned && (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-brand-500/15 text-brand-300 border border-brand-500/30">
+                        <svg className="w-3 h-3 text-brand-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                        </svg>
+                        Pinned
+                      </span>
+                    )}
+                    {a.priority > 0 && (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/30">
+                        <svg className="w-3 h-3 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        Important Notice
+                      </span>
+                    )}
                     <Badge color="blue">{a.audience}</Badge>
                     {isRead && <span className="text-[11px] text-slate-400 italic">Read</span>}
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-400">{fmtDate(a.publishAt)}</span>
+                    <span className="text-xs text-slate-400 font-mono">{fmtDate(a.publishAt)}</span>
                     <button
                       type="button"
                       onClick={() => togglePin(a.id)}
-                      className={`p-1 rounded text-xs transition-colors ${
-                        isPinned ? "text-brand-600 font-bold" : "text-slate-400 hover:text-slate-600"
+                      className={`p-1.5 rounded-lg border text-xs transition-colors ${
+                        isPinned
+                          ? "border-brand-500/40 bg-brand-500/15 text-brand-300"
+                          : "border-white/10 bg-slate-800/50 text-slate-400 hover:text-white hover:border-white/20"
                       }`}
                       title={isPinned ? "Unpin notice" : "Pin notice to top"}
                     >
-                      📌
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                      </svg>
                     </button>
                     <button
                       type="button"
                       onClick={() => copyNotice(a)}
-                      className="p-1 rounded text-xs text-slate-400 hover:text-slate-600 transition-colors"
+                      className="p-1.5 rounded-lg border border-white/10 bg-slate-800/50 text-xs text-slate-400 hover:text-white hover:border-white/20 transition-colors"
                       title="Copy notice text"
                     >
-                      📋
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
                     </button>
                     <button
                       type="button"
                       onClick={() => toggleRead(a.id)}
-                      className="p-1 rounded text-xs text-slate-400 hover:text-slate-600 transition-colors"
+                      className="p-1.5 rounded-lg border border-white/10 bg-slate-800/50 text-xs text-slate-400 hover:text-white hover:border-white/20 transition-colors"
                       title={isRead ? "Mark unread" : "Mark as read"}
                     >
-                      {isRead ? "👁️‍🗨️" : "✓"}
+                      {isRead ? (
+                        <svg className="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      ) : (
+                        <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
                     </button>
                   </div>
                 </div>
 
-                <h2 className="mt-3 font-bold text-base text-slate-900">{a.title}</h2>
-                <div className="mt-2 text-xs text-slate-700 leading-relaxed whitespace-pre-line">
+                <h2 className="mt-3.5 font-bold text-base text-white tracking-tight">{a.title}</h2>
+                <div className="mt-2 text-xs text-slate-300 leading-relaxed whitespace-pre-line">
                   {a.body}
                 </div>
               </article>

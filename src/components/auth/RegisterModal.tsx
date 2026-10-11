@@ -180,32 +180,36 @@ export function RegisterModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-in fade-in">
-      <div className="card w-full max-w-xl overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md animate-in fade-in">
+      <div className="w-full max-w-xl overflow-hidden bg-slate-900/90 backdrop-blur-2xl border border-white/[0.08] shadow-[0_16px_48px_0_rgba(0,0,0,0.6)] ring-1 ring-inset ring-white/[0.04] rounded-2xl max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 bg-gradient-to-r from-slate-950 to-brand-950/40 px-6 py-4">
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 font-bold text-white shadow-sm">
-              📝
+        <div className="flex items-center justify-between border-b border-white/[0.08] bg-slate-950/60 px-6 py-4">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 border border-brand-500/20 text-brand-400 shadow-sm">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+              </svg>
             </span>
             <div>
-              <h2 className="text-base font-bold text-white">School Registration &amp; Onboarding Window</h2>
+              <h2 className="text-base font-bold text-white tracking-tight">Institutional Enrollment Portal</h2>
               <p className="text-xs text-slate-400">
-                Principal Authority: Register Students, Teachers, Non-Teaching Staff, Parents, or Administrators
+                Principal Authority: Register Students, Teachers, Staff, Parents, or Leaders
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+            className="rounded-lg p-2 text-slate-400 hover:bg-white/[0.06] hover:text-white transition"
           >
-            ✕
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
         {/* Role Selector Tabs */}
-        <div className="border-b border-slate-800 bg-slate-950/80 px-4 pt-3">
+        <div className="border-b border-white/[0.08] bg-slate-950/80 px-4 pt-3">
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
             <button
               type="button"
@@ -213,13 +217,13 @@ export function RegisterModal({
                 setRole("student");
                 setFeedback(null);
               }}
-              className={`flex items-center justify-center gap-1.5 rounded-t-lg border-b-2 py-2 text-xs font-semibold transition ${
+              className={`flex items-center justify-center gap-1.5 rounded-t-lg border-b-2 py-2.5 text-xs font-semibold transition ${
                 role === "student"
-                  ? "border-brand-500 bg-slate-900 text-brand-400 shadow-sm"
-                  : "border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                  ? "border-brand-500 bg-slate-900/90 text-brand-300 shadow-sm"
+                  : "border-transparent text-slate-400 hover:bg-slate-800/40 hover:text-slate-200"
               }`}
             >
-              <span>🎓</span> Student
+              Student
             </button>
             <button
               type="button"
@@ -227,13 +231,13 @@ export function RegisterModal({
                 setRole("teacher");
                 setFeedback(null);
               }}
-              className={`flex items-center justify-center gap-1.5 rounded-t-lg border-b-2 py-2 text-xs font-semibold transition ${
+              className={`flex items-center justify-center gap-1.5 rounded-t-lg border-b-2 py-2.5 text-xs font-semibold transition ${
                 role === "teacher"
-                  ? "border-brand-500 bg-slate-900 text-brand-400 shadow-sm"
-                  : "border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                  ? "border-brand-500 bg-slate-900/90 text-brand-300 shadow-sm"
+                  : "border-transparent text-slate-400 hover:bg-slate-800/40 hover:text-slate-200"
               }`}
             >
-              <span>👩‍🏫</span> Teacher
+              Teacher
             </button>
             <button
               type="button"
@@ -241,13 +245,13 @@ export function RegisterModal({
                 setRole("staff");
                 setFeedback(null);
               }}
-              className={`flex items-center justify-center gap-1.5 rounded-t-lg border-b-2 py-2 text-xs font-semibold transition ${
+              className={`flex items-center justify-center gap-1.5 rounded-t-lg border-b-2 py-2.5 text-xs font-semibold transition ${
                 role === "staff"
-                  ? "border-brand-500 bg-slate-900 text-brand-400 shadow-sm"
-                  : "border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                  ? "border-brand-500 bg-slate-900/90 text-brand-300 shadow-sm"
+                  : "border-transparent text-slate-400 hover:bg-slate-800/40 hover:text-slate-200"
               }`}
             >
-              <span>💼</span> Staff (Non-Teaching)
+              Staff
             </button>
             <button
               type="button"
@@ -255,13 +259,13 @@ export function RegisterModal({
                 setRole("parent");
                 setFeedback(null);
               }}
-              className={`flex items-center justify-center gap-1.5 rounded-t-lg border-b-2 py-2 text-xs font-semibold transition ${
+              className={`flex items-center justify-center gap-1.5 rounded-t-lg border-b-2 py-2.5 text-xs font-semibold transition ${
                 role === "parent"
-                  ? "border-brand-500 bg-slate-900 text-brand-400 shadow-sm"
-                  : "border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                  ? "border-brand-500 bg-slate-900/90 text-brand-300 shadow-sm"
+                  : "border-transparent text-slate-400 hover:bg-slate-800/40 hover:text-slate-200"
               }`}
             >
-              <span>👨‍👩‍👧</span> Parent
+              Parent
             </button>
             <button
               type="button"
@@ -269,13 +273,13 @@ export function RegisterModal({
                 setRole("principal");
                 setFeedback(null);
               }}
-              className={`flex items-center justify-center gap-1.5 rounded-t-lg border-b-2 py-2 text-xs font-semibold transition ${
+              className={`flex items-center justify-center gap-1.5 rounded-t-lg border-b-2 py-2.5 text-xs font-semibold transition ${
                 role === "principal"
-                  ? "border-brand-500 bg-slate-900 text-brand-400 shadow-sm"
-                  : "border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                  ? "border-brand-500 bg-slate-900/90 text-brand-300 shadow-sm"
+                  : "border-transparent text-slate-400 hover:bg-slate-800/40 hover:text-slate-200"
               }`}
             >
-              <span>👑</span> Principal
+              Principal
             </button>
           </div>
         </div>
@@ -655,14 +659,17 @@ export function RegisterModal({
           )}
 
           {role === "principal" && (
-            <div className="rounded-xl border border-amber-800/60 bg-amber-950/30 p-3.5 space-y-3">
-              <div className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                <span>👑</span> School Leadership & Administrative Access
+            <div className="rounded-2xl border border-brand-500/30 bg-slate-800/40 p-4 space-y-3">
+              <div className="text-xs font-bold text-brand-300 flex items-center gap-2">
+                <svg className="w-4 h-4 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                School Leadership &amp; Administrative Authority
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="label text-xs">Administrative Passcode</label>
+                  <label className="label text-xs">Administrative Clearance Passcode</label>
                   <input
                     type="password"
                     value={securityPasscode}
@@ -670,8 +677,8 @@ export function RegisterModal({
                     className="input text-xs font-mono"
                     placeholder="GREENFIELD2026"
                   />
-                  <p className="mt-1 text-[10px] text-amber-400">
-                    Default demo passcode: <code className="font-mono font-bold">GREENFIELD2026</code>
+                  <p className="mt-1 text-[10px] text-slate-400">
+                    Institutional master key: <code className="font-mono text-brand-300">GREENFIELD2026</code>
                   </p>
                 </div>
                 <div>

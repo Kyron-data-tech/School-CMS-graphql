@@ -241,8 +241,8 @@ export function SchoolRegistrationClient() {
       {/* ── TOP HEADER / BRAND ── */}
       <header className="max-w-xl w-full mx-auto mb-6 flex items-center justify-between text-xs text-white">
         <Link href="/" className="flex items-center gap-2.5 font-bold hover:opacity-90 transition">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-amber-400 via-amber-500 to-amber-700 p-0.5 shadow-sm">
-            <div className="h-full w-full rounded-[10px] bg-slate-950 flex items-center justify-center font-serif text-amber-400 font-black text-sm">
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-indigo-700 p-0.5 shadow-sm ring-1 ring-white/10">
+            <div className="h-full w-full rounded-[10px] bg-slate-950 flex items-center justify-center font-display text-white font-black text-sm">
               G
             </div>
           </div>
@@ -567,8 +567,8 @@ export function SchoolRegistrationClient() {
               )}
 
               {role === "principal" && (
-                <div className="p-3.5 rounded-2xl bg-amber-950/30 border border-amber-800/60 space-y-1.5">
-                  <label className="label text-xs font-bold text-amber-300">
+                <div className="p-4 rounded-2xl bg-slate-800/40 border border-brand-500/30 space-y-2">
+                  <label className="label text-xs font-bold text-brand-300">
                     Administrative Clearance Key *
                   </label>
                   <input
@@ -578,8 +578,8 @@ export function SchoolRegistrationClient() {
                     onChange={(e) => setSecurityPasscode(e.target.value)}
                     className="input w-full py-2 text-xs font-mono bg-slate-950 text-slate-100"
                   />
-                  <span className="text-[10px] text-amber-400 block">
-                    Default institutional deployment key: <code>GREENFIELD2026</code>
+                  <span className="text-[10px] text-slate-400 block">
+                    Institutional clearance key: <code className="font-mono text-brand-300">GREENFIELD2026</code>
                   </span>
                 </div>
               )}

@@ -257,35 +257,47 @@ export function InteractiveHomeworkClient({
     <div className="space-y-6">
       {/* ── HEADER ACTION ROW & STATS ── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="card p-4 flex items-center justify-between border-l-4 border-l-brand-600">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Homework</div>
-            <div className="text-2xl font-bold text-white mt-1">{homeworkList.length}</div>
-          </div>
-          <div className="h-10 w-10 rounded-xl bg-brand-950/80 border border-brand-800/60 flex items-center justify-center text-brand-400 font-bold text-lg">
-            📚
-          </div>
-        </div>
-
-        <div className="card p-4 flex items-center justify-between border-l-4 border-l-emerald-500">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Active Deadlines</div>
-            <div className="text-2xl font-bold text-emerald-400 mt-1">
-              {homeworkList.filter((h) => new Date(h.dueAt).getTime() > Date.now()).length}
+        <div className="card-hover p-5 rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Homework</div>
+              <div className="text-2xl font-bold text-white mt-1.5 font-display">{homeworkList.length}</div>
+            </div>
+            <div className="h-11 w-11 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 group-hover:scale-110 transition-transform">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
             </div>
           </div>
-          <div className="h-10 w-10 rounded-xl bg-emerald-950/80 border border-emerald-800/60 flex items-center justify-center text-emerald-400 font-bold text-lg">
-            ⏰
+        </div>
+
+        <div className="card-hover p-5 rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Active Deadlines</div>
+              <div className="text-2xl font-bold text-emerald-400 mt-1.5 font-display">
+                {homeworkList.filter((h) => new Date(h.dueAt).getTime() > Date.now()).length}
+              </div>
+            </div>
+            <div className="h-11 w-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
           </div>
         </div>
 
-        <div className="card p-4 flex items-center justify-between border-l-4 border-l-purple-500">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Subject Coverage</div>
-            <div className="text-2xl font-bold text-purple-400 mt-1">{subjectList.length} Subjects</div>
-          </div>
-          <div className="h-10 w-10 rounded-xl bg-purple-950/80 border border-purple-800/60 flex items-center justify-center text-purple-400 font-bold text-lg">
-            🎓
+        <div className="card-hover p-5 rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Subject Coverage</div>
+              <div className="text-2xl font-bold text-purple-400 mt-1.5 font-display">{subjectList.length} Subjects</div>
+            </div>
+            <div className="h-11 w-11 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -413,12 +425,12 @@ export function InteractiveHomeworkClient({
             return (
               <div
                 key={h.id}
-                className={`card p-5 flex flex-col justify-between hover:shadow-card-hover transition-all duration-200 border-l-4 relative overflow-hidden ${
+                className={`card p-5 flex flex-col justify-between hover:shadow-card-hover transition-all duration-200 relative overflow-hidden rounded-2xl border ${
                   h.type === "QUIZ"
-                    ? "border-l-purple-600"
+                    ? "border-purple-500/30 bg-purple-950/10 shadow-[0_4px_24px_-4px_rgba(168,85,247,0.12)]"
                     : h.type === "TEST"
-                    ? "border-l-indigo-600"
-                    : "border-l-brand-600"
+                    ? "border-indigo-500/30 bg-indigo-950/10 shadow-[0_4px_24px_-4px_rgba(99,102,241,0.12)]"
+                    : "border-white/[0.08] bg-slate-900/40"
                 }`}
               >
                 <div>

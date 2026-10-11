@@ -189,44 +189,45 @@ export default function LoginPage() {
   }
 
   return (
-    <div
-      className="min-h-screen font-sans flex flex-col items-center justify-center p-4 sm:p-6 text-slate-100 relative bg-cover bg-center bg-no-repeat bg-fixed"
-      style={{
-        backgroundImage: "linear-gradient(to bottom, rgba(15, 23, 42, 0.65), rgba(2, 6, 23, 0.82)), url('/campus-background.jpg')",
-      }}
-    >
-      {/* ── SIMPLE & EFFECTIVE AUTHENTICATION WINDOW ── */}
-      <div className="w-full max-w-md rounded-3xl bg-slate-900/90 backdrop-blur-xl border border-slate-700/60 p-6 sm:p-8 shadow-2xl relative z-10">
+    <div className="min-h-screen font-sans flex flex-col items-center justify-center p-4 sm:p-6 text-slate-100 relative bg-[#07090e] overflow-hidden">
+      {/* ── Ambient Background Lighting ── */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full bg-brand-600/15 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-10 right-1/4 w-[400px] h-[300px] rounded-full bg-indigo-600/10 blur-[100px] pointer-events-none" />
+
+      {/* ── MODERN GLASS AUTHENTICATION CARD ── */}
+      <div className="w-full max-w-md rounded-3xl bg-slate-900/50 backdrop-blur-2xl border border-white/[0.08] p-6 sm:p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)] relative z-10 ring-1 ring-inset ring-white/[0.03]">
         {/* School Crest & Title Header */}
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="h-12 w-12 rounded-2xl bg-gradient-to-tr from-amber-400 via-amber-500 to-amber-700 p-0.5 shadow-lg mb-3">
-            <div className="h-full w-full rounded-[14px] bg-slate-950 flex items-center justify-center">
-              <span className="font-serif font-black text-amber-400 text-lg tracking-wider">GIA</span>
+          <div className="h-12 w-12 rounded-2xl bg-gradient-to-tr from-brand-500 via-indigo-500 to-cyan-400 p-[1.5px] shadow-[0_0_25px_-3px_rgba(99,102,241,0.5)] mb-3">
+            <div className="h-full w-full rounded-[14px] bg-[#090d16] flex items-center justify-center">
+              <span className="font-display font-black text-white text-base tracking-wider">GIA</span>
             </div>
           </div>
           <h1 className="text-xl font-black text-white tracking-tight font-display">
             Greenfield International Academy
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            School Management &amp; Academic Portal
+            Central Academic SIS &amp; Administration Portal
           </p>
         </div>
 
         {/* Clean Segmented Window Tabs: Sign In / Register */}
-        <div className="grid grid-cols-2 p-1 rounded-2xl bg-slate-950 border border-slate-800 text-xs font-bold mb-6">
+        <div className="grid grid-cols-2 p-1 rounded-xl bg-white/[0.03] border border-white/[0.08] text-xs font-bold mb-6">
           <button
             type="button"
             onClick={() => {
               setActiveTab("login");
               setRegFeedback(null);
             }}
-            className={`py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-2 ${
               activeTab === "login"
-                ? "bg-brand-600 text-white shadow-sm font-black"
+                ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-[0_0_15px_-2px_rgba(99,102,241,0.4)] font-bold"
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            <span>🔐</span>
+            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            </svg>
             <span>Sign In</span>
           </button>
           <button
@@ -234,13 +235,15 @@ export default function LoginPage() {
             onClick={() => {
               setActiveTab("register");
             }}
-            className={`py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-2 ${
               activeTab === "register"
-                ? "bg-brand-600 text-white shadow-sm font-black"
+                ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-[0_0_15px_-2px_rgba(99,102,241,0.4)] font-bold"
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            <span>📝</span>
+            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.765z" />
+            </svg>
             <span>Register</span>
           </button>
         </div>
@@ -254,7 +257,11 @@ export default function LoginPage() {
                   Email Address
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">✉️</span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                    </svg>
+                  </span>
                   <input
                     id="email"
                     name="email"
@@ -277,13 +284,17 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowResetModal(true)}
-                    className="text-[11px] font-semibold text-brand-400 hover:underline"
+                    className="text-[11px] font-semibold text-brand-400 hover:text-brand-300 transition"
                   >
                     Forgot Password?
                   </button>
                 </div>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔒</span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                    </svg>
+                  </span>
                   <input
                     id="password"
                     name="password"
@@ -297,9 +308,19 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition"
+                    title={showPassword ? "Hide password" : "Show password"}
                   >
-                    {showPassword ? "🙈" : "👁️"}
+                    {showPassword ? (
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                      </svg>
+                    ) : (
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    )}
                   </button>
                 </div>
               </div>
@@ -307,9 +328,9 @@ export default function LoginPage() {
               {state?.error && (
                 <div
                   role="alert"
-                  className="rounded-xl border border-rose-800/80 bg-rose-950/60 p-3 text-xs font-semibold text-rose-200 flex items-center gap-2"
+                  className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs font-semibold text-rose-200 flex items-center gap-2 backdrop-blur-md"
                 >
-                  <span>⚠️</span>
+                  <span className="h-2 w-2 rounded-full bg-rose-400" />
                   <span>{state.error}</span>
                 </div>
               )}
@@ -323,13 +344,17 @@ export default function LoginPage() {
               </button>
             </form>
 
-            {/* Quick 1-Click Demo Login Pills: Clean & Compact */}
-            <div className="mt-6 pt-5 border-t border-slate-800">
-              <div className="text-[11px] font-medium text-slate-400 mb-2.5 text-center">
-                Quick Demo Login:
+            {/* Quick 1-Click Demo Login: Modern Frosted Cards */}
+            <div className="mt-6 pt-5 border-t border-white/[0.08]">
+              <div className="text-[11px] font-bold text-slate-400 mb-2.5 text-center uppercase tracking-wider font-display">
+                Quick Demo Accounts
               </div>
               <div className="grid grid-cols-3 gap-2">
-                {demoAccounts.map((acc) => (
+                {[
+                  { role: "Principal", email: "principal@greenfield.edu", badge: "bg-purple-500/15 text-purple-300 border-purple-500/30" },
+                  { role: "Teacher", email: "rao@greenfield.edu", badge: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+                  { role: "Student", email: "arjun@student.greenfield.edu", badge: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" },
+                ].map((acc) => (
                   <button
                     key={acc.email}
                     type="button"
@@ -337,10 +362,12 @@ export default function LoginPage() {
                       setEmailInput(acc.email);
                       setPasswordInput("Password123!");
                     }}
-                    className="flex items-center justify-center gap-1 py-2 px-1.5 rounded-xl border border-slate-800 bg-slate-950/70 hover:bg-slate-800 hover:border-slate-700 text-xs text-slate-300 font-medium transition"
+                    className="flex flex-col items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.08] hover:border-brand-500/40 text-xs text-slate-200 font-semibold transition group backdrop-blur-sm"
                   >
-                    <span>{acc.icon}</span>
-                    <span className="truncate">{acc.role}</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${acc.badge}`}>
+                      {acc.role}
+                    </span>
+                    <span className="text-[10px] text-slate-400 group-hover:text-white transition">Auto Fill ↵</span>
                   </button>
                 ))}
               </div>
@@ -356,7 +383,7 @@ export default function LoginPage() {
               <label className="label text-[11px] font-bold text-slate-400 mb-1">
                 Select Role to Register
               </label>
-              <div className="grid grid-cols-4 gap-1 p-1 rounded-xl bg-slate-950 border border-slate-800 text-center font-bold">
+              <div className="grid grid-cols-4 gap-1 p-1 rounded-xl bg-white/[0.03] border border-white/[0.08] text-center font-bold">
                 {[
                   { id: "student", label: "Student", icon: "🎓" },
                   { id: "teacher", label: "Teacher", icon: "👩‍🏫" },
@@ -370,9 +397,9 @@ export default function LoginPage() {
                       setRegRole(r.id as any);
                       setRegFeedback(null);
                     }}
-                    className={`py-1.5 rounded-lg transition-all flex items-center justify-center gap-1 ${
+                    className={`py-1.5 rounded-lg transition-all flex items-center justify-center gap-1 text-[11px] ${
                       regRole === r.id
-                        ? "bg-brand-600 text-white shadow-sm font-black"
+                        ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-sm font-bold"
                         : "text-slate-400 hover:text-white"
                     }`}
                   >
@@ -641,9 +668,9 @@ export default function LoginPage() {
 
       {/* ── RESET PASSWORD MODAL ── */}
       {showResetModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-md animate-in fade-in">
-          <div className="w-full max-w-sm rounded-3xl bg-slate-900 shadow-2xl border border-slate-800 p-6 text-slate-100">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xl animate-in fade-in">
+          <div className="w-full max-w-sm rounded-3xl bg-slate-900/80 shadow-[0_20px_50px_rgba(0,0,0,0.8)] border border-white/[0.1] p-6 text-slate-100 backdrop-blur-2xl ring-1 ring-inset ring-white/[0.03]">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3 mb-4">
               <h4 className="text-sm font-bold text-white font-display">Reset Password</h4>
               <button
                 type="button"
@@ -675,13 +702,17 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowResetPassword((prev) => !prev)}
-                    className="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition"
+                    className="text-[11px] text-brand-400 hover:text-brand-300 font-semibold transition"
                   >
-                    <span>{showResetPassword ? "🙈 Hide" : "👁️ Show"}</span>
+                    {showResetPassword ? "Hide" : "Show"}
                   </button>
                 </div>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔒</span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 00-2.25 2.25z" />
+                    </svg>
+                  </span>
                   <input
                     required
                     minLength={8}
@@ -694,11 +725,11 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowResetPassword((prev) => !prev)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition"
                     aria-label={showResetPassword ? "Hide password" : "Show password"}
                     title={showResetPassword ? "Hide password" : "Show password"}
                   >
-                    {showResetPassword ? "🙈" : "👁️"}
+                    {showResetPassword ? "Hide" : "Show"}
                   </button>
                 </div>
               </div>

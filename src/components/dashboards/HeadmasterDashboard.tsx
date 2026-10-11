@@ -75,49 +75,60 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
   return (
     <div className="space-y-6">
       {/* ── WELCOME HERO BANNER ── */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-brand-950 to-indigo-950 p-6 sm:p-8 text-white shadow-elevated border border-slate-800">
-        <div className="absolute right-0 top-0 -mt-16 -mr-16 w-80 h-80 rounded-full bg-brand-500/15 blur-3xl pointer-events-none" />
-        <div className="absolute left-1/3 bottom-0 -mb-20 w-72 h-72 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900/90 via-brand-950/40 to-slate-900/90 p-6 sm:p-8 text-white shadow-[0_16px_40px_rgba(0,0,0,0.4)] border border-white/[0.08] backdrop-blur-2xl ring-1 ring-inset ring-white/[0.03]">
+        <div className="absolute right-0 top-0 -mt-16 -mr-16 w-80 h-80 rounded-full bg-brand-500/20 blur-3xl pointer-events-none" />
+        <div className="absolute left-1/3 bottom-0 -mb-20 w-72 h-72 rounded-full bg-indigo-500/15 blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2.5">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-brand-200 backdrop-blur-md border border-white/10">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.06] px-3.5 py-1 text-xs font-bold text-brand-200 backdrop-blur-md border border-white/[0.1]">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               Greenfield Executive Command Desk · Session 2026–2027
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight font-display text-white">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight font-display text-white">
               Welcome back, {ctx.name}
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
               Academic Term 1 is in active session. All campus sections, biometric attendance registers, and CBSE grading workflows are operational.
             </p>
-
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 self-start lg:self-auto">
             <Link
               href="/copilot"
-              className="inline-flex items-center gap-2 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-bold px-4 py-2.5 text-xs shadow-md transition active:scale-95"
+              className="btn-primary"
             >
-              <span>🤖</span> AI Copilot &amp; Key
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+              </svg>
+              <span>AI Copilot &amp; Keys</span>
             </Link>
             <Link
               href="/fees"
-              className="inline-flex items-center gap-2 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-white font-medium border border-slate-700 px-4 py-2.5 text-xs transition active:scale-95"
+              className="btn-ghost"
             >
-              <span>💳</span> Fee Invoicing
+              <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15A2.25 2.25 0 002.25 6.75v10.5A2.25 2.25 0 004.5 19.5z" />
+              </svg>
+              <span>Fee Invoicing</span>
             </Link>
             <Link
               href="/results"
-              className="inline-flex items-center gap-2 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-white font-medium border border-slate-700 px-4 py-2.5 text-xs transition active:scale-95"
+              className="btn-ghost"
             >
-              <span>📄</span> Marksheets
+              <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.496m5.008 0a3.75 3.75 0 003.75-3.75V6.75H5.746v5.125a3.75 3.75 0 003.75 3.75zm0 0v-4.5" />
+              </svg>
+              <span>Marksheets</span>
             </Link>
             <Link
               href="/announcements"
-              className="inline-flex items-center gap-2 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-white font-medium border border-slate-700 px-4 py-2.5 text-xs transition active:scale-95"
+              className="btn-ghost"
             >
-              <span>📢</span> Post Circular
+              <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+              </svg>
+              <span>Post Circular</span>
             </Link>
           </div>
         </div>
@@ -132,28 +143,44 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
           label="Total Students"
           value={students}
           hint="Enrolled & Active Roster"
-          icon={<span>👥</span>}
+          icon={
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+            </svg>
+          }
           trend={{ value: "98.4% retention", positive: true }}
         />
         <StatCard
           label="Faculty Members"
           value={teachers}
           hint="Certified Teaching Staff"
-          icon={<span>👩‍🏫</span>}
+          icon={
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342" />
+            </svg>
+          }
           trend={{ value: "Full Staffing", positive: true }}
         />
         <StatCard
           label="Class Sections"
           value={sections}
           hint="Grades 6 to 12"
-          icon={<span>🏫</span>}
+          icon={
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+            </svg>
+          }
           trend={{ value: "100% active", positive: true }}
         />
         <StatCard
           label="Subject Curriculum"
           value={subjects}
           hint="CBSE Accredited Courses"
-          icon={<span>📚</span>}
+          icon={
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+            </svg>
+          }
         />
       </div>
 
@@ -168,7 +195,7 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
           action={
             <Link
               href="/students"
-              className="text-xs font-bold text-brand-600 hover:text-brand-800 transition"
+              className="text-xs font-bold text-brand-400 hover:text-brand-300 transition"
             >
               View Directory →
             </Link>

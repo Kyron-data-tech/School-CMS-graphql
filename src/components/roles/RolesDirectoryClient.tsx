@@ -140,63 +140,73 @@ export function RolesDirectoryClient({
     <div className="space-y-5">
       {/* KPI Stats Header */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-        <div className="card p-3 flex items-center gap-3 border-l-4 border-l-purple-500">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-950/80 text-purple-300 border border-purple-800/60 text-lg shadow-sm">
-            👥
+        <div className="card-hover p-3.5 flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/25 text-base shadow-sm">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+            </svg>
           </div>
           <div>
-            <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-display">
               Total Users
             </div>
-            <div className="text-lg font-bold text-white">{stats.total}</div>
+            <div className="text-lg font-extrabold text-white">{stats.total}</div>
           </div>
         </div>
 
-        <div className="card p-3 flex items-center gap-3 border-l-4 border-l-blue-500">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-950/80 text-blue-300 border border-blue-800/60 text-lg shadow-sm">
-            👩‍🏫
+        <div className="card-hover p-3.5 flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-300 border border-blue-500/25 text-base shadow-sm">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342" />
+            </svg>
           </div>
           <div>
-            <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-display">
               Teachers
             </div>
-            <div className="text-lg font-bold text-white">{stats.teachers}</div>
+            <div className="text-lg font-extrabold text-white">{stats.teachers}</div>
           </div>
         </div>
 
-        <div className="card p-3 flex items-center gap-3 border-l-4 border-l-indigo-500">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-950/80 text-indigo-300 border border-indigo-800/60 text-lg shadow-sm">
-            💼
+        <div className="card-hover p-3.5 flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-300 border border-indigo-500/25 text-base shadow-sm">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
+            </svg>
           </div>
           <div>
-            <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-              Non-Teaching Staff
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-display">
+              Staff
             </div>
-            <div className="text-lg font-bold text-white">{stats.staff}</div>
+            <div className="text-lg font-extrabold text-white">{stats.staff}</div>
           </div>
         </div>
 
-        <div className="card p-3 flex items-center gap-3 border-l-4 border-l-emerald-500">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 text-lg shadow-sm">
-            🎓
+        <div className="card-hover p-3.5 flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300 border border-emerald-500/25 text-base shadow-sm">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+            </svg>
           </div>
           <div>
-            <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-display">
               Students
             </div>
-            <div className="text-lg font-bold text-white">{stats.students}</div>
+            <div className="text-lg font-extrabold text-white">{stats.students}</div>
           </div>
         </div>
 
-        <div className="card p-3 flex items-center gap-3 border-l-4 border-l-amber-500">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-950/80 text-amber-300 border border-amber-800/60 text-lg shadow-sm">
-            👑
+        <div className="card-hover p-3.5 flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-300 border border-cyan-500/25 text-base shadow-sm">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
           </div>
           <div>
-            <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-              Leadership &amp; Roles
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-display">
+              Roles &amp; Access
             </div>
-            <div className="text-lg font-bold text-white">{roles.length} Roles</div>
+            <div className="text-lg font-extrabold text-white">{roles.length} Roles</div>
           </div>
         </div>
       </div>
@@ -205,28 +215,28 @@ export function RolesDirectoryClient({
       <div className="card p-4 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           {/* Main Tab Toggle: Users Directory vs Roles Matrix */}
-          <div className="flex rounded-xl border border-slate-800 bg-slate-950/80 p-1 shrink-0">
+          <div className="flex rounded-xl border border-white/[0.08] bg-white/[0.03] p-1 shrink-0">
             <button
               type="button"
               onClick={() => setActiveTab("users")}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition ${
                 activeTab === "users"
-                  ? "bg-brand-600 text-white shadow-sm"
+                  ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-sm font-bold"
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              <span>👥</span> People &amp; Staff Directory ({filteredUsers.length})
+              <span>People &amp; Staff Directory ({filteredUsers.length})</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("roles")}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition ${
                 activeTab === "roles"
-                  ? "bg-brand-600 text-white shadow-sm"
+                  ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-sm font-bold"
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              <span>🛡️</span> Roles &amp; Permissions Matrix ({roles.length})
+              <span>Roles &amp; Permissions Matrix ({roles.length})</span>
             </button>
           </div>
 
@@ -236,30 +246,27 @@ export function RolesDirectoryClient({
               <button
                 type="button"
                 onClick={() => handleOpenRegister("staff")}
-                className="btn bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm"
+                className="btn-ghost py-2 px-3 text-xs"
                 title="Onboard Non-Teaching Staff (Accountant, Librarian, Transport, Clerk, Lab Assistant)"
               >
-                <span>💼</span>
                 <span>+ Add Staff</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleOpenRegister("teacher")}
-                className="btn bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm"
+                className="btn-ghost py-2 px-3 text-xs"
                 title="Onboard Teacher or Faculty Member"
               >
-                <span>👩‍🏫</span>
                 <span>+ Add Teacher</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleOpenRegister("student")}
-                className="btn bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm"
+                className="btn-primary py-2 px-3.5 text-xs"
                 title="Enroll a new student"
               >
-                <span>🎓</span>
                 <span>+ Add Student</span>
               </button>
             </div>

@@ -359,9 +359,9 @@ export function InteractiveResultsClient({
       {/* ── REAL-TIME ANALYTICS BAR (TEACHER / ADMIN VIEW) ── */}
       {!isStudentOrParent && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          <div className="card p-3.5 text-center border-l-4 border-l-brand-600">
-            <div className="text-xs font-medium text-slate-400">Class Average</div>
-            <div className="text-xl font-bold text-brand-400 mt-1">
+          <div className="card-hover p-4 text-center rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Class Average</div>
+            <div className="text-2xl font-bold text-brand-400 mt-1 font-display">
               {analytics.avg} / {activeGradebook.maxMarks}
             </div>
             <div className="text-[11px] text-slate-400 mt-0.5">
@@ -369,38 +369,38 @@ export function InteractiveResultsClient({
             </div>
           </div>
 
-          <div className="card p-3.5 text-center border-l-4 border-l-emerald-500">
-            <div className="text-xs font-medium text-slate-400">Pass Rate</div>
-            <div className="text-xl font-bold text-emerald-400 mt-1">{analytics.passRate}%</div>
-            <div className="text-[11px] text-emerald-400 font-medium mt-0.5">Passing marks: {activeGradebook.passingMarks ?? Math.round(activeGradebook.maxMarks * 0.4)}</div>
+          <div className="card-hover p-4 text-center rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Pass Rate</div>
+            <div className="text-2xl font-bold text-emerald-400 mt-1 font-display">{analytics.passRate}%</div>
+            <div className="text-[11px] text-emerald-400/80 font-medium mt-0.5">Passing: {activeGradebook.passingMarks ?? Math.round(activeGradebook.maxMarks * 0.4)}</div>
           </div>
 
-          <div className="card p-3.5 text-center border-l-4 border-l-purple-500">
-            <div className="text-xs font-medium text-slate-400">Top Score</div>
-            <div className="text-xl font-bold text-purple-400 mt-1">
+          <div className="card-hover p-4 text-center rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Top Score</div>
+            <div className="text-2xl font-bold text-purple-400 mt-1 font-display">
               {analytics.highest} / {activeGradebook.maxMarks}
             </div>
-            <div className="text-[11px] text-purple-400 font-medium mt-0.5">Highest recorded</div>
+            <div className="text-[11px] text-purple-400/80 font-medium mt-0.5">Highest recorded</div>
           </div>
 
-          <div className="card p-3.5 text-center border-l-4 border-l-amber-500">
-            <div className="text-xs font-medium text-slate-400">Graded Roster</div>
-            <div className="text-xl font-bold text-amber-400 mt-1">
+          <div className="card-hover p-4 text-center rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Graded Roster</div>
+            <div className="text-2xl font-bold text-indigo-400 mt-1 font-display">
               {analytics.gradedCount} / {analytics.count}
             </div>
             <div className="text-[11px] text-slate-400 mt-0.5">Students evaluated</div>
           </div>
 
-          <div className="card p-3.5 text-center border-l-4 border-l-sky-500">
-            <div className="text-xs font-medium text-slate-400">Release Status</div>
-            <div className="mt-1">
+          <div className="card-hover p-4 text-center rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Release Status</div>
+            <div className="mt-1.5 flex justify-center">
               {activeGradebook.isPublished ? (
                 <Badge color="green">Published</Badge>
               ) : (
-                <Badge color="amber">In Progress</Badge>
+                <Badge color="red">In Progress</Badge>
               )}
             </div>
-            <div className="text-[11px] text-slate-400 mt-1">
+            <div className="text-[11px] text-slate-400 mt-1.5">
               {activeGradebook.isPublished ? "Visible to Parents" : "Internal Draft"}
             </div>
           </div>

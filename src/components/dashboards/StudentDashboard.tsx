@@ -82,37 +82,39 @@ export async function StudentDashboard({ ctx }: { ctx: AuthContext }) {
   return (
     <div className="space-y-6">
       {/* Student Progress Hero */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-950 via-teal-950 to-slate-950 p-6 sm:p-8 text-white shadow-elevated border border-emerald-900/50">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900/90 via-emerald-950/30 to-slate-900/90 p-6 sm:p-8 text-white shadow-[0_16px_40px_rgba(0,0,0,0.4)] border border-white/[0.08] backdrop-blur-2xl ring-1 ring-inset ring-white/[0.03]">
+        <div className="absolute right-0 top-0 -mt-16 -mr-16 w-80 h-80 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-300 border border-emerald-500/30 backdrop-blur-md">
-              🎓 Student Academic Portal · Session 2026–27
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3.5 py-1 text-xs font-bold text-emerald-300 border border-emerald-500/30 backdrop-blur-md">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              Student Academic Portal · Session 2026–27
             </span>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight mt-2 font-display text-white">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-2 font-display text-white">
               Welcome, {ctx.name}
             </h1>
-            <p className="text-xs sm:text-sm text-emerald-100/80 mt-1 max-w-xl">
+            <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
               Track your daily class attendance, assignment deadlines, term exam results, and campus broadcasts.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Link
               href="/copilot"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 text-slate-950 px-3.5 py-2 text-xs font-black shadow-md transition active:scale-95"
+              className="btn-accent"
             >
-              <span>🤖</span> AI Study Copilot
+              <span>AI Study Tutor</span>
             </Link>
             <Link
               href="/fees"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/20 px-3.5 py-2 text-xs font-bold transition active:scale-95"
+              className="btn-ghost"
             >
-              <span>💳</span> Fees &amp; Receipts
+              <span>Fees &amp; Receipts</span>
             </Link>
             <Link
               href="/notes"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/20 px-3.5 py-2 text-xs font-bold transition active:scale-95"
+              className="btn-ghost"
             >
-              <span>📖</span> Subject Notes
+              <span>Subject Notes</span>
             </Link>
           </div>
         </div>
@@ -126,14 +128,22 @@ export async function StudentDashboard({ ctx }: { ctx: AuthContext }) {
           label="Attendance Rate"
           value={`${pct}%`}
           hint={`${present}/${attendance.length} days present`}
-          icon={<span>📅</span>}
+          icon={
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+          }
           trend={{ value: `${pct}%`, positive: pct >= 75 }}
         />
         <StatCard
           label="Pending Homework"
           value={pending.length}
           hint="Due this week"
-          icon={<span>📝</span>}
+          icon={
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+            </svg>
+          }
         />
         <StatCard
           label="Published Results"

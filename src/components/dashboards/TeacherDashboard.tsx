@@ -68,13 +68,15 @@ export async function TeacherDashboard({ ctx }: { ctx: AuthContext }) {
   return (
     <div className="space-y-6">
       {/* Teacher Action Hero */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-brand-950 to-indigo-950 p-6 sm:p-8 text-white shadow-elevated border border-slate-800">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900/90 via-indigo-950/40 to-slate-900/90 p-6 sm:p-8 text-white shadow-[0_16px_40px_rgba(0,0,0,0.4)] border border-white/[0.08] backdrop-blur-2xl ring-1 ring-inset ring-white/[0.03]">
+        <div className="absolute right-0 top-0 -mt-16 -mr-16 w-80 h-80 rounded-full bg-indigo-500/15 blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-brand-200 border border-white/10 backdrop-blur-md">
-              👩‍🏫 Faculty Academic Workspace · Session 2026–27
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.06] px-3.5 py-1 text-xs font-bold text-brand-200 border border-white/[0.1] backdrop-blur-md">
+              <span className="h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
+              Faculty Academic Workspace · Session 2026–27
             </span>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight mt-2 font-display text-white">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-2 font-display text-white">
               Welcome, {ctx.name}
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
@@ -84,33 +86,27 @@ export async function TeacherDashboard({ ctx }: { ctx: AuthContext }) {
           <div className="flex flex-wrap items-center gap-2">
             <Link
               href="/copilot"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white px-3.5 py-2 text-xs font-black shadow-md transition active:scale-95"
+              className="btn-primary"
             >
-              <span>🤖</span> AI Copilot
+              <span>AI Copilot</span>
             </Link>
             <Link
               href="/notes"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-2 text-xs font-black shadow-md transition active:scale-95"
+              className="btn-ghost"
             >
-              <span>📖</span> Subject Notes
+              <span>Subject Notes</span>
             </Link>
             <Link
               href="/attendance"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md px-3.5 py-2 text-xs font-bold text-white border border-white/15 transition active:scale-95"
+              className="btn-ghost"
             >
-              <span>📅</span> Attendance
+              <span>Attendance</span>
             </Link>
             <Link
               href="/results"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md px-3.5 py-2 text-xs font-bold text-white border border-white/15 transition active:scale-95"
+              className="btn-ghost"
             >
-              <span>🏆</span> Enter Marks
-            </Link>
-            <Link
-              href="/library"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md px-3.5 py-2 text-xs font-bold text-white border border-white/15 transition active:scale-95"
-            >
-              <span>📚</span> Library
+              <span>Enter Marks</span>
             </Link>
           </div>
         </div>
@@ -124,20 +120,32 @@ export async function TeacherDashboard({ ctx }: { ctx: AuthContext }) {
         <StatCard
           label="Assigned subjects"
           value={offerings.length}
-          icon={<span>📚</span>}
+          icon={
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+            </svg>
+          }
           hint="Active courses"
         />
         <StatCard
           label="Classes today"
           value={todayClasses.length}
           hint={DAYS[today]}
-          icon={<span>⏰</span>}
+          icon={
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          }
         />
         <StatCard
           label="Homework to review"
           value={awaitingReview}
           hint="Student submissions"
-          icon={<span>📝</span>}
+          icon={
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+            </svg>
+          }
         />
         <StatCard
           label="Marks to enter"

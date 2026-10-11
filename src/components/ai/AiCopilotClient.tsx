@@ -486,19 +486,23 @@ export function AiCopilotClient({
   return (
     <div className="space-y-6">
       {/* 1. Header Banner & Model Coordination Bar */}
-      <div className="rounded-2xl border border-brand-800/60 bg-gradient-to-r from-brand-950 via-indigo-950 to-slate-900 p-6 text-white shadow-xl">
+      <div className="rounded-3xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-2xl p-6 sm:p-7 text-white shadow-[0_16px_40px_rgba(0,0,0,0.4)] ring-1 ring-inset ring-white/[0.03]">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500/30 text-xl">🤖</span>
-              <h2 className="text-xl font-bold tracking-tight">
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white shadow-[0_0_20px_-3px_rgba(99,102,241,0.5)]">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                </svg>
+              </span>
+              <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight font-display">
                 {activeRole === "student" ? "Greenfield AI Study Assistant" : "Greenfield AI Academic Copilot"}
               </h2>
-              <span className="rounded-full bg-emerald-400/20 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300 border border-emerald-400/30">
+              <span className="rounded-full bg-emerald-500/15 px-3 py-0.5 text-[10px] font-bold text-emerald-300 border border-emerald-500/30 backdrop-blur-md">
                 {activeRole === "student" ? "Student Learning & Practice Mode" : "Multi-LLM GUI Coordinator"}
               </span>
             </div>
-            <p className="text-xs text-slate-300 max-w-2xl">
+            <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
               {activeRole === "student"
                 ? "Self-assessment practice quizzes (Science, Photosynthesis, Force & Motion), curriculum revision, and interactive AI tutor doubt-solving."
                 : "Coordinate effortlessly between OpenAI ChatGPT, Anthropic Claude, Google Gemini, and Sir's Local Endpoints with real-time Content Window monitoring."}
@@ -509,33 +513,38 @@ export function AiCopilotClient({
             <button
               type="button"
               onClick={() => setShowContextInfo(!showContextInfo)}
-              className="rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 px-3 py-1.5 text-xs font-semibold text-indigo-200 border border-indigo-400/30 transition flex items-center gap-1.5"
+              className="btn-ghost py-2 px-3 text-xs"
             >
-              <span>🧠</span>
-              <span>Content Window Info</span>
+              <svg className="h-4 w-4 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+              </svg>
+              <span>Context Window Guide</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("settings")}
-              className="rounded-lg bg-white/20 hover:bg-white/30 px-3 py-1.5 text-xs font-medium text-white transition border border-white/20 flex items-center gap-1.5"
+              className="btn-ghost py-2 px-3 text-xs"
             >
-              <span>⚙️</span>
+              <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.27.1.06-.12l-.773.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.27-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.11v-1.093c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
               <span>{activeRole === "student" ? "AI Settings" : "Model Settings"}</span>
             </button>
           </div>
         </div>
 
         {/* Role Authority & Institutional License Status Strip */}
-        <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="mt-5 pt-4 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-slate-300 font-semibold text-xs">Authority Level:</span>
-            <div className="inline-flex rounded-lg bg-black/50 p-1 border border-white/15">
+            <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px] font-display">Authority Level:</span>
+            <div className="inline-flex rounded-xl bg-white/[0.03] p-1 border border-white/[0.08]">
               <button
                 type="button"
                 onClick={() => setActiveRole("principal")}
-                className={`px-3 py-1 rounded-md text-xs font-bold transition flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
                   activeRole === "principal"
-                    ? "bg-brand-600 text-white shadow-md ring-1 ring-brand-400"
+                    ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-sm ring-1 ring-white/10"
                     : "text-slate-300 hover:text-white"
                 }`}
               >
@@ -544,13 +553,13 @@ export function AiCopilotClient({
               <button
                 type="button"
                 onClick={() => setActiveRole("teacher")}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${
                   activeRole === "teacher"
-                    ? "bg-indigo-600 text-white shadow-md ring-1 ring-indigo-400"
+                    ? "bg-gradient-to-r from-indigo-600 to-brand-600 text-white shadow-sm ring-1 ring-white/10"
                     : "text-slate-300 hover:text-white"
                 }`}
               >
-                <span>👨‍🏫</span> Teacher (Assignments &amp; Remarks)
+                <span>👩‍🏫</span> Teacher (Assignments &amp; Remarks)
               </button>
               <button
                 type="button"
@@ -560,9 +569,9 @@ export function AiCopilotClient({
                     setActiveTab("quiz");
                   }
                 }}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${
                   activeRole === "student"
-                    ? "bg-emerald-600 text-white shadow-md ring-1 ring-emerald-400"
+                    ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm ring-1 ring-white/10"
                     : "text-slate-300 hover:text-white"
                 }`}
               >
@@ -573,13 +582,13 @@ export function AiCopilotClient({
 
           <div className="flex items-center gap-2">
             {institutionalConfig?.hasKey || institutionalConfig?.isConfigured ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 px-3 py-1 text-[11px] font-medium text-emerald-300">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-[11px] font-semibold text-emerald-300 backdrop-blur-md">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 School AI License: <strong>Active (Configured by Principal)</strong>
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-800 border border-slate-700 px-3 py-1 text-[11px] font-medium text-slate-300">
-                <span className="h-2 w-2 rounded-full bg-slate-400"></span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] px-3 py-1 text-[11px] font-medium text-slate-300">
+                <span className="h-1.5 w-1.5 rounded-full bg-slate-400"></span>
                 Institutional Key: <strong>Needs Principal Setup</strong>
               </span>
             )}
@@ -592,97 +601,97 @@ export function AiCopilotClient({
         </div>
 
         {/* 2. Interactive LLM Preset Selector Chips */}
-        <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center gap-2">
-          <span className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mr-1">
-            Select Active LLM:
+        <div className="mt-4 pt-3 border-t border-white/[0.08] flex flex-wrap items-center gap-2">
+          <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 mr-1 font-display">
+            Active LLM Model:
           </span>
 
           {/* ChatGPT */}
           <button
             type="button"
             onClick={() => selectPreset("openai")}
-            className={`rounded-xl px-3 py-1.5 text-xs font-medium transition flex items-center gap-1.5 border ${
+            className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition flex items-center gap-2 border backdrop-blur-md ${
               settings.provider === "openai"
-                ? "bg-emerald-600/30 border-emerald-400 text-emerald-200 font-bold shadow-sm ring-1 ring-emerald-400/50"
-                : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+                ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-200 font-bold shadow-[0_0_15px_-3px_rgba(16,185,129,0.3)] ring-1 ring-emerald-400/50"
+                : "bg-white/[0.03] border-white/[0.08] text-slate-300 hover:bg-white/[0.07]"
             }`}
           >
-            <span>🟢</span>
+            <span className="h-2 w-2 rounded-full bg-emerald-400" />
             <span>ChatGPT (GPT-4o)</span>
-            <span className="rounded bg-black/40 px-1.5 py-0.2 text-[10px] text-emerald-300 font-mono">128K</span>
+            <span className="rounded bg-black/40 px-1.5 py-0.5 text-[10px] text-emerald-300 font-mono">128K</span>
           </button>
 
           {/* Claude */}
           <button
             type="button"
             onClick={() => selectPreset("claude")}
-            className={`rounded-xl px-3 py-1.5 text-xs font-medium transition flex items-center gap-1.5 border ${
+            className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition flex items-center gap-2 border backdrop-blur-md ${
               settings.provider === "claude"
-                ? "bg-purple-600/30 border-purple-400 text-purple-200 font-bold shadow-sm ring-1 ring-purple-400/50"
-                : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+                ? "bg-purple-500/15 border-purple-500/40 text-purple-200 font-bold shadow-[0_0_15px_-3px_rgba(168,85,247,0.3)] ring-1 ring-purple-400/50"
+                : "bg-white/[0.03] border-white/[0.08] text-slate-300 hover:bg-white/[0.07]"
             }`}
           >
-            <span>🟣</span>
+            <span className="h-2 w-2 rounded-full bg-purple-400" />
             <span>Claude (3.5 Sonnet)</span>
-            <span className="rounded bg-black/40 px-1.5 py-0.2 text-[10px] text-purple-300 font-mono">200K</span>
+            <span className="rounded bg-black/40 px-1.5 py-0.5 text-[10px] text-purple-300 font-mono">200K</span>
           </button>
 
           {/* Gemini */}
           <button
             type="button"
             onClick={() => selectPreset("gemini")}
-            className={`rounded-xl px-3 py-1.5 text-xs font-medium transition flex items-center gap-1.5 border ${
+            className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition flex items-center gap-2 border backdrop-blur-md ${
               settings.provider === "gemini"
-                ? "bg-blue-600/30 border-blue-400 text-blue-200 font-bold shadow-sm ring-1 ring-blue-400/50"
-                : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+                ? "bg-blue-500/15 border-blue-500/40 text-blue-200 font-bold shadow-[0_0_15px_-3px_rgba(59,130,246,0.3)] ring-1 ring-blue-400/50"
+                : "bg-white/[0.03] border-white/[0.08] text-slate-300 hover:bg-white/[0.07]"
             }`}
           >
-            <span>🔵</span>
+            <span className="h-2 w-2 rounded-full bg-blue-400" />
             <span>Google Gemini (1.5 Flash)</span>
-            <span className="rounded bg-black/40 px-1.5 py-0.2 text-[10px] text-blue-300 font-mono">1M</span>
+            <span className="rounded bg-black/40 px-1.5 py-0.5 text-[10px] text-blue-300 font-mono">1M</span>
           </button>
 
           {/* Sir's Custom Endpoint */}
           <button
             type="button"
             onClick={() => selectPreset("custom")}
-            className={`rounded-xl px-3 py-1.5 text-xs font-medium transition flex items-center gap-1.5 border ${
+            className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition flex items-center gap-2 border backdrop-blur-md ${
               settings.provider === "custom"
-                ? "bg-slate-700/60 border-slate-400 text-slate-100 font-bold shadow-sm ring-1 ring-slate-400/50"
-                : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200 font-bold shadow-[0_0_15px_-3px_rgba(99,102,241,0.3)] ring-1 ring-indigo-400/50"
+                : "bg-white/[0.03] border-white/[0.08] text-slate-300 hover:bg-white/[0.07]"
             }`}
           >
-            <span>⚡</span>
-            <span>Sir&apos;s Local Endpoint (LLaMA 3)</span>
-            <span className="rounded bg-black/40 px-1.5 py-0.2 text-[10px] text-slate-300 font-mono">8K</span>
+            <span className="h-2 w-2 rounded-full bg-indigo-400" />
+            <span>Local Endpoint (LLaMA 3)</span>
+            <span className="rounded bg-black/40 px-1.5 py-0.5 text-[10px] text-slate-300 font-mono">8K</span>
           </button>
 
           {/* Built-in Academic Engine */}
           <button
             type="button"
             onClick={() => selectPreset("builtin")}
-            className={`rounded-xl px-3 py-1.5 text-xs font-medium transition flex items-center gap-1.5 border ${
+            className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition flex items-center gap-2 border backdrop-blur-md ${
               settings.provider === "builtin"
-                ? "bg-slate-700/60 border-slate-400 text-slate-100 font-bold shadow-sm ring-1 ring-slate-400/50"
-                : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10"
+                ? "bg-white/[0.1] border-white/[0.2] text-white font-bold ring-1 ring-white/20"
+                : "bg-white/[0.03] border-white/[0.08] text-slate-400 hover:bg-white/[0.07]"
             }`}
           >
-            <span>🏫</span>
-            <span>Built-in Engine</span>
-            <span className="rounded bg-black/40 px-1.5 py-0.2 text-[10px] text-slate-300 font-mono">Offline</span>
+            <span className="h-2 w-2 rounded-full bg-slate-400" />
+            <span>Built-in Offline Engine</span>
+            <span className="rounded bg-black/40 px-1.5 py-0.5 text-[10px] text-slate-300 font-mono">Offline</span>
           </button>
         </div>
 
         {/* 3. Live Context Window Gauge & Capacity Meter */}
-        <div className="mt-4 rounded-xl bg-black/40 border border-white/10 p-3.5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div className="mt-4 rounded-2xl bg-white/[0.02] border border-white/[0.08] p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono text-sm font-bold">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/15 text-brand-300 border border-brand-500/25 font-mono text-sm font-bold shadow-sm">
               {activeSpec.badge.split(" ")[0]}
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-white">{activeSpec.name}</span>
-                <span className="rounded bg-indigo-900/60 border border-indigo-700/60 px-2 py-0.2 text-[10px] font-mono text-indigo-300">
+                <span className="rounded-full bg-indigo-500/15 border border-indigo-500/30 px-2.5 py-0.5 text-[10px] font-mono text-indigo-300">
                   Window: {activeSpec.contextWindow.toLocaleString()} tokens
                 </span>
               </div>
@@ -691,22 +700,22 @@ export function AiCopilotClient({
           </div>
 
           {/* Context Meter Bar */}
-          <div className="w-full md:w-64 space-y-1">
+          <div className="w-full md:w-72 space-y-1.5">
             <div className="flex justify-between text-[11px]">
               <span className="text-slate-400">Context Window Used:</span>
-              <span className="font-mono text-indigo-300 font-semibold">
+              <span className="font-mono text-brand-300 font-bold">
                 {lastTokenStats ? `${lastTokenStats.totalTokens} tokens (${lastTokenStats.contextWindowPercent}%)` : `~${totalChatTokens} tokens`}
               </span>
             </div>
-            <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+            <div className="h-2 w-full bg-white/[0.06] rounded-full overflow-hidden border border-white/[0.08]">
               <div
-                className="h-full bg-gradient-to-r from-brand-500 to-indigo-500 rounded-full transition-all duration-500"
+                className="h-full bg-gradient-to-r from-brand-500 via-indigo-500 to-cyan-400 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]"
                 style={{
                   width: `${Math.min(100, Math.max(2, lastTokenStats?.contextWindowPercent || (totalChatTokens / activeSpec.contextWindow) * 100))}%`,
                 }}
               />
             </div>
-            <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+            <div className="flex justify-between text-[10px] text-slate-400 font-mono">
               <span>0</span>
               <span>Headroom: {(activeSpec.contextWindow - (lastTokenStats?.totalTokens || totalChatTokens)).toLocaleString()} tokens</span>
             </div>
@@ -715,49 +724,49 @@ export function AiCopilotClient({
 
         {/* 4. Educational Content Window Explainer Banner (Toggleable) */}
         {showContextInfo && (
-          <div className="mt-4 rounded-xl border border-indigo-500/40 bg-indigo-950/70 p-4 text-xs text-indigo-100 space-y-3 animate-fadeIn">
-            <div className="flex items-center justify-between font-bold text-indigo-200">
-              <span className="flex items-center gap-1.5 text-sm">
-                <span>📚</span> Understanding LLM &quot;Content Window&quot; (Context Window)
+          <div className="mt-4 rounded-2xl border border-brand-500/30 bg-brand-950/40 p-4 text-xs text-indigo-100 space-y-3 backdrop-blur-xl animate-fadeIn ring-1 ring-inset ring-white/[0.04]">
+            <div className="flex items-center justify-between font-bold text-brand-200">
+              <span className="flex items-center gap-2 text-sm font-display">
+                <span>Understanding LLM Context Windows</span>
               </span>
               <button
                 type="button"
                 onClick={() => setShowContextInfo(false)}
-                className="text-slate-400 hover:text-white text-xs px-2 py-0.5 rounded bg-white/10"
+                className="text-slate-400 hover:text-white text-xs px-2.5 py-1 rounded-lg bg-white/10 transition"
               >
                 ✕ Close
               </button>
             </div>
             <p className="leading-relaxed text-slate-300 text-[11px]">
-              The **Content Window (Context Window)** is the **working memory limit** of an AI model in a single request. It holds the System Prompt, conversation history, school database context, user query, and generated answer:
+              The **Context Window** is the working memory limit of an AI model in a single request. It holds the System Prompt, conversation history, school database context, user query, and generated answer:
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-[11px]">
-              <div className="rounded-lg bg-black/40 border border-indigo-800/60 p-2.5">
-                <div className="font-bold text-blue-300 flex items-center gap-1">
-                  <span>🔵</span> Google Gemini
+              <div className="rounded-xl bg-white/[0.03] border border-white/[0.08] p-3 backdrop-blur-md">
+                <div className="font-bold text-blue-300 flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-blue-400" /> Google Gemini
                 </div>
-                <div className="text-[10px] font-mono text-emerald-300 mt-0.5">1,000,000 – 2,000,000 tokens</div>
-                <p className="text-slate-400 text-[10px] mt-1">
+                <div className="text-[10px] font-mono text-emerald-300 mt-1">1,000,000 – 2,000,000 tokens</div>
+                <p className="text-slate-400 text-[10px] mt-1 leading-relaxed">
                   Massive memory. Can digest complete school syllabus, 100+ textbooks, or full-year student rosters at once.
                 </p>
               </div>
 
-              <div className="rounded-lg bg-black/40 border border-indigo-800/60 p-2.5">
-                <div className="font-bold text-purple-300 flex items-center gap-1">
-                  <span>🟣</span> Anthropic Claude
+              <div className="rounded-xl bg-white/[0.03] border border-white/[0.08] p-3 backdrop-blur-md">
+                <div className="font-bold text-purple-300 flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-purple-400" /> Anthropic Claude
                 </div>
-                <div className="text-[10px] font-mono text-purple-300 mt-0.5">200,000 tokens (~150,000 words)</div>
-                <p className="text-slate-400 text-[10px] mt-1">
+                <div className="text-[10px] font-mono text-purple-300 mt-1">200,000 tokens (~150,000 words)</div>
+                <p className="text-slate-400 text-[10px] mt-1 leading-relaxed">
                   Superior comprehension for long student essays, multi-chapter exams, and extensive disciplinary files.
                 </p>
               </div>
 
-              <div className="rounded-lg bg-black/40 border border-indigo-800/60 p-2.5">
-                <div className="font-bold text-emerald-300 flex items-center gap-1">
-                  <span>🟢</span> OpenAI ChatGPT
+              <div className="rounded-xl bg-white/[0.03] border border-white/[0.08] p-3 backdrop-blur-md">
+                <div className="font-bold text-emerald-300 flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400" /> OpenAI ChatGPT
                 </div>
-                <div className="text-[10px] font-mono text-emerald-300 mt-0.5">128,000 tokens (~96,000 words)</div>
-                <p className="text-slate-400 text-[10px] mt-1">
+                <div className="text-[10px] font-mono text-emerald-300 mt-1">128,000 tokens (~96,000 words)</div>
+                <p className="text-slate-400 text-[10px] mt-1 leading-relaxed">
                   General-purpose industry workhorse for fast interactive Q&A, report card remarks, and quick circulars.
                 </p>
               </div>
@@ -766,7 +775,7 @@ export function AiCopilotClient({
         )}
 
         {/* 5. Navigation Tabs - Filtered for Student Authority */}
-        <div className="mt-5 flex flex-wrap gap-2 border-t border-white/10 pt-4">
+        <div className="mt-5 flex flex-wrap gap-2 border-t border-white/[0.08] pt-4">
           {/* Remarks Tab: Only for Principal & Teacher */}
           {activeRole !== "student" && (
             <button
@@ -775,13 +784,14 @@ export function AiCopilotClient({
                 setActiveTab("remarks");
                 setResultText(null);
               }}
-              className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition ${
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition ${
                 activeTab === "remarks"
-                  ? "bg-brand-600 text-white shadow-md font-semibold"
-                  : "text-slate-300 hover:bg-white/10 hover:text-white"
+                  ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-[0_0_15px_-2px_rgba(99,102,241,0.4)] font-bold"
+                  : "text-slate-300 hover:text-white bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08]"
               }`}
             >
-              📝 Report Card Remarks
+              <span>📝</span>
+              <span>Report Card Remarks</span>
             </button>
           )}
 
@@ -792,13 +802,14 @@ export function AiCopilotClient({
               setActiveTab("quiz");
               setResultText(null);
             }}
-            className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition ${
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition ${
               activeTab === "quiz"
-                ? "bg-brand-600 text-white shadow-md font-semibold"
-                : "text-slate-300 hover:bg-white/10 hover:text-white"
+                ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-[0_0_15px_-2px_rgba(99,102,241,0.4)] font-bold"
+                : "text-slate-300 hover:text-white bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08]"
             }`}
           >
-            {activeRole === "student" ? "📚 Practice Quizzes & Revision" : "📋 Quiz & Assignment Maker"}
+            <span>📋</span>
+            <span>{activeRole === "student" ? "Practice Quizzes & Revision" : "Quiz & Assignment Maker"}</span>
           </button>
 
           {/* Notice Tab: Only for Principal & Teacher */}
@@ -809,13 +820,14 @@ export function AiCopilotClient({
                 setActiveTab("notice");
                 setResultText(null);
               }}
-              className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition ${
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition ${
                 activeTab === "notice"
-                  ? "bg-brand-600 text-white shadow-md font-semibold"
-                  : "text-slate-300 hover:bg-white/10 hover:text-white"
+                  ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-[0_0_15px_-2px_rgba(99,102,241,0.4)] font-bold"
+                  : "text-slate-300 hover:text-white bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08]"
               }`}
             >
-              📢 Circular & Notice Drafter
+              <span>📢</span>
+              <span>Circular &amp; Notice Drafter</span>
             </button>
           )}
 
@@ -826,13 +838,14 @@ export function AiCopilotClient({
               setActiveTab("chat");
               setResultText(null);
             }}
-            className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition ${
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition ${
               activeTab === "chat"
-                ? "bg-brand-600 text-white shadow-md font-semibold"
-                : "text-slate-300 hover:bg-white/10 hover:text-white"
+                ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-[0_0_15px_-2px_rgba(99,102,241,0.4)] font-bold"
+                : "text-slate-300 hover:text-white bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08]"
             }`}
           >
-            {activeRole === "student" ? "💬 AI Study Tutor & Doubt Solver" : "💬 Interactive AI Chat"}
+            <span>💬</span>
+            <span>{activeRole === "student" ? "AI Study Tutor & Doubt Solver" : "Interactive AI Chat"}</span>
           </button>
 
           <button
@@ -841,13 +854,14 @@ export function AiCopilotClient({
               setActiveTab("settings");
               setResultText(null);
             }}
-            className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition ml-auto ${
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition ml-auto ${
               activeTab === "settings"
-                ? "bg-brand-600 text-white shadow-md font-bold"
-                : "bg-white/10 text-slate-200 hover:bg-white/20"
+                ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-[0_0_15px_-2px_rgba(99,102,241,0.4)] font-bold"
+                : "bg-white/[0.04] text-slate-200 hover:bg-white/[0.08] border border-white/[0.08]"
             }`}
           >
-            ⚙️ {activeRole === "student" ? "AI Settings & Key" : "Model & AI Settings"}
+            <span>⚙️</span>
+            <span>{activeRole === "student" ? "AI Settings & Key" : "Model & AI Settings"}</span>
           </button>
         </div>
       </div>

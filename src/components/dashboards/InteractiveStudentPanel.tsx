@@ -68,19 +68,19 @@ export function InteractiveStudentPanel() {
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="btn bg-brand-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-brand-500 shadow-sm transition-all"
+            className="btn-primary py-2 px-3.5 text-xs font-bold"
           >
             {isOpen ? "Close Form" : "+ Enroll Student"}
           </button>
           <Link
             href="/students"
-            className="btn-ghost px-3 py-1.5 text-xs text-slate-300 hover:text-white font-medium"
+            className="btn-ghost py-2 px-3 text-xs"
           >
             Full Student Directory →
           </Link>
           <Link
             href="/register"
-            className="btn-ghost px-3 py-1.5 text-xs text-brand-400 hover:text-brand-300 font-semibold"
+            className="btn-ghost py-2 px-3 text-xs text-brand-300 hover:text-brand-200"
           >
             Open Public Admissions Portal ↗
           </Link>
@@ -89,8 +89,8 @@ export function InteractiveStudentPanel() {
 
       {/* Quick Add Student Collapsible Form */}
       {isOpen && (
-        <form onSubmit={handleCreateStudent} className="mt-4 border-t border-slate-800 pt-4">
-          <h4 className="mb-3 text-xs font-bold uppercase tracking-wide text-slate-300">
+        <form onSubmit={handleCreateStudent} className="mt-4 border-t border-white/[0.08] pt-4">
+          <h4 className="mb-3 text-xs font-bold uppercase tracking-wide text-slate-300 font-display">
             Rapid Student Admission Form
           </h4>
 

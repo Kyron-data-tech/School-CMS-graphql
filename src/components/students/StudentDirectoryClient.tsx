@@ -117,45 +117,53 @@ export function StudentDirectoryClient({
 
       {/* Quick KPI Stats Header */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="card p-3 flex items-center gap-3 border-l-4 border-l-blue-500">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-950/80 text-blue-400 border border-blue-800/60 text-lg shadow-sm">
-            👥
+        <div className="card-hover p-4 flex items-center gap-3.5">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/25 text-base shadow-sm">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+            </svg>
           </div>
           <div>
-            <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Enrolled</div>
-            <div className="text-xl font-bold text-white">{students.length}</div>
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-display">Total Enrolled</div>
+            <div className="text-xl font-extrabold text-white">{students.length}</div>
           </div>
         </div>
 
-        <div className="card p-3 flex items-center gap-3 border-l-4 border-l-indigo-500">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-950/80 text-indigo-400 border border-indigo-800/60 text-lg shadow-sm">
-            🏫
+        <div className="card-hover p-4 flex items-center gap-3.5">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/25 text-base shadow-sm">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+            </svg>
           </div>
           <div>
-            <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Active Sections</div>
-            <div className="text-xl font-bold text-white">{sections.length}</div>
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-display">Active Sections</div>
+            <div className="text-xl font-extrabold text-white">{sections.length}</div>
           </div>
         </div>
 
-        <div className="card p-3 flex items-center gap-3 border-l-4 border-l-emerald-500">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 text-lg shadow-sm">
-            🚻
+        <div className="card-hover p-4 flex items-center gap-3.5">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 text-base shadow-sm">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+            </svg>
           </div>
           <div>
-            <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Gender Split</div>
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-display">Gender Split</div>
             <div className="text-xs font-bold text-slate-200">
               {students.filter((s) => s.gender === "MALE").length} Boys · {students.filter((s) => s.gender === "FEMALE").length} Girls
             </div>
           </div>
         </div>
 
-        <div className="card p-3 flex items-center gap-3 border-l-4 border-l-brand-500">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-950/80 text-brand-400 border border-brand-800/60 text-lg shadow-sm">
-            ⚡
+        <div className="card-hover p-4 flex items-center gap-3.5">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-400 border border-brand-500/25 text-base shadow-sm">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.539.09.917.555.917 1.097v1.824c0 .385-.195.74-.514.945l-5.119 3.29a2.25 2.25 0 00-.967 1.884V16.5a2.25 2.25 0 01-1.023 1.888l-2.25 1.5A2.25 2.25 0 018.25 18V12.69a2.25 2.25 0 00-.967-1.884L2.164 7.517A1.125 1.125 0 011.65 6.572V4.775c0-.542.378-1.007.917-1.097A48.539 48.539 0 0112 3z" />
+            </svg>
           </div>
           <div>
-            <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Filtered Matches</div>
-            <div className="text-xl font-bold text-brand-400">{filteredStudents.length}</div>
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-display">Filtered Matches</div>
+            <div className="text-xl font-extrabold text-brand-400">{filteredStudents.length}</div>
           </div>
         </div>
       </div>
@@ -341,15 +349,12 @@ export function StudentDirectoryClient({
             return (
               <div
                 key={s.id}
-                className="card group flex flex-col justify-between overflow-hidden transition hover:border-brand-500/60 hover:shadow-lg"
+                className="card-hover group flex flex-col justify-between overflow-hidden relative"
               >
-                {/* Top Accent Strip */}
-                <div className="h-2 bg-gradient-to-r from-brand-500 to-indigo-500"></div>
-
                 <div className="p-4">
                   {/* Avatar & Class Badge */}
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-950/80 text-brand-300 border border-brand-800/60 font-semibold shadow-inner">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand-900/80 via-indigo-900/60 to-slate-900 text-brand-300 border border-brand-500/30 font-bold shadow-sm">
                       {s.firstName[0]}
                       {s.lastName[0]}
                     </div>
@@ -360,7 +365,7 @@ export function StudentDirectoryClient({
                         <Badge color="slate">New</Badge>
                       )}
                       {enr?.rollNumber && (
-                        <span className="text-[11px] font-medium text-slate-400">
+                        <span className="text-[10px] font-mono font-medium text-slate-400">
                           Roll #{enr.rollNumber}
                         </span>
                       )}
@@ -369,23 +374,23 @@ export function StudentDirectoryClient({
 
                   {/* Student Details */}
                   <div className="mt-3">
-                    <h4 className="font-semibold text-white group-hover:text-brand-400 transition">
+                    <h4 className="font-bold text-white group-hover:text-brand-300 transition">
                       {s.firstName} {s.lastName}
                     </h4>
                     <div className="mt-1 flex items-center gap-2 text-xs text-slate-400">
-                      <span className="font-mono">{s.admissionNo}</span>
+                      <span className="font-mono text-[11px] text-slate-400">{s.admissionNo}</span>
                       <span>·</span>
-                      <span className="capitalize">{s.gender.toLowerCase()}</span>
+                      <span className="capitalize text-[11px]">{s.gender.toLowerCase()}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Footer Link */}
-                <div className="border-t border-slate-800/80 bg-slate-950/60 px-4 py-2.5 flex items-center justify-between">
-                  <span className="text-[11px] text-slate-400">Student Profile</span>
+                <div className="border-t border-white/[0.06] bg-white/[0.02] px-4 py-2.5 flex items-center justify-between">
+                  <span className="text-[11px] text-slate-400 font-medium">Academic File</span>
                   <Link
                     href={`/students/${s.id}`}
-                    className="text-xs font-medium text-brand-400 hover:underline"
+                    className="text-xs font-bold text-brand-400 hover:text-brand-300 transition"
                   >
                     View Details →
                   </Link>

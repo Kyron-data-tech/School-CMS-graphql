@@ -154,13 +154,15 @@ export function InteractiveTimetableClient({
               return (
                 <div
                   key={p.id}
-                  className={`card p-4 transition-all duration-200 border-l-4 ${
-                    e ? "border-l-brand-500 bg-slate-900/90" : "border-l-slate-800 bg-slate-950/60"
+                  className={`card p-4 transition-all duration-200 rounded-2xl border ${
+                    e
+                      ? "border-brand-500/30 bg-slate-900/60 shadow-[0_4px_20px_-4px_rgba(99,102,241,0.12)]"
+                      : "border-white/[0.05] bg-slate-950/40 opacity-70"
                   }`}
                 >
-                  <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-800/80">
+                  <div className="flex items-center justify-between text-xs pb-2.5 border-b border-white/[0.06]">
                     <span className="font-bold text-white">{p.name}</span>
-                    <span className="text-slate-400 font-mono">
+                    <span className="text-slate-400 font-mono text-[11px]">
                       {p.startTime} – {p.endTime}
                     </span>
                   </div>
@@ -169,11 +171,25 @@ export function InteractiveTimetableClient({
                     <div className="mt-3">
                       <div className="font-bold text-sm text-brand-300">{e.subjectName}</div>
                       <div className="text-xs text-slate-300 mt-1">
-                        Class: {e.gradeName.replace("Class ", "")}-{e.sectionName}
+                        Class {e.gradeName.replace("Class ", "")}-{e.sectionName}
                       </div>
-                      <div className="flex items-center gap-2 mt-2 text-[11px] text-slate-400">
-                        {e.roomName && <span>🏫 Room {e.roomName}</span>}
-                        {e.teacherName && <span>👨‍🏫 {e.teacherName}</span>}
+                      <div className="flex flex-wrap items-center gap-3 mt-2.5 text-[11px] text-slate-400">
+                        {e.roomName && (
+                          <span className="inline-flex items-center gap-1">
+                            <svg className="w-3 h-3 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            Room {e.roomName}
+                          </span>
+                        )}
+                        {e.teacherName && (
+                          <span className="inline-flex items-center gap-1">
+                            <svg className="w-3 h-3 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            {e.teacherName}
+                          </span>
+                        )}
                       </div>
                     </div>
                   ) : (

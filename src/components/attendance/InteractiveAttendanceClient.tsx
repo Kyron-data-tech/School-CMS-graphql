@@ -263,41 +263,41 @@ export function InteractiveAttendanceClient({
       </div>
 
       {/* ── REAL-TIME ATTENDANCE METRICS ── */}
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-        <div className="card p-3 text-center border-l-4 border-l-brand-600">
-          <div className="text-xs font-medium text-slate-400">Present Rate</div>
-          <div className="text-xl font-bold text-brand-400 mt-1">{stats.rate}%</div>
-          <div className="text-[11px] text-slate-400 mt-0.5">{stats.present}/{stats.total} Present</div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="card-hover p-4 text-center rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Present Rate</div>
+          <div className="text-2xl font-bold text-brand-400 mt-1 font-display">{stats.rate}%</div>
+          <div className="text-[11px] text-slate-400 mt-0.5">{stats.present}/{stats.total} Total</div>
         </div>
 
-        <div className="card p-3 text-center border-l-4 border-l-emerald-500">
-          <div className="text-xs font-medium text-slate-400">Present</div>
-          <div className="text-xl font-bold text-emerald-400 mt-1">{stats.present}</div>
-          <div className="text-[11px] text-emerald-400 font-medium mt-0.5">On time</div>
+        <div className="card-hover p-4 text-center rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Present</div>
+          <div className="text-2xl font-bold text-emerald-400 mt-1 font-display">{stats.present}</div>
+          <div className="text-[11px] text-emerald-400/80 font-medium mt-0.5">On time</div>
         </div>
 
-        <div className="card p-3 text-center border-l-4 border-l-rose-500">
-          <div className="text-xs font-medium text-slate-400">Absent</div>
-          <div className="text-xl font-bold text-rose-400 mt-1">{stats.absent}</div>
-          <div className="text-[11px] text-rose-400 font-medium mt-0.5">Unexcused</div>
+        <div className="card-hover p-4 text-center rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Absent</div>
+          <div className="text-2xl font-bold text-rose-400 mt-1 font-display">{stats.absent}</div>
+          <div className="text-[11px] text-rose-400/80 font-medium mt-0.5">Unexcused</div>
         </div>
 
-        <div className="card p-3 text-center border-l-4 border-l-amber-500">
-          <div className="text-xs font-medium text-slate-400">Late</div>
-          <div className="text-xl font-bold text-amber-400 mt-1">{stats.late}</div>
-          <div className="text-[11px] text-amber-400 font-medium mt-0.5">Delayed</div>
+        <div className="card-hover p-4 text-center rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Late</div>
+          <div className="text-2xl font-bold text-indigo-400 mt-1 font-display">{stats.late}</div>
+          <div className="text-[11px] text-indigo-400/80 font-medium mt-0.5">Delayed</div>
         </div>
 
-        <div className="card p-3 text-center border-l-4 border-l-purple-500">
-          <div className="text-xs font-medium text-slate-400">Excused</div>
-          <div className="text-xl font-bold text-purple-400 mt-1">{stats.excused}</div>
-          <div className="text-[11px] text-purple-400 font-medium mt-0.5">Documented</div>
+        <div className="card-hover p-4 text-center rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Excused</div>
+          <div className="text-2xl font-bold text-purple-400 mt-1 font-display">{stats.excused}</div>
+          <div className="text-[11px] text-purple-400/80 font-medium mt-0.5">Documented</div>
         </div>
 
-        <div className="card p-3 text-center border-l-4 border-l-sky-500">
-          <div className="text-xs font-medium text-slate-400">On Leave</div>
-          <div className="text-xl font-bold text-sky-400 mt-1">{stats.leave}</div>
-          <div className="text-[11px] text-sky-400 font-medium mt-0.5">Approved</div>
+        <div className="card-hover p-4 text-center rounded-2xl border border-white/[0.08] bg-slate-900/50 backdrop-blur-xl relative overflow-hidden group">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">On Leave</div>
+          <div className="text-2xl font-bold text-sky-400 mt-1 font-display">{stats.leave}</div>
+          <div className="text-[11px] text-sky-400/80 font-medium mt-0.5">Approved</div>
         </div>
       </div>
 
