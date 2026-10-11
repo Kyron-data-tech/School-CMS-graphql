@@ -273,5 +273,72 @@ describe("LLM Academic Copilot - Unit Test Suite", () => {
       const retrieved = getInstitutionalAiConfig();
       expect(retrieved.apiKey).toBe("sk-ant-api03-principaltestkey9999");
     });
+
+    it("should allow Principal to independently add and delete API keys for Gemini, ChatGPT, and Claude", async () => {
+      const {
+        saveInstitutionalApiKey,
+        deleteInstitutionalApiKey,
+        getPublicInstitutionalAiConfig,
+        getInstitutionalAiConfig,
+      } = await import("@/lib/ai/institutionalConfig");
+
+      // 1. Principal adds Gemini API Key
+      saveInstitutionalApiKey(
+        "gemini",
+        "AIzaSyDemoPrincipalGeminiKey1234567890",
+        "gemini-1.5-flash",
+        "Principal (Dr. Anita Desai)"
+      );
+
+      // 2. Principal adds ChatGPT API Key
+      saveInstitutionalApiKey(
+        "openai",
+        "sk-proj-DemoPrincipalOpenAiKey1234567890",
+        "gpt-4o",
+        "Principal (Dr. Anita Desai)"
+      );
+
+      // 3. Principal adds Claude API Key
+      saveInstitutionalApiKey(
+        "claude",
+        "sk-ant-DemoPrincipalClaudeKey1234567890",
+        "claude-3-5-sonnet",
+        "Principal (Dr. Anita Desai)"
+      );
+
+      let publicConfig = getPublicInstitutionalAiConfig();
+      expect(publicConfig.keysStatus.gemini.configured).toBe(true);
+      expect(publicConfig.keysStatus.gemini.maskedKey).toContain("••••");
+      expect(publicConfig.keysStatus.openai.configured).toBe(true);
+      expect(publicConfig.keysStatus.openai.maskedKey).toContain("••••");
+      expect(publicConfig.keysStatus.claude.configured).toBe(true);
+      expect(publicConfig.keysStatus.claude.maskedKey).toContain("••••");
+
+      // 4. Principal deletes Gemini API Key
+      deleteInstitutionalApiKey("gemini", "Principal (Dr. Anita Desai)");
+      publicConfig = getPublicInstitutionalAiConfig();
+      expect(publicConfig.keysStatus.gemini.configured).toBe(false);
+      expect(publicConfig.keysStatus.gemini.maskedKey).toBe("");
+      // Other keys remain intact
+      expect(publicConfig.keysStatus.openai.configured).toBe(true);
+      expect(publicConfig.keysStatus.claude.configured).toBe(true);
+
+      // 5. Principal deletes OpenAI API Key
+      deleteInstitutionalApiKey("openai", "Principal (Dr. Anita Desai)");
+      publicConfig = getPublicInstitutionalAiConfig();
+      expect(publicConfig.keysStatus.openai.configured).toBe(false);
+      expect(publicConfig.keysStatus.claude.configured).toBe(true);
+
+      // 6. Principal deletes Claude API Key
+      deleteInstitutionalApiKey("claude", "Principal (Dr. Anita Desai)");
+      publicConfig = getPublicInstitutionalAiConfig();
+      expect(publicConfig.keysStatus.claude.configured).toBe(false);
+      // Fallback is clean
+      const finalConfig = getInstitutionalAiConfig();
+      expect(finalConfig.apiKeys?.gemini).toBeUndefined();
+      expect(finalConfig.apiKeys?.openai).toBeUndefined();
+      expect(finalConfig.apiKeys?.claude).toBeUndefined();
+    });
   });
 });
+

@@ -65,6 +65,15 @@ export function AiCopilotClient({
   const [savingInstitutional, setSavingInstitutional] = useState(false);
   const [saveSuccessMessage, setSaveSuccessMessage] = useState<string | null>(null);
 
+  // Per-Provider Key Inputs and Action Loading for Principal GUI
+  const [providerKeyInputs, setProviderKeyInputs] = useState<{ [key: string]: string }>({
+    gemini: "",
+    openai: "",
+    claude: "",
+    custom: "",
+  });
+  const [keyActionLoading, setKeyActionLoading] = useState<{ [key: string]: boolean }>({});
+
   // Automatically switch away from teacher-only tabs if student role is active
   useEffect(() => {
     if (activeRole === "student" && (activeTab === "remarks" || activeTab === "notice")) {
@@ -146,6 +155,97 @@ export function AiCopilotClient({
     } finally {
       setSavingInstitutional(false);
     }
+  }
+
+  async function handleSaveProviderKey(
+    provider: "openai" | "claude" | "gemini" | "custom",
+    customKey?: string
+  ) {
+    const rawKey = (customKey !== undefined ? customKey : providerKeyInputs[provider]) || "";
+    if (!rawKey.trim()) {
+      alert(`Please enter a valid API key for ${provider.toUpperCase()} before saving.`);
+      return;
+    }
+    setKeyActionLoading((prev) => ({ ...prev, [provider]: true }));
+    setSaveSuccessMessage(null);
+    try {
+      const res = await fetch("/api/ai/models/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "save_key",
+          provider,
+          apiKey: rawKey.trim(),
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setInstitutionalConfig(data.config);
+        setProviderKeyInputs((prev) => ({ ...prev, [provider]: "" }));
+        setSaveSuccessMessage(`✓ Principal Authority: ${data.message || `Saved API key for ${provider.toUpperCase()}.`}`);
+        setTimeout(() => setSaveSuccessMessage(null), 5000);
+      } else {
+        alert(data.error || "Failed to save API key.");
+      }
+    } catch (err: any) {
+      alert("Network error: " + err.message);
+    } finally {
+      setKeyActionLoading((prev) => ({ ...prev, [provider]: false }));
+    }
+  }
+
+  async function handleDeleteProviderKey(provider: "openai" | "claude" | "gemini" | "custom") {
+    const providerNames: Record<string, string> = {
+      gemini: "Google Gemini",
+      openai: "OpenAI ChatGPT",
+      claude: "Anthropic Claude",
+      custom: "Sir's Local Endpoint",
+    };
+    const pName = providerNames[provider] || provider;
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete the school API key for ${pName}? Teachers and students will no longer have access to this model until a new key is added.`
+    );
+    if (!confirmDelete) return;
+
+    setKeyActionLoading((prev) => ({ ...prev, [provider]: true }));
+    setSaveSuccessMessage(null);
+    try {
+      const res = await fetch("/api/ai/models/config", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setInstitutionalConfig(data.config);
+        setProviderKeyInputs((prev) => ({ ...prev, [provider]: "" }));
+        if (settings.provider === provider) {
+          saveSettings({ ...settings, apiKey: "" });
+        }
+        setSaveSuccessMessage(`✓ Principal Authority: ${data.message || `Deleted API key for ${pName}.`}`);
+        setTimeout(() => setSaveSuccessMessage(null), 5000);
+      } else {
+        alert(data.error || "Failed to delete API key.");
+      }
+    } catch (err: any) {
+      alert("Network error: " + err.message);
+    } finally {
+      setKeyActionLoading((prev) => ({ ...prev, [provider]: false }));
+    }
+  }
+
+  function getProviderStatus(provider: "gemini" | "openai" | "claude" | "custom") {
+    if (institutionalConfig?.keysStatus?.[provider]) {
+      return institutionalConfig.keysStatus[provider];
+    }
+    const isThis = institutionalConfig?.provider === provider;
+    return {
+      provider,
+      name: provider,
+      configured: isThis && Boolean(institutionalConfig?.hasKey),
+      maskedKey: isThis ? institutionalConfig?.maskedKey || "" : "",
+      defaultModel: "",
+    };
   }
 
   // Helper to switch active model preset
@@ -773,58 +873,300 @@ export function AiCopilotClient({
           <div className="space-y-5">
             {/* 👑 Institutional License & School-Wide API Key Card */}
             {activeRole === "principal" ? (
-              <div className="rounded-2xl border border-brand-500/30 bg-gradient-to-br from-slate-900 via-brand-950/30 to-slate-950 p-5 space-y-3.5 shadow-lg">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-500/20 text-brand-300 text-lg">
-                        👑
-                      </span>
-                      <h4 className="text-sm font-bold text-white">
-                        Principal Authority: School-Wide AI License Management
-                      </h4>
-                      <span className="rounded bg-brand-500/20 border border-brand-400/30 px-2 py-0.5 text-[10px] font-mono text-brand-300 font-semibold">
-                        ADMIN AUTHORITY
-                      </span>
+              <>
+                <div className="rounded-2xl border border-brand-500/30 bg-gradient-to-br from-slate-900 via-brand-950/30 to-slate-950 p-5 space-y-3.5 shadow-lg">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-500/20 text-brand-300 text-lg">
+                          👑
+                        </span>
+                        <h4 className="text-sm font-bold text-white">
+                          Principal Authority: School-Wide AI License Management
+                        </h4>
+                        <span className="rounded bg-brand-500/20 border border-brand-400/30 px-2 py-0.5 text-[10px] font-mono text-brand-300 font-semibold">
+                          ADMIN AUTHORITY
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+                        As Principal, manage your school&apos;s AI keys below. All keys are securely stored on the server so <strong>Teachers and Students</strong> automatically inherit access without seeing or needing individual API keys.
+                      </p>
                     </div>
-                    <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
-                      As Principal, enter your school&apos;s API key below and click <strong>&quot;Save School-Wide API Key&quot;</strong>. The key is securely stored on the server so <strong>all Teachers and Students</strong> automatically inherit this AI license without needing their own accounts or keys.
-                    </p>
+
+                    <button
+                      type="button"
+                      onClick={handleSaveSchoolApiKey}
+                      disabled={savingInstitutional}
+                      className="btn bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shrink-0 shadow-lg transition flex items-center gap-2 px-4 py-2.5 rounded-xl border border-brand-400/40 disabled:opacity-50"
+                    >
+                      <span>💾</span>
+                      <span>{savingInstitutional ? "Saving..." : "Save Active Config"}</span>
+                    </button>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={handleSaveSchoolApiKey}
-                    disabled={savingInstitutional}
-                    className="btn bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shrink-0 shadow-lg transition flex items-center gap-2 px-4 py-2.5 rounded-xl border border-brand-400/40 disabled:opacity-50"
-                  >
-                    <span>💾</span>
-                    <span>{savingInstitutional ? "Saving..." : "Save School-Wide API Key"}</span>
-                  </button>
+                  {saveSuccessMessage && (
+                    <div className="rounded-xl bg-emerald-950/80 border border-emerald-500/60 p-3 text-xs text-emerald-200 font-medium flex items-center gap-2">
+                      <span>✓</span>
+                      <span>{saveSuccessMessage}</span>
+                    </div>
+                  )}
+
+                  {institutionalConfig && (
+                    <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
+                      <div className="flex items-center gap-2">
+                        <span>Authority: <strong className="text-white">{institutionalConfig.configuredBy || "Dr. Anita Desai (Principal)"}</strong></span>
+                        <span>•</span>
+                        <span>Active Default Engine: <strong className="text-indigo-300 uppercase">{institutionalConfig.provider}</strong> ({institutionalConfig.modelName})</span>
+                      </div>
+                      {institutionalConfig.maskedKey && (
+                        <div className="font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2.5 py-0.5 rounded">
+                          Key: {institutionalConfig.maskedKey}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
-                {saveSuccessMessage && (
-                  <div className="rounded-xl bg-emerald-950/80 border border-emerald-500/60 p-3 text-xs text-emerald-200 font-medium flex items-center gap-2">
-                    <span>✓</span>
-                    <span>{saveSuccessMessage}</span>
-                  </div>
-                )}
-
-                {institutionalConfig && (
-                  <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
-                    <div className="flex items-center gap-2">
-                      <span>Authority: <strong className="text-white">{institutionalConfig.configuredBy || "Dr. Anita Desai (Principal)"}</strong></span>
-                      <span>•</span>
-                      <span>Configured Model: <strong className="text-indigo-300 uppercase">{institutionalConfig.provider}</strong> ({institutionalConfig.modelName})</span>
-                    </div>
-                    {institutionalConfig.maskedKey && (
-                      <div className="font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2.5 py-0.5 rounded">
-                        Key: {institutionalConfig.maskedKey}
+                {/* 🔑 Principal Multi-Model API Keys Control Center (Add & Delete from GUI) */}
+                <div className="rounded-2xl border border-slate-800 bg-slate-900/95 p-5 space-y-4 shadow-xl">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800/80 pb-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-500/20 text-indigo-300 text-sm">
+                          🔑
+                        </span>
+                        <h4 className="text-sm font-bold text-white">
+                          Principal Multi-Model Key Manager (Add &amp; Delete from GUI)
+                        </h4>
+                        <span className="rounded bg-indigo-500/20 border border-indigo-400/30 px-2 py-0.5 text-[10px] font-mono text-indigo-300 font-semibold">
+                          GUI CONTROLS
+                        </span>
                       </div>
-                    )}
+                      <p className="text-xs text-slate-300 mt-1">
+                        Add, update, or delete school API keys for <strong>Google Gemini</strong>, <strong>OpenAI ChatGPT</strong>, and <strong>Anthropic Claude</strong>. Clicking <strong>Delete</strong> immediately removes access for that specific model.
+                      </p>
+                    </div>
+                    <span className="text-[11px] font-mono text-slate-400 shrink-0">
+                      Status: <strong className="text-emerald-400">{institutionalConfig?.isConfigured ? "Keys Configured" : "No Keys Set"}</strong>
+                    </span>
                   </div>
-                )}
-              </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                    {/* 1. Google Gemini Card */}
+                    {(() => {
+                      const status = getProviderStatus("gemini");
+                      const isBusy = keyActionLoading["gemini"];
+                      return (
+                        <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-3.5 flex flex-col justify-between space-y-3">
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                                <span>🔵</span> Google Gemini
+                              </span>
+                              <span className="rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-mono text-blue-400">
+                                1M–2M Context
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-slate-400">Gemini 1.5 Flash &amp; Pro</div>
+                            <div className="pt-1">
+                              {status.configured ? (
+                                <div className="inline-flex items-center gap-1.5 rounded-md bg-emerald-950/80 border border-emerald-500/40 px-2 py-1 text-[11px] font-mono text-emerald-300 w-full justify-between">
+                                  <span className="flex items-center gap-1.5 truncate">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                                    <span className="truncate">{status.maskedKey || "Configured"}</span>
+                                  </span>
+                                  <span className="text-[10px] text-emerald-400 font-sans shrink-0">✓ Active</span>
+                                </div>
+                              ) : (
+                                <div className="inline-flex items-center gap-1.5 rounded-md bg-slate-950/80 border border-slate-800 px-2 py-1 text-[11px] font-mono text-slate-400 w-full">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-slate-500 shrink-0"></span>
+                                  <span>Not Configured</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 pt-1">
+                            <input
+                              type="password"
+                              className="input text-xs font-mono w-full"
+                              placeholder={status.configured ? "Paste new key to replace..." : "Paste AIzaSy... key"}
+                              value={providerKeyInputs.gemini || ""}
+                              onChange={(e) =>
+                                setProviderKeyInputs((prev) => ({ ...prev, gemini: e.target.value }))
+                              }
+                            />
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                disabled={isBusy || !providerKeyInputs.gemini?.trim()}
+                                onClick={() => handleSaveProviderKey("gemini")}
+                                className="btn bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs flex-1 py-1.5 rounded-lg disabled:opacity-40 transition"
+                              >
+                                {isBusy ? "Saving..." : status.configured ? "Update Key" : "Add Key"}
+                              </button>
+                              {status.configured && (
+                                <button
+                                  type="button"
+                                  disabled={isBusy}
+                                  onClick={() => handleDeleteProviderKey("gemini")}
+                                  title="Delete Gemini API Key"
+                                  className="btn bg-rose-950/60 hover:bg-rose-900 border border-rose-700/60 text-rose-300 font-semibold text-xs px-2.5 py-1.5 rounded-lg disabled:opacity-40 transition flex items-center gap-1 shrink-0"
+                                >
+                                  <span>🗑️</span>
+                                  <span>Delete</span>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* 2. OpenAI ChatGPT Card */}
+                    {(() => {
+                      const status = getProviderStatus("openai");
+                      const isBusy = keyActionLoading["openai"];
+                      return (
+                        <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5 flex flex-col justify-between space-y-3">
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                                <span>🟢</span> OpenAI ChatGPT
+                              </span>
+                              <span className="rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-mono text-emerald-400">
+                                128K Context
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-slate-400">GPT-4o &amp; GPT-4o-mini</div>
+                            <div className="pt-1">
+                              {status.configured ? (
+                                <div className="inline-flex items-center gap-1.5 rounded-md bg-emerald-950/80 border border-emerald-500/40 px-2 py-1 text-[11px] font-mono text-emerald-300 w-full justify-between">
+                                  <span className="flex items-center gap-1.5 truncate">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                                    <span className="truncate">{status.maskedKey || "Configured"}</span>
+                                  </span>
+                                  <span className="text-[10px] text-emerald-400 font-sans shrink-0">✓ Active</span>
+                                </div>
+                              ) : (
+                                <div className="inline-flex items-center gap-1.5 rounded-md bg-slate-950/80 border border-slate-800 px-2 py-1 text-[11px] font-mono text-slate-400 w-full">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-slate-500 shrink-0"></span>
+                                  <span>Not Configured</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 pt-1">
+                            <input
+                              type="password"
+                              className="input text-xs font-mono w-full"
+                              placeholder={status.configured ? "Paste new key to replace..." : "Paste sk-proj-... key"}
+                              value={providerKeyInputs.openai || ""}
+                              onChange={(e) =>
+                                setProviderKeyInputs((prev) => ({ ...prev, openai: e.target.value }))
+                              }
+                            />
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                disabled={isBusy || !providerKeyInputs.openai?.trim()}
+                                onClick={() => handleSaveProviderKey("openai")}
+                                className="btn bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex-1 py-1.5 rounded-lg disabled:opacity-40 transition"
+                              >
+                                {isBusy ? "Saving..." : status.configured ? "Update Key" : "Add Key"}
+                              </button>
+                              {status.configured && (
+                                <button
+                                  type="button"
+                                  disabled={isBusy}
+                                  onClick={() => handleDeleteProviderKey("openai")}
+                                  title="Delete OpenAI API Key"
+                                  className="btn bg-rose-950/60 hover:bg-rose-900 border border-rose-700/60 text-rose-300 font-semibold text-xs px-2.5 py-1.5 rounded-lg disabled:opacity-40 transition flex items-center gap-1 shrink-0"
+                                >
+                                  <span>🗑️</span>
+                                  <span>Delete</span>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* 3. Anthropic Claude Card */}
+                    {(() => {
+                      const status = getProviderStatus("claude");
+                      const isBusy = keyActionLoading["claude"];
+                      return (
+                        <div className="rounded-xl border border-purple-500/30 bg-purple-950/20 p-3.5 flex flex-col justify-between space-y-3">
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                                <span>🟣</span> Anthropic Claude
+                              </span>
+                              <span className="rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-mono text-purple-400">
+                                200K Context
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-slate-400">Claude 3.5 Sonnet &amp; Haiku</div>
+                            <div className="pt-1">
+                              {status.configured ? (
+                                <div className="inline-flex items-center gap-1.5 rounded-md bg-emerald-950/80 border border-emerald-500/40 px-2 py-1 text-[11px] font-mono text-emerald-300 w-full justify-between">
+                                  <span className="flex items-center gap-1.5 truncate">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                                    <span className="truncate">{status.maskedKey || "Configured"}</span>
+                                  </span>
+                                  <span className="text-[10px] text-emerald-400 font-sans shrink-0">✓ Active</span>
+                                </div>
+                              ) : (
+                                <div className="inline-flex items-center gap-1.5 rounded-md bg-slate-950/80 border border-slate-800 px-2 py-1 text-[11px] font-mono text-slate-400 w-full">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-slate-500 shrink-0"></span>
+                                  <span>Not Configured</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 pt-1">
+                            <input
+                              type="password"
+                              className="input text-xs font-mono w-full"
+                              placeholder={status.configured ? "Paste new key to replace..." : "Paste sk-ant-... key"}
+                              value={providerKeyInputs.claude || ""}
+                              onChange={(e) =>
+                                setProviderKeyInputs((prev) => ({ ...prev, claude: e.target.value }))
+                              }
+                            />
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                disabled={isBusy || !providerKeyInputs.claude?.trim()}
+                                onClick={() => handleSaveProviderKey("claude")}
+                                className="btn bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs flex-1 py-1.5 rounded-lg disabled:opacity-40 transition"
+                              >
+                                {isBusy ? "Saving..." : status.configured ? "Update Key" : "Add Key"}
+                              </button>
+                              {status.configured && (
+                                <button
+                                  type="button"
+                                  disabled={isBusy}
+                                  onClick={() => handleDeleteProviderKey("claude")}
+                                  title="Delete Claude API Key"
+                                  className="btn bg-rose-950/60 hover:bg-rose-900 border border-rose-700/60 text-rose-300 font-semibold text-xs px-2.5 py-1.5 rounded-lg disabled:opacity-40 transition flex items-center gap-1 shrink-0"
+                                >
+                                  <span>🗑️</span>
+                                  <span>Delete</span>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </>
             ) : activeRole === "student" ? (
               <div className="rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950/40 via-slate-900 to-slate-950 p-5 space-y-3 shadow-lg">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -1075,9 +1417,44 @@ export function AiCopilotClient({
                       />
                     )}
                     {activeRole === "principal" && (
-                      <p className="text-[10px] text-slate-400 mt-1">
-                        Enter key and click &quot;Save School-Wide API Key&quot; above to enable for all teachers and students.
-                      </p>
+                      <div className="mt-2 space-y-1.5">
+                        <div className="flex items-center justify-between gap-2">
+                          {getProviderStatus("openai").configured ? (
+                            <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
+                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                              Active: {getProviderStatus("openai").maskedKey}
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-slate-400">No key configured</span>
+                          )}
+                          <div className="flex items-center gap-2">
+                            {settings.apiKey && (
+                              <button
+                                type="button"
+                                disabled={keyActionLoading["openai"]}
+                                onClick={() => handleSaveProviderKey("openai", settings.apiKey)}
+                                className="text-[11px] font-semibold text-emerald-300 hover:text-emerald-200 bg-emerald-950/60 border border-emerald-800/60 px-2.5 py-1 rounded-lg transition"
+                              >
+                                {keyActionLoading["openai"] ? "Saving..." : "💾 Save Key"}
+                              </button>
+                            )}
+                            {getProviderStatus("openai").configured && (
+                              <button
+                                type="button"
+                                disabled={keyActionLoading["openai"]}
+                                onClick={() => handleDeleteProviderKey("openai")}
+                                className="text-[11px] font-semibold text-rose-300 hover:text-rose-200 bg-rose-950/60 border border-rose-800/60 px-2.5 py-1 rounded-lg transition flex items-center gap-1"
+                              >
+                                <span>🗑️</span>
+                                <span>Delete Key</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-[10px] text-slate-400">
+                          Principal can add or delete this key anytime. Deletion removes OpenAI for the school.
+                        </p>
+                      </div>
                     )}
                     {activeRole === "student" && (
                       <p className="text-[10px] text-emerald-400/80 mt-1">
@@ -1130,9 +1507,44 @@ export function AiCopilotClient({
                       />
                     )}
                     {activeRole === "principal" && (
-                      <p className="text-[10px] text-slate-400 mt-1">
-                        Enter key and click &quot;Save School-Wide API Key&quot; above to enable for all teachers and students.
-                      </p>
+                      <div className="mt-2 space-y-1.5">
+                        <div className="flex items-center justify-between gap-2">
+                          {getProviderStatus("claude").configured ? (
+                            <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
+                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                              Active: {getProviderStatus("claude").maskedKey}
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-slate-400">No key configured</span>
+                          )}
+                          <div className="flex items-center gap-2">
+                            {settings.apiKey && (
+                              <button
+                                type="button"
+                                disabled={keyActionLoading["claude"]}
+                                onClick={() => handleSaveProviderKey("claude", settings.apiKey)}
+                                className="text-[11px] font-semibold text-purple-300 hover:text-purple-200 bg-purple-950/60 border border-purple-800/60 px-2.5 py-1 rounded-lg transition"
+                              >
+                                {keyActionLoading["claude"] ? "Saving..." : "💾 Save Key"}
+                              </button>
+                            )}
+                            {getProviderStatus("claude").configured && (
+                              <button
+                                type="button"
+                                disabled={keyActionLoading["claude"]}
+                                onClick={() => handleDeleteProviderKey("claude")}
+                                className="text-[11px] font-semibold text-rose-300 hover:text-rose-200 bg-rose-950/60 border border-rose-800/60 px-2.5 py-1 rounded-lg transition flex items-center gap-1"
+                              >
+                                <span>🗑️</span>
+                                <span>Delete Key</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-[10px] text-slate-400">
+                          Principal can add or delete this key anytime. Deletion removes Claude for the school.
+                        </p>
+                      </div>
                     )}
                     {activeRole === "student" && (
                       <p className="text-[10px] text-emerald-400/80 mt-1">
@@ -1185,9 +1597,44 @@ export function AiCopilotClient({
                       />
                     )}
                     {activeRole === "principal" && (
-                      <p className="text-[10px] text-slate-400 mt-1">
-                        Enter key and click &quot;Save School-Wide API Key&quot; above to enable for all teachers and students.
-                      </p>
+                      <div className="mt-2 space-y-1.5">
+                        <div className="flex items-center justify-between gap-2">
+                          {getProviderStatus("gemini").configured ? (
+                            <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
+                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                              Active: {getProviderStatus("gemini").maskedKey}
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-slate-400">No key configured</span>
+                          )}
+                          <div className="flex items-center gap-2">
+                            {settings.apiKey && (
+                              <button
+                                type="button"
+                                disabled={keyActionLoading["gemini"]}
+                                onClick={() => handleSaveProviderKey("gemini", settings.apiKey)}
+                                className="text-[11px] font-semibold text-blue-300 hover:text-blue-200 bg-blue-950/60 border border-blue-800/60 px-2.5 py-1 rounded-lg transition"
+                              >
+                                {keyActionLoading["gemini"] ? "Saving..." : "💾 Save Key"}
+                              </button>
+                            )}
+                            {getProviderStatus("gemini").configured && (
+                              <button
+                                type="button"
+                                disabled={keyActionLoading["gemini"]}
+                                onClick={() => handleDeleteProviderKey("gemini")}
+                                className="text-[11px] font-semibold text-rose-300 hover:text-rose-200 bg-rose-950/60 border border-rose-800/60 px-2.5 py-1 rounded-lg transition flex items-center gap-1"
+                              >
+                                <span>🗑️</span>
+                                <span>Delete Key</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-[10px] text-slate-400">
+                          Principal can add or delete this key anytime. Deletion removes Gemini for the school.
+                        </p>
+                      </div>
                     )}
                     {activeRole === "student" && (
                       <p className="text-[10px] text-emerald-400/80 mt-1">

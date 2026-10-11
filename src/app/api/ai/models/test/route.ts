@@ -11,7 +11,11 @@ export async function POST(request: Request) {
     const institutional = getInstitutionalAiConfig();
     const rawKey = (config.apiKey || "").trim();
     const isMaskedOrEmpty = !rawKey || rawKey.includes("••");
-    const effectiveKey = !isMaskedOrEmpty ? rawKey : institutional.apiKey;
+    const targetProvider = config.provider as "openai" | "claude" | "gemini" | "custom" | "builtin";
+    const providerSpecificKey = institutional.apiKeys?.[targetProvider as keyof typeof institutional.apiKeys];
+    const effectiveKey = !isMaskedOrEmpty
+      ? rawKey
+      : (providerSpecificKey || (targetProvider === institutional.provider ? institutional.apiKey : ""));
 
     const result = await testModelConnection({
       ...config,

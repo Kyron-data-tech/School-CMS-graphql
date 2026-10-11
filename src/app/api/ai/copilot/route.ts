@@ -18,10 +18,16 @@ export async function POST(request: Request) {
     const institutional = getInstitutionalAiConfig();
     const rawClientKey = (modelConfig?.apiKey || "").trim();
     const isMaskedOrEmpty = !rawClientKey || rawClientKey.includes("••");
-    const effectiveApiKey = !isMaskedOrEmpty ? rawClientKey : institutional.apiKey;
+    const targetProvider = (modelConfig?.provider || institutional.provider) as "openai" | "claude" | "gemini" | "custom" | "builtin";
+
+    // Resolve key for the specific target provider from institutional multi-key store
+    const providerSpecificKey = institutional.apiKeys?.[targetProvider as keyof typeof institutional.apiKeys];
+    const effectiveApiKey = !isMaskedOrEmpty
+      ? rawClientKey
+      : (providerSpecificKey || (targetProvider === institutional.provider ? institutional.apiKey : ""));
 
     const effectiveConfig = {
-      provider: modelConfig?.provider || institutional.provider,
+      provider: targetProvider,
       modelName: modelConfig?.modelName || institutional.modelName,
       baseUrl: modelConfig?.baseUrl || institutional.baseUrl,
       apiKey: effectiveApiKey,
