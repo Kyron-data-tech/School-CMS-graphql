@@ -94,6 +94,24 @@ export const MODEL_CATALOG: Record<string, ModelSpec> = {
     badge: "2M Context",
   },
   // 4. Sir's Custom / Local Endpoint (Ollama, LM Studio, vLLM)
+  "qwen-0.6b": {
+    id: "qwen-0.6b",
+    name: "Qwen 0.6B Parameter (Edge / CPU SLM)",
+    provider: "custom",
+    contextWindow: 32768,
+    maxOutputTokens: 2048,
+    description: "Ultra-compact 0.6B parameter Small Language Model (Qwen 0.6B / Qwen3). 100% offline, runs on ordinary school PCs & CPUs with under 600MB RAM.",
+    badge: "0.6B Edge SLM",
+  },
+  "qwen3-0.6b": {
+    id: "qwen3-0.6b",
+    name: "Qwen3 0.6B Parameter (Local Edge)",
+    provider: "custom",
+    contextWindow: 32768,
+    maxOutputTokens: 2048,
+    description: "Sir's recommended 0.6B parameter model. Highly optimized for fast CPU inference without dedicated GPU hardware.",
+    badge: "0.6B SLM",
+  },
   "llama3": {
     id: "llama3",
     name: "Sir's Custom Endpoint (LLaMA 3)",
@@ -134,7 +152,7 @@ export function getContextWindowLimit(modelName?: string): number {
   if (modelName.includes("gemini")) return 1000000;
   if (modelName.includes("claude")) return 200000;
   if (modelName.includes("gpt-4") || modelName.includes("openai")) return 128000;
-  if (modelName.includes("mistral")) return 32768;
+  if (modelName.includes("mistral") || modelName.includes("qwen")) return 32768;
   return 8192;
 }
 

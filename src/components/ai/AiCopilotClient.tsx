@@ -249,7 +249,7 @@ export function AiCopilotClient({
   }
 
   // Helper to switch active model preset
-  function selectPreset(preset: "openai" | "claude" | "gemini" | "custom" | "builtin") {
+  function selectPreset(preset: "openai" | "claude" | "gemini" | "custom" | "qwen" | "builtin") {
     switch (preset) {
       case "openai":
         saveSettings({
@@ -273,6 +273,14 @@ export function AiCopilotClient({
           provider: "gemini",
           modelName: "gemini-1.5-flash",
           baseUrl: "",
+        });
+        break;
+      case "qwen":
+        saveSettings({
+          ...settings,
+          provider: "custom",
+          modelName: "qwen-0.6b",
+          baseUrl: "http://localhost:11434/v1",
         });
         break;
       case "custom":
@@ -651,12 +659,27 @@ export function AiCopilotClient({
             <span className="rounded bg-black/40 px-1.5 py-0.5 text-[10px] text-blue-300 font-mono">1M</span>
           </button>
 
+          {/* Qwen 0.6B (Sir's Recommendation) */}
+          <button
+            type="button"
+            onClick={() => selectPreset("qwen")}
+            className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition flex items-center gap-2 border backdrop-blur-md ${
+              settings.provider === "custom" && (settings.modelName === "qwen-0.6b" || settings.modelName === "qwen3-0.6b")
+                ? "bg-teal-500/15 border-teal-500/40 text-teal-200 font-bold shadow-[0_0_15px_-3px_rgba(20,184,166,0.3)] ring-1 ring-teal-400/50"
+                : "bg-white/[0.03] border-white/[0.08] text-slate-300 hover:bg-white/[0.07]"
+            }`}
+          >
+            <span className="h-2 w-2 rounded-full bg-teal-400" />
+            <span>Qwen 0.6B (Edge SLM)</span>
+            <span className="rounded bg-black/40 px-1.5 py-0.5 text-[10px] text-teal-300 font-mono">0.6B / 32K</span>
+          </button>
+
           {/* Sir's Custom Endpoint */}
           <button
             type="button"
             onClick={() => selectPreset("custom")}
             className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition flex items-center gap-2 border backdrop-blur-md ${
-              settings.provider === "custom"
+              settings.provider === "custom" && settings.modelName !== "qwen-0.6b" && settings.modelName !== "qwen3-0.6b"
                 ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200 font-bold shadow-[0_0_15px_-3px_rgba(99,102,241,0.3)] ring-1 ring-indigo-400/50"
                 : "bg-white/[0.03] border-white/[0.08] text-slate-300 hover:bg-white/[0.07]"
             }`}
@@ -740,7 +763,7 @@ export function AiCopilotClient({
             <p className="leading-relaxed text-slate-300 text-[11px]">
               The **Context Window** is the working memory limit of an AI model in a single request. It holds the System Prompt, conversation history, school database context, user query, and generated answer:
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-[11px]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-[11px]">
               <div className="rounded-xl bg-white/[0.03] border border-white/[0.08] p-3 backdrop-blur-md">
                 <div className="font-bold text-blue-300 flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-blue-400" /> Google Gemini
@@ -768,6 +791,16 @@ export function AiCopilotClient({
                 <div className="text-[10px] font-mono text-emerald-300 mt-1">128,000 tokens (~96,000 words)</div>
                 <p className="text-slate-400 text-[10px] mt-1 leading-relaxed">
                   General-purpose industry workhorse for fast interactive Q&A, report card remarks, and quick circulars.
+                </p>
+              </div>
+
+              <div className="rounded-xl bg-teal-950/30 border border-teal-500/30 p-3 backdrop-blur-md">
+                <div className="font-bold text-teal-300 flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-teal-400" /> Qwen 0.6B (Sir&apos;s Pick)
+                </div>
+                <div className="text-[10px] font-mono text-teal-300 mt-1">32,768 tokens (~25,000 words)</div>
+                <p className="text-slate-300 text-[10px] mt-1 leading-relaxed">
+                  Ultra-light 0.6B Small Language Model. Runs offline on school CPUs with ~500MB RAM. Zero API cost.
                 </p>
               </div>
             </div>
@@ -1668,6 +1701,44 @@ export function AiCopilotClient({
               {/* Custom Model Config */}
               {settings.provider === "custom" && (
                 <div className="space-y-3">
+                  {/* Quick Local Model Presets */}
+                  <div className="flex flex-wrap items-center gap-1.5 pb-1">
+                    <span className="text-[11px] text-slate-400 mr-1">Quick Local Presets:</span>
+                    <button
+                      type="button"
+                      onClick={() => saveSettings({ ...settings, modelName: "qwen-0.6b", baseUrl: "http://localhost:11434/v1" })}
+                      className={`text-[10px] px-2.5 py-1 rounded-lg border font-semibold transition ${
+                        settings.modelName === "qwen-0.6b" || settings.modelName === "qwen3-0.6b"
+                          ? "bg-teal-500/20 text-teal-300 border-teal-500/40 shadow-sm"
+                          : "bg-white/[0.04] text-slate-300 border-white/[0.08] hover:bg-white/[0.08]"
+                      }`}
+                    >
+                      ⚡ Qwen 0.6B (Sir&apos;s Pick)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => saveSettings({ ...settings, modelName: "llama3", baseUrl: "http://localhost:11434/v1" })}
+                      className={`text-[10px] px-2.5 py-1 rounded-lg border font-semibold transition ${
+                        settings.modelName === "llama3"
+                          ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/40 shadow-sm"
+                          : "bg-white/[0.04] text-slate-300 border-white/[0.08] hover:bg-white/[0.08]"
+                      }`}
+                    >
+                      LLaMA 3 (8B)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => saveSettings({ ...settings, modelName: "mistral", baseUrl: "http://localhost:11434/v1" })}
+                      className={`text-[10px] px-2.5 py-1 rounded-lg border font-semibold transition ${
+                        settings.modelName === "mistral"
+                          ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/40 shadow-sm"
+                          : "bg-white/[0.04] text-slate-300 border-white/[0.08] hover:bg-white/[0.08]"
+                      }`}
+                    >
+                      Mistral 7B
+                    </button>
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="label text-xs">Model Name *</label>
@@ -1675,7 +1746,7 @@ export function AiCopilotClient({
                         className="input text-xs font-mono"
                         value={settings.modelName}
                         onChange={(e) => saveSettings({ ...settings, modelName: e.target.value })}
-                        placeholder="e.g. llama3, mistral, qwen2"
+                        placeholder="e.g. qwen-0.6b, llama3, mistral"
                       />
                     </div>
                     <div>
