@@ -622,8 +622,9 @@ export async function generateQuiz(
 ): Promise<LlmGenerationResult> {
   const count = data.questionCount || 5;
   const systemPrompt = `You are an expert curriculum developer and teacher at Greenfield International School. You generate educational, age-appropriate quizzes with answer keys.`;
-  const userPrompt = `Create a ${count}-question quiz for ${data.gradeLevel || "Class 8"} on the subject of "${data.subject}" focusing on the topic "${data.topic}".
-Format with clear Question numbers, multiple choice options (A, B, C, D), and an Answer Key with brief explanations at the bottom.`;
+  const userPrompt = `Create a ${count}-question quiz for ${data.gradeLevel || "Class 8"} on the subject of "${data.subject}" focusing strictly on the topic "${data.topic}".
+IMPORTANT: All generated questions MUST focus exclusively and directly on "${data.topic}". Do NOT generate questions from unrelated topics or different branches of ${data.subject}.
+Format with clear Question numbers (Q1, Q2, ...), multiple choice options (A, B, C, D), and an Answer Key with brief explanations at the bottom.`;
 
   const llmRes = await dispatchLlm(systemPrompt, userPrompt, config);
   if (llmRes) {
@@ -633,7 +634,7 @@ Format with clear Question numbers, multiple choice options (A, B, C, D), and an
   const fallback = buildDomainQuizFallback(
     data.subject,
     data.topic,
-    data.gradeLevel || "Class 9",
+    data.gradeLevel || "Class 8",
     count
   );
 
@@ -651,14 +652,44 @@ Format with clear Question numbers, multiple choice options (A, B, C, D), and an
   };
 }
 
+interface DomainQuizQuestion {
+  q: string;
+  options: string[];
+  answer: string;
+  explanation: string;
+}
+
+function formatQuizResponse(
+  subject: string,
+  topic: string,
+  gradeLevel: string,
+  questions: DomainQuizQuestion[],
+  questionCount: number
+): string {
+  const selected = questions.slice(0, Math.min(questionCount, questions.length));
+  let text = `### 📝 Practice Quiz: ${subject} — ${topic} (${gradeLevel})\n\n`;
+  selected.forEach((item, idx) => {
+    text += `**Q${idx + 1}. ${item.q}**\n`;
+    item.options.forEach((opt) => {
+      text += `* ${opt}\n`;
+    });
+    text += `\n`;
+  });
+  text += `---\n\n### 🔑 Answer Key & Explanations:\n`;
+  selected.forEach((item, idx) => {
+    text += `${idx + 1}. **Answer: ${item.answer}** — ${item.explanation}\n`;
+  });
+  return text.trim();
+}
+
 /**
  * Domain-specific Quiz Generator Fallback
- * Generates rigorous, subject-accurate questions for Computer Science, Math, Science, and other subjects.
+ * Generates rigorous, topic-accurate questions for Mathematics, Computer Science, Science, English, and other subjects.
  */
 function buildDomainQuizFallback(
   subject: string,
   topic: string,
-  gradeLevel: string = "Class 9",
+  gradeLevel: string = "Class 8",
   questionCount: number = 3
 ): string {
   const topicLower = topic.toLowerCase();
@@ -670,7 +701,7 @@ function buildDomainQuizFallback(
     topicLower.includes("linked") ||
     topicLower.includes("list")
   ) {
-    const arrayListQuestions = [
+    const questions: DomainQuizQuestion[] = [
       {
         q: "What is the primary memory allocation difference between an Array and a Linked List?",
         options: [
@@ -727,21 +758,7 @@ function buildDomainQuizFallback(
         explanation: "Attempting to access an index outside [0, length - 1] leads to an ArrayIndexOutOfBoundsException or Segmentation Fault due to unauthorized memory access.",
       },
     ];
-
-    const selected = arrayListQuestions.slice(0, Math.min(questionCount, arrayListQuestions.length));
-    let text = `### 📝 Practice Quiz: ${subject} — ${topic} (${gradeLevel})\n\n`;
-    selected.forEach((item, idx) => {
-      text += `**Q${idx + 1}. ${item.q}**\n`;
-      item.options.forEach((opt) => {
-        text += `* ${opt}\n`;
-      });
-      text += `\n`;
-    });
-    text += `---\n\n### 🔑 Answer Key & Explanations:\n`;
-    selected.forEach((item, idx) => {
-      text += `${idx + 1}. **Answer: ${item.answer}** — ${item.explanation}\n`;
-    });
-    return text.trim();
+    return formatQuizResponse(subject, topic, gradeLevel, questions, questionCount);
   }
 
   // 1B. Computer Science: Trees & Graphs
@@ -750,7 +767,7 @@ function buildDomainQuizFallback(
     topicLower.includes("graph") ||
     topicLower.includes("bst")
   ) {
-    const csQuestions = [
+    const questions: DomainQuizQuestion[] = [
       {
         q: "What is the primary structural difference between a Tree and a Graph data structure?",
         options: [
@@ -807,21 +824,7 @@ function buildDomainQuizFallback(
         explanation: "A spanning tree that connects all V vertices without forming any cycles contains exactly V - 1 edges.",
       },
     ];
-
-    const selected = csQuestions.slice(0, Math.min(questionCount, csQuestions.length));
-    let text = `### 📝 Practice Quiz: ${subject} — ${topic} (${gradeLevel})\n\n`;
-    selected.forEach((item, idx) => {
-      text += `**Q${idx + 1}. ${item.q}**\n`;
-      item.options.forEach((opt) => {
-        text += `* ${opt}\n`;
-      });
-      text += `\n`;
-    });
-    text += `---\n\n### 🔑 Answer Key & Explanations:\n`;
-    selected.forEach((item, idx) => {
-      text += `${idx + 1}. **Answer: ${item.answer}** — ${item.explanation}\n`;
-    });
-    return text.trim();
+    return formatQuizResponse(subject, topic, gradeLevel, questions, questionCount);
   }
 
   // 1C. Computer Science: Stacks & Queues
@@ -829,7 +832,7 @@ function buildDomainQuizFallback(
     topicLower.includes("stack") ||
     topicLower.includes("queue")
   ) {
-    const sqQuestions = [
+    const questions: DomainQuizQuestion[] = [
       {
         q: "Which fundamental data access principle governs a Stack data structure?",
         options: [
@@ -853,7 +856,7 @@ function buildDomainQuizFallback(
         explanation: "The call stack manages active function calls, local variables, and return addresses using LIFO stack semantics.",
       },
       {
-        q: "What principle governs a Queue data structure?",
+        q: "What principle governs a standard Queue data structure?",
         options: [
           "A) Last-In, First-Out (LIFO)",
           "B) First-In, First-Out (FIFO)",
@@ -864,43 +867,337 @@ function buildDomainQuizFallback(
         explanation: "A standard Queue enforces First-In, First-Out (FIFO) ordering: elements are enqueued at the rear and dequeued from the front.",
       },
     ];
-    const selected = sqQuestions.slice(0, Math.min(questionCount, sqQuestions.length));
-    let text = `### 📝 Practice Quiz: ${subject} — ${topic} (${gradeLevel})\n\n`;
-    selected.forEach((item, idx) => {
-      text += `**Q${idx + 1}. ${item.q}**\n`;
-      item.options.forEach((opt) => {
-        text += `* ${opt}\n`;
-      });
-      text += `\n`;
-    });
-    text += `---\n\n### 🔑 Answer Key & Explanations:\n`;
-    selected.forEach((item, idx) => {
-      text += `${idx + 1}. **Answer: ${item.answer}** — ${item.explanation}\n`;
-    });
-    return text.trim();
+    return formatQuizResponse(subject, topic, gradeLevel, questions, questionCount);
   }
 
-  // 2. Mathematics: Equations, Algebra, Geometry
+  // 2A. Mathematics: Probability & Chance (Class 8 & School Curriculum)
   if (
-    subjectLower.includes("math") ||
-    topicLower.includes("equation") ||
-    topicLower.includes("algebra") ||
-    topicLower.includes("geometry")
+    topicLower.includes("probab") ||
+    topicLower.includes("chance") ||
+    topicLower.includes("dice") ||
+    topicLower.includes("coin") ||
+    topicLower.includes("card") ||
+    topicLower.includes("sample space") ||
+    topicLower.includes("outcome")
   ) {
-    const mathQuestions = [
+    const questions: DomainQuizQuestion[] = [
       {
-        q: `In the mathematical analysis of ${topic}, what is the standard method to solve for unknown variables?`,
+        q: "What is the standard mathematical formula used to calculate the theoretical probability of an event E, denoted as P(E)?",
         options: [
-          "A) Balancing equations by performing inverse operations on both sides",
-          "B) Random substitution without validation",
-          "C) Graphical approximation only",
-          "D) Eliminating constants arbitrarily",
+          "A) P(E) = (Number of outcomes favorable to E) / (Total number of possible outcomes in the sample space)",
+          "B) P(E) = (Total number of possible outcomes) / (Number of favorable outcomes)",
+          "C) P(E) = (Number of favorable outcomes) × (Total outcomes)",
+          "D) P(E) = (Total outcomes) - (Number of favorable outcomes)",
         ],
         answer: "A",
-        explanation: "Maintaining mathematical equality requires applying balanced inverse operations across both sides of the equation.",
+        explanation: "Theoretical probability is calculated as the ratio of favorable outcomes to the total number of equally likely possible outcomes: P(E) = n(E) / n(S).",
       },
       {
-        q: `Which algebraic property ensures that a(b + c) = ab + ac when simplifying expressions in ${topic}?`,
+        q: "If a fair, standard six-sided die is rolled once, what is the probability of rolling an even prime number?",
+        options: [
+          "A) 1/2",
+          "B) 1/6",
+          "C) 1/3",
+          "D) 2/3",
+        ],
+        answer: "B",
+        explanation: "The possible outcomes when rolling a six-sided die are {1, 2, 3, 4, 5, 6} (6 total outcomes). The only even prime number is 2 (1 favorable outcome). Therefore, P(even prime) = 1/6.",
+      },
+      {
+        q: "Which of the following values can NEVER represent the probability of an event occurring?",
+        options: [
+          "A) 0",
+          "B) 3/4 (or 0.75)",
+          "C) 1.25",
+          "D) 85%",
+        ],
+        answer: "C",
+        explanation: "The probability of any event E always satisfies 0 ≤ P(E) ≤ 1 (or 0% to 100%). A probability value cannot be negative or strictly greater than 1 (such as 1.25).",
+      },
+      {
+        q: "When two fair coins are tossed simultaneously, what is the probability of obtaining at least one Head?",
+        options: [
+          "A) 1/4",
+          "B) 1/2",
+          "C) 3/4",
+          "D) 1",
+        ],
+        answer: "C",
+        explanation: "The complete sample space for tossing two coins is {HH, HT, TH, TT} (4 total outcomes). The outcomes containing at least one Head are {HH, HT, TH} (3 favorable outcomes). Hence, P(at least one Head) = 3/4.",
+      },
+      {
+        q: "A single card is drawn at random from a well-shuffled standard deck of 52 playing cards. What is the probability of drawing a red Ace?",
+        options: [
+          "A) 1/52",
+          "B) 2/52 (which simplifies to 1/26)",
+          "C) 4/52 (which simplifies to 1/13)",
+          "D) 1/4",
+        ],
+        answer: "B",
+        explanation: "A standard deck contains 4 Aces, consisting of 2 black Aces (Spades, Clubs) and 2 red Aces (Hearts, Diamonds). Therefore, P(red Ace) = 2/52 = 1/26.",
+      },
+      {
+        q: "If the probability of an event E occurring is P(E) = 0.35, what is the probability of its complementary event 'not E' occurring?",
+        options: [
+          "A) 0.35",
+          "B) 0.65",
+          "C) 1.35",
+          "D) 0.70",
+        ],
+        answer: "B",
+        explanation: "The sum of probabilities of an event and its complement is always 1: P(E) + P(not E) = 1. Therefore, P(not E) = 1 - 0.35 = 0.65.",
+      },
+      {
+        q: "A bag contains 5 red balls, 3 blue balls, and 2 green balls. If one ball is drawn at random, what is the probability that it is NOT blue?",
+        options: [
+          "A) 3/10",
+          "B) 7/10",
+          "C) 1/2",
+          "D) 2/5",
+        ],
+        answer: "B",
+        explanation: "Total balls = 5 + 3 + 2 = 10. The number of balls that are not blue (red + green) = 5 + 2 = 7. Thus, P(not blue) = 7/10.",
+      },
+    ];
+    return formatQuizResponse(subject, topic, gradeLevel, questions, questionCount);
+  }
+
+  // 2B. Mathematics: Statistics & Data Handling
+  if (
+    topicLower.includes("stat") ||
+    topicLower.includes("mean") ||
+    topicLower.includes("median") ||
+    topicLower.includes("mode") ||
+    topicLower.includes("data handling") ||
+    topicLower.includes("frequency") ||
+    topicLower.includes("histogram") ||
+    topicLower.includes("bar graph") ||
+    topicLower.includes("pie chart")
+  ) {
+    const questions: DomainQuizQuestion[] = [
+      {
+        q: "How is the arithmetic mean of a set of N observations calculated?",
+        options: [
+          "A) (Sum of all observations) / (Total number of observations N)",
+          "B) (Highest observation - Lowest observation) / 2",
+          "C) The value that appears most frequently",
+          "D) The middle observation when sorted",
+        ],
+        answer: "A",
+        explanation: "The arithmetic mean is computed by summing all values and dividing by the total count: Mean = (Σx) / N.",
+      },
+      {
+        q: "In a set of sorted numerical observations, what does the Median represent?",
+        options: [
+          "A) The arithmetic average of all values",
+          "B) The middle-most value that divides the sorted data into two equal halves",
+          "C) The observation occurring with the highest frequency",
+          "D) The difference between extreme values",
+        ],
+        answer: "B",
+        explanation: "When data is arranged in ascending or descending order, the median is the central observation.",
+      },
+      {
+        q: "What is the Mode of the following data set: 4, 7, 9, 7, 3, 7, 5, 2?",
+        options: [
+          "A) 5.5",
+          "B) 7",
+          "C) 9",
+          "D) 4",
+        ],
+        answer: "B",
+        explanation: "The mode is the observation that appears with the highest frequency. Here, 7 appears 3 times, which is more than any other number.",
+      },
+      {
+        q: "In descriptive statistics, what does the Range of a data set measure?",
+        options: [
+          "A) The difference between the maximum and minimum observations (Max - Min)",
+          "B) The average distance of data points from the mean",
+          "C) The sum of squares of deviations",
+          "D) The center of mass of the frequency polygon",
+        ],
+        answer: "A",
+        explanation: "The range measures statistical dispersion by subtracting the smallest observation from the largest observation.",
+      },
+      {
+        q: "Which graphical representation uses adjacent continuous bars without gaps between them to represent grouped frequency distributions?",
+        options: [
+          "A) Simple Bar Graph",
+          "B) Histogram",
+          "C) Pie Chart",
+          "D) Line Graph",
+        ],
+        answer: "B",
+        explanation: "Histograms display continuous class intervals on the horizontal axis with adjacent bars whose heights represent frequency.",
+      },
+    ];
+    return formatQuizResponse(subject, topic, gradeLevel, questions, questionCount);
+  }
+
+  // 2C. Mathematics: Geometry & Mensuration
+  if (
+    topicLower.includes("geometry") ||
+    topicLower.includes("mensuration") ||
+    topicLower.includes("surface area") ||
+    topicLower.includes("volume") ||
+    topicLower.includes("perimeter") ||
+    topicLower.includes("circle") ||
+    topicLower.includes("triangle") ||
+    topicLower.includes("quadrilateral") ||
+    topicLower.includes("polygon") ||
+    topicLower.includes("pythagor")
+  ) {
+    const questions: DomainQuizQuestion[] = [
+      {
+        q: "What is the formula for calculating the area of a circle with radius r?",
+        options: [
+          "A) 2πr",
+          "B) πr²",
+          "C) πd²/2",
+          "D) 4/3 πr³",
+        ],
+        answer: "B",
+        explanation: "The area enclosed by a circle of radius r is πr², whereas 2πr represents its circumference (perimeter).",
+      },
+      {
+        q: "According to the Pythagorean Theorem, what is the relationship between the hypotenuse c and legs a, b in a right-angled triangle?",
+        options: [
+          "A) a + b = c",
+          "B) a² + b² = c²",
+          "C) a² - b² = c²",
+          "D) 2a + 2b = c²",
+        ],
+        answer: "B",
+        explanation: "In any right-angled triangle, the square of the hypotenuse is equal to the sum of the squares of the other two sides: a² + b² = c².",
+      },
+      {
+        q: "What is the sum of the interior angles of a convex polygon with n sides?",
+        options: [
+          "A) (n - 2) × 180°",
+          "B) n × 180°",
+          "C) (n + 2) × 180°",
+          "D) 360° / n",
+        ],
+        answer: "A",
+        explanation: "Any convex n-sided polygon can be partitioned into (n - 2) non-overlapping triangles from a single vertex, making the sum of its interior angles (n - 2) × 180°.",
+      },
+      {
+        q: "What is the formula for the volume of a right circular cylinder having radius r and height h?",
+        options: [
+          "A) 2πrh",
+          "B) πr²h",
+          "C) 1/3 πr²h",
+          "D) 2πr(r + h)",
+        ],
+        answer: "B",
+        explanation: "The volume of a cylinder is computed by multiplying the circular base area (πr²) by the height h: V = πr²h.",
+      },
+      {
+        q: "If a triangle has a base of 10 cm and a perpendicular height of 6 cm, what is its area?",
+        options: [
+          "A) 60 cm²",
+          "B) 30 cm²",
+          "C) 16 cm²",
+          "D) 45 cm²",
+        ],
+        answer: "B",
+        explanation: "Area of a triangle = (1/2) × base × height = (1/2) × 10 × 6 = 30 cm².",
+      },
+    ];
+    return formatQuizResponse(subject, topic, gradeLevel, questions, questionCount);
+  }
+
+  // 2D. Mathematics: Exponents, Powers & Square Roots
+  if (
+    topicLower.includes("exponent") ||
+    topicLower.includes("power") ||
+    topicLower.includes("square root") ||
+    topicLower.includes("cube root") ||
+    topicLower.includes("radical") ||
+    topicLower.includes("rational")
+  ) {
+    const questions: DomainQuizQuestion[] = [
+      {
+        q: "According to the laws of exponents, what is the product of aᵐ and aⁿ for any non-zero base a?",
+        options: [
+          "A) aᵐ⁺ⁿ",
+          "B) aᵐⁿ",
+          "C) aᵐ⁻ⁿ",
+          "D) (2a)ᵐ⁺ⁿ",
+        ],
+        answer: "A",
+        explanation: "When multiplying exponential expressions with the same base, keep the base and add the exponents: aᵐ × aⁿ = aᵐ⁺ⁿ.",
+      },
+      {
+        q: "For any non-zero real number a, what is the value of a⁰?",
+        options: [
+          "A) 0",
+          "B) 1",
+          "C) a",
+          "D) Undefined",
+        ],
+        answer: "B",
+        explanation: "By exponent laws (aⁿ / aⁿ = aⁿ⁻ⁿ = a⁰ = 1), any non-zero number raised to the zero power equals 1.",
+      },
+      {
+        q: "What is the principal square root of 144, denoted as √144?",
+        options: [
+          "A) 11",
+          "B) 12",
+          "C) 14",
+          "D) 72",
+        ],
+        answer: "B",
+        explanation: "Since 12 × 12 = 144, the principal (positive) square root of 144 is 12.",
+      },
+      {
+        q: "Which of the following numbers is an irrational number?",
+        options: [
+          "A) 0.75",
+          "B) 2/3",
+          "C) √2",
+          "D) √16",
+        ],
+        answer: "C",
+        explanation: "√2 cannot be expressed as the ratio of two integers p/q, making it an irrational number. √16 simplifies to 4 (rational).",
+      },
+      {
+        q: "What is the simplified value of (2³)²?",
+        options: [
+          "A) 2⁵ = 32",
+          "B) 2⁶ = 64",
+          "C) 2⁹ = 512",
+          "D) 12",
+        ],
+        answer: "B",
+        explanation: "Using the power of a power rule (aᵐ)ⁿ = aᵐⁿ, we have (2³)² = 2⁶ = 64.",
+      },
+    ];
+    return formatQuizResponse(subject, topic, gradeLevel, questions, questionCount);
+  }
+
+  // 2E. Mathematics: Algebra & Linear Equations
+  if (
+    topicLower.includes("algebra") ||
+    topicLower.includes("linear") ||
+    topicLower.includes("equation") ||
+    topicLower.includes("variable") ||
+    topicLower.includes("polynomial")
+  ) {
+    const questions: DomainQuizQuestion[] = [
+      {
+        q: "What is the standard procedure to solve a linear equation for an unknown variable x?",
+        options: [
+          "A) Balancing the equation by applying identical inverse operations to both sides",
+          "B) Guessing and substituting values without validation",
+          "C) Removing terms arbitrarily from the left side",
+          "D) Multiplying only one side by zero",
+        ],
+        answer: "A",
+        explanation: "Maintaining mathematical equality requires applying balanced inverse operations across both sides of the equation to isolate the unknown variable.",
+      },
+      {
+        q: "Which algebraic property justifies that a(b + c) = ab + ac?",
         options: [
           "A) Associative Property",
           "B) Distributive Property of Multiplication over Addition",
@@ -908,45 +1205,218 @@ function buildDomainQuizFallback(
           "D) Identity Property",
         ],
         answer: "B",
-        explanation: "The Distributive Property allows multiplying a single term over a parenthetical sum.",
+        explanation: "The Distributive Property allows multiplying a single outer term across each term in a parenthetical sum.",
       },
       {
-        q: `When analyzing linear relationships relevant to ${topic}, what does the slope (m) represent?`,
+        q: "In a linear equation of the form y = mx + c, what does the parameter m represent?",
         options: [
-          "A) The point where the line crosses the y-axis",
-          "B) The rate of change of y with respect to x (rise over run)",
+          "A) The y-intercept where the line crosses the vertical axis",
+          "B) The slope or rate of change (rise over run)",
           "C) The total area under the linear curve",
-          "D) The perimeter of the coordinate plane",
+          "D) The x-intercept",
         ],
         answer: "B",
-        explanation: "Slope measures the steepness and direction of a line, defined by the ratio of vertical change to horizontal change.",
+        explanation: "The slope m measures the steepness and direction of a line, defined by the ratio of vertical change (rise) to horizontal change (run).",
+      },
+      {
+        q: "What defines a Linear Equation in one variable?",
+        options: [
+          "A) The highest power (degree) of the unknown variable is exactly 1",
+          "B) The equation must contain two or more variables multiplied together",
+          "C) The equation must contain squared terms x²",
+          "D) The variable must appear inside a square root",
+        ],
+        answer: "A",
+        explanation: "A linear equation in one variable has the general form ax + b = 0 (where a ≠ 0), with variable degree exactly equal to 1.",
+      },
+      {
+        q: "If 3x + 5 = 20, what is the value of x?",
+        options: [
+          "A) 3",
+          "B) 5",
+          "C) 7",
+          "D) 15",
+        ],
+        answer: "B",
+        explanation: "Subtract 5 from both sides: 3x = 15. Divide both sides by 3: x = 5.",
       },
     ];
-    const selected = mathQuestions.slice(0, Math.min(questionCount, mathQuestions.length));
-    let text = `### 📝 Practice Quiz: ${subject} — ${topic} (${gradeLevel})\n\n`;
-    selected.forEach((item, idx) => {
-      text += `**Q${idx + 1}. ${item.q}**\n`;
-      item.options.forEach((opt) => {
-        text += `* ${opt}\n`;
-      });
-      text += `\n`;
-    });
-    text += `---\n\n### 🔑 Answer Key & Explanations:\n`;
-    selected.forEach((item, idx) => {
-      text += `${idx + 1}. **Answer: ${item.answer}** — ${item.explanation}\n`;
-    });
-    return text.trim();
+    return formatQuizResponse(subject, topic, gradeLevel, questions, questionCount);
   }
 
-  // 3. Science: Biology, Chemistry, Physics
+  // 2F. Mathematics: General Fallback for other Math Topics
+  if (subjectLower.includes("math")) {
+    const questions: DomainQuizQuestion[] = [
+      {
+        q: `In the mathematical analysis of ${topic}, what is the foundational principle used to verify the accuracy of a calculated solution?`,
+        options: [
+          `A) Substituting the result back into the original equations or constraints of ${topic} to confirm equality`,
+          "B) Arbitrary approximation without symbolic verification",
+          "C) Disregarding edge cases and boundary constraints",
+          "D) Changing the initial numerical values until they match",
+        ],
+        answer: "A",
+        explanation: `Rigorous mathematical verification in ${topic} requires substituting the derived value back into the original conditions to confirm consistency.`,
+      },
+      {
+        q: `When simplifying or calculating expressions in ${topic}, which standard hierarchy of operational precedence must be maintained?`,
+        options: [
+          "A) Standard Order of Operations (BODMAS/PEMDAS: Brackets/Parentheses, Orders/Exponents, Division & Multiplication, Addition & Subtraction)",
+          "B) Arbitrary left-to-right evaluation ignoring groupings",
+          "C) Performing all addition before evaluating parentheses",
+          "D) Randomized evaluation order",
+        ],
+        answer: "A",
+        explanation: "Universal mathematical conventions require following the standard order of operations (BODMAS/PEMDAS) across all expressions.",
+      },
+      {
+        q: `What distinguishes a formal mathematical theorem or proof in ${topic} from an empirical hypothesis?`,
+        options: [
+          "A) A proof uses deductive logical reasoning to establish universal truth across all valid conditions",
+          "B) A proof only works for a single numerical trial",
+          "C) A proof is based purely on opinion and survey votes",
+          "D) A proof cannot be algebraically validated",
+        ],
+        answer: "A",
+        explanation: `In mathematics, a proof provides deductive certainty that holds true universally under stated axioms, which is central to ${topic}.`,
+      },
+    ];
+    return formatQuizResponse(subject, topic, gradeLevel, questions, questionCount);
+  }
+
+  // 3A. Science: Physics, Force & Motion
   if (
-    subjectLower.includes("science") ||
-    topicLower.includes("photo") ||
-    topicLower.includes("cell") ||
-    topicLower.includes("bio") ||
-    topicLower.includes("physics")
+    topicLower.includes("force") ||
+    topicLower.includes("motion") ||
+    topicLower.includes("newton") ||
+    topicLower.includes("gravity") ||
+    topicLower.includes("friction") ||
+    topicLower.includes("speed") ||
+    topicLower.includes("velocity") ||
+    topicLower.includes("energy") ||
+    topicLower.includes("electricity") ||
+    topicLower.includes("light")
   ) {
-    const sciQuestions = [
+    const questions: DomainQuizQuestion[] = [
+      {
+        q: "What does Newton's First Law of Motion (Law of Inertia) state?",
+        options: [
+          "A) An object remains at rest or in uniform straight-line motion unless acted upon by a net external unbalanced force",
+          "B) Acceleration is inversely proportional to net force",
+          "C) Every action has an unequal opposite reaction",
+          "D) Friction is always zero in a vacuum",
+        ],
+        answer: "A",
+        explanation: "Inertia is the inherent tendency of an object to resist changes in its state of rest or motion unless compelled by an external net force.",
+      },
+      {
+        q: "Which mathematical formula represents Newton's Second Law of Motion relating Force (F), Mass (m), and Acceleration (a)?",
+        options: [
+          "A) F = m × a",
+          "B) F = m / a",
+          "C) F = m + a",
+          "D) F = a / m",
+        ],
+        answer: "A",
+        explanation: "Newton's Second Law defines net force as the product of mass and acceleration: F = ma (measured in Newtons).",
+      },
+      {
+        q: "What type of contact force acts parallel to surfaces in contact and opposes relative motion?",
+        options: [
+          "A) Gravitational force",
+          "B) Frictional force",
+          "C) Electrostatic force",
+          "D) Magnetic force",
+        ],
+        answer: "B",
+        explanation: "Frictional force arises from microscopic surface irregularities and always opposes relative motion between contacting bodies.",
+      },
+      {
+        q: "According to the Law of Conservation of Energy, which statement is universally true?",
+        options: [
+          "A) Energy can be created from nothing during chemical reactions",
+          "B) Energy cannot be created or destroyed; it can only be transformed from one form to another",
+          "C) Total energy in an isolated system constantly decreases over time",
+          "D) Kinetic energy is always greater than potential energy",
+        ],
+        answer: "B",
+        explanation: "The first law of thermodynamics states that the total energy of an isolated system remains constant; energy is merely converted among forms.",
+      },
+    ];
+    return formatQuizResponse(subject, topic, gradeLevel, questions, questionCount);
+  }
+
+  // 3B. Science: Chemistry, Acids, Bases & Chemical Reactions
+  if (
+    topicLower.includes("acid") ||
+    topicLower.includes("base") ||
+    topicLower.includes("chemical") ||
+    topicLower.includes("reaction") ||
+    topicLower.includes("atom") ||
+    topicLower.includes("element") ||
+    topicLower.includes("compound") ||
+    topicLower.includes("ph")
+  ) {
+    const questions: DomainQuizQuestion[] = [
+      {
+        q: "On the standard pH scale ranging from 0 to 14, what pH value corresponds to a neutral solution at 25°C?",
+        options: [
+          "A) pH = 0",
+          "B) pH = 7",
+          "C) pH = 14",
+          "D) pH = 3.5",
+        ],
+        answer: "B",
+        explanation: "Pure water at 25°C has equal hydrogen and hydroxide ion concentrations, corresponding to a neutral pH of exactly 7.",
+      },
+      {
+        q: "How does blue litmus paper behave when tested in an acidic solution?",
+        options: [
+          "A) Turns red",
+          "B) Turns green",
+          "C) Remains blue",
+          "D) Turns completely colorless",
+        ],
+        answer: "A",
+        explanation: "Acids turn blue litmus paper red, while alkaline (basic) substances turn red litmus paper blue.",
+      },
+      {
+        q: "What products are universally formed in a typical acid-base Neutralization reaction?",
+        options: [
+          "A) Salt and Water",
+          "B) Pure Hydrogen gas and Oxygen",
+          "C) Carbon dioxide only",
+          "D) Pure metallic elements",
+        ],
+        answer: "A",
+        explanation: "When an acid reacts with a base, they neutralize each other to produce a chemical salt and water: Acid + Base -> Salt + Water.",
+      },
+      {
+        q: "Which fundamental scientific law requires that chemical equations be balanced on both reactant and product sides?",
+        options: [
+          "A) Law of Definite Proportions",
+          "B) Law of Conservation of Mass",
+          "C) Boyle's Law",
+          "D) Avogadro's Principle",
+        ],
+        answer: "B",
+        explanation: "The Law of Conservation of Mass states that mass cannot be created or destroyed in a chemical reaction; atoms must be equal on both sides.",
+      },
+    ];
+    return formatQuizResponse(subject, topic, gradeLevel, questions, questionCount);
+  }
+
+  // 3C. Science: Biology, Cell Structure & Photosynthesis
+  if (
+    topicLower.includes("cell") ||
+    topicLower.includes("photo") ||
+    topicLower.includes("bio") ||
+    topicLower.includes("plant") ||
+    topicLower.includes("organ") ||
+    topicLower.includes("gene") ||
+    topicLower.includes("life")
+  ) {
+    const questions: DomainQuizQuestion[] = [
       {
         q: `In the biological study of ${topic}, which cellular organelle is primarily responsible for energy conversion?`,
         options: [
@@ -980,37 +1450,171 @@ function buildDomainQuizFallback(
         answer: "B",
         explanation: "Chlorophyll pigments absorb blue and red light wavelengths while reflecting green light.",
       },
+      {
+        q: "Which structural feature is present in plant cells but absent in animal cells?",
+        options: [
+          "A) Rigid Cellulose Cell Wall and Chloroplasts",
+          "B) Mitochondria",
+          "C) Cell membrane",
+          "D) Ribosomes",
+        ],
+        answer: "A",
+        explanation: "Plant cells feature a rigid outer cell wall made of cellulose and chloroplasts for photosynthesis, neither of which exists in animal cells.",
+      },
     ];
-    const selected = sciQuestions.slice(0, Math.min(questionCount, sciQuestions.length));
-    let text = `### 📝 Practice Quiz: ${subject} — ${topic} (${gradeLevel})\n\n`;
-    selected.forEach((item, idx) => {
-      text += `**Q${idx + 1}. ${item.q}**\n`;
-      item.options.forEach((opt) => {
-        text += `* ${opt}\n`;
-      });
-      text += `\n`;
-    });
-    text += `---\n\n### 🔑 Answer Key & Explanations:\n`;
-    selected.forEach((item, idx) => {
-      text += `${idx + 1}. **Answer: ${item.answer}** — ${item.explanation}\n`;
-    });
-    return text.trim();
+    return formatQuizResponse(subject, topic, gradeLevel, questions, questionCount);
   }
 
-  // 4. Default Subject Fallback
-  let text = `### 📝 Practice Quiz: ${subject} — ${topic} (${gradeLevel})\n\n`;
-  for (let i = 1; i <= Math.min(questionCount, 5); i++) {
-    text += `**Q${i}. What is the primary conceptual principle of ${topic} in ${subject}?**\n`;
-    text += `* A) Foundational theoretical definitions and core taxonomy\n`;
-    text += `* B) Systematic classification and practical implementation guidelines\n`;
-    text += `* C) Randomized dynamic empirical observations\n`;
-    text += `* D) Both A and B\n\n`;
+  // 3D. Science: General Fallback
+  if (subjectLower.includes("science")) {
+    const questions: DomainQuizQuestion[] = [
+      {
+        q: `In the scientific investigation of ${topic}, what is the essential first step of the Scientific Method?`,
+        options: [
+          "A) Making systematic observations and defining a clear question or hypothesis",
+          "B) Drawing conclusions before gathering any data",
+          "C) Publishing results without experimental controls",
+          "D) Discarding conflicting experimental trials",
+        ],
+        answer: "A",
+        explanation: `The scientific method begins with systematic empirical observation and formulating testable hypotheses concerning ${topic}.`,
+      },
+      {
+        q: `Why must a controlled experiment testing ${topic} keep control variables constant while changing only the independent variable?`,
+        options: [
+          "A) To ensure that any observed effect on the dependent variable is caused solely by the tested factor",
+          "B) To speed up laboratory procedures",
+          "C) To avoid recording numerical measurements",
+          "D) Because controlled variables do not affect experimental outcomes",
+        ],
+        answer: "A",
+        explanation: "Controlling extraneous variables ensures high internal validity, confirming that the independent variable caused the observed change.",
+      },
+    ];
+    return formatQuizResponse(subject, topic, gradeLevel, questions, questionCount);
   }
-  text += `---\n\n### 🔑 Answer Key & Explanations:\n`;
-  for (let i = 1; i <= Math.min(questionCount, 5); i++) {
-    text += `${i}. **Answer: D** — Foundational taxonomy and practical guidelines form the baseline knowledge of ${topic}.\n`;
+
+  // 4. English & Language Arts
+  if (
+    subjectLower.includes("english") ||
+    topicLower.includes("grammar") ||
+    topicLower.includes("voice") ||
+    topicLower.includes("tense") ||
+    topicLower.includes("speech") ||
+    topicLower.includes("comprehension")
+  ) {
+    const questions: DomainQuizQuestion[] = [
+      {
+        q: "In English grammar, what distinguishes Active Voice from Passive Voice?",
+        options: [
+          "A) In Active Voice the subject performs the action, whereas in Passive Voice the subject receives the action",
+          "B) Active Voice is used only in the past tense",
+          "C) Passive Voice can never include the agent ('by...')",
+          "D) Active voice cannot contain transitive verbs",
+        ],
+        answer: "A",
+        explanation: "In active voice, the grammatical subject carries out the verb's action (e.g., 'The teacher explained the lesson'). In passive voice, the subject is acted upon ('The lesson was explained by the teacher').",
+      },
+      {
+        q: "Which verb tense correctly expresses an action that began in the past and continues into the present moment?",
+        options: [
+          "A) Simple Past Tense",
+          "B) Present Perfect Continuous Tense",
+          "C) Future Perfect Tense",
+          "D) Past Perfect Tense",
+        ],
+        answer: "B",
+        explanation: "The Present Perfect Continuous tense (e.g., 'She has been studying for two hours') connects an ongoing action from the past into the present.",
+      },
+      {
+        q: "When converting Direct Speech into Indirect (Reported) Speech, what change typically occurs to the reporting verb and tense?",
+        options: [
+          "A) Quotation marks are removed, pronouns adjust, and present tenses shift back into past tenses",
+          "B) The sentence must always be converted into future tense",
+          "C) No punctuation or pronoun changes are allowed",
+          "D) The reporting clause is always deleted",
+        ],
+        answer: "A",
+        explanation: "Indirect speech removes quotation marks and shifts back verb tenses (backshifting) while adapting pronouns and time expressions relative to the speaker.",
+      },
+    ];
+    return formatQuizResponse(subject, topic, gradeLevel, questions, questionCount);
   }
-  return text.trim();
+
+  // 5. History & Social Studies
+  if (
+    subjectLower.includes("history") ||
+    subjectLower.includes("social") ||
+    topicLower.includes("constitution") ||
+    topicLower.includes("revolt") ||
+    topicLower.includes("revolution") ||
+    topicLower.includes("movement") ||
+    topicLower.includes("democracy")
+  ) {
+    const questions: DomainQuizQuestion[] = [
+      {
+        q: `In historical analysis related to ${topic}, what is the key difference between a Primary Source and a Secondary Source?`,
+        options: [
+          "A) A primary source is a firsthand artifact or document from the time period, whereas a secondary source analyzes or interprets primary sources later",
+          "B) Primary sources are only found in textbooks",
+          "C) Secondary sources were written exclusively before 1900",
+          "D) Primary sources are always biased while secondary sources are universally objective",
+        ],
+        answer: "A",
+        explanation: "Primary sources (letters, treaties, eyewitness accounts) originate directly from the historical period, whereas secondary sources (scholarship, critiques) interpret those records.",
+      },
+      {
+        q: `What is the supreme governing legal document that outlines fundamental rights, duties, and state governance for a democratic nation in the study of ${topic}?`,
+        options: [
+          "A) The National Constitution",
+          "B) The Annual Budget Report",
+          "C) A Presidential Decree",
+          "D) An Executive Directive",
+        ],
+        answer: "A",
+        explanation: "The Constitution serves as the fundamental supreme law establishing the structure of government and safeguarding citizen rights.",
+      },
+    ];
+    return formatQuizResponse(subject, topic, gradeLevel, questions, questionCount);
+  }
+
+  // 6. Universal Subject & Topic Fallback (Clean, non-polluted)
+  const defaultQuestions: DomainQuizQuestion[] = [
+    {
+      q: `What is the foundational theoretical principle of ${topic} in ${subject}?`,
+      options: [
+        `A) Core conceptual definitions, taxonomy, and fundamental principles governing ${topic}`,
+        "B) Randomized speculative observations without empirical validation",
+        "C) Subjective arbitrary classifications without formal criteria",
+        "D) Disregarding historical and pedagogical standards",
+      ],
+      answer: "A",
+      explanation: `Mastery of ${topic} in ${subject} requires understanding foundational principles, accurate terminology, and systematic methodologies.`,
+    },
+    {
+      q: `When applying principles of ${topic} to solve practical academic problems, what is the recommended systematic workflow?`,
+      options: [
+        "A) Problem identification, analyzing constraints, applying standard domain procedures, and validating outcomes",
+        "B) Guessing the final outcome without intermediate steps",
+        "C) Changing problem requirements whenever difficulties arise",
+        "D) Bypassing verification procedures",
+      ],
+      answer: "A",
+      explanation: "Rigorous academic inquiry follows structured problem-solving: identifying requirements, applying standardized principles, and confirming results.",
+    },
+    {
+      q: `Which skill is essential for students to demonstrate proficiency in ${topic} for ${gradeLevel}?`,
+      options: [
+        "A) Critical thinking, analytical reasoning, and clear conceptual communication",
+        "B) Passive rote memorization without contextual understanding",
+        "C) Avoiding peer collaboration and discussion",
+        "D) Memorizing answers without understanding underlying mechanisms",
+      ],
+      answer: "A",
+      explanation: `Proficiency in ${topic} emphasizes critical analytical application and clear conceptual understanding suited for ${gradeLevel}.`,
+    },
+  ];
+  return formatQuizResponse(subject, topic, gradeLevel, defaultQuestions, questionCount);
 }
 
 /**

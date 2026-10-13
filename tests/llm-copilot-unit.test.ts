@@ -117,6 +117,35 @@ describe("LLM Academic Copilot - Unit Test Suite", () => {
       expect(res.text).toContain("Q2");
     });
 
+    it("should generate dedicated Probability quiz questions without slope or algebraic properties", async () => {
+      const res = await generateQuiz({
+        subject: "Mathematics",
+        topic: "Probability (Class 8)",
+        gradeLevel: "Class 8",
+        questionCount: 3,
+      });
+
+      expect(res.text).toContain("Probability (Class 8)");
+      expect(res.text).toContain("Answer Key");
+      expect(res.text).toMatch(/sample space|die|outcomes|prime/i);
+      expect(res.text).not.toContain("slope (m)");
+      expect(res.text).not.toContain("distributive property");
+    });
+
+    it("should generate dedicated Physics questions for Force and Motion without biology concepts", async () => {
+      const res = await generateQuiz({
+        subject: "Science",
+        topic: "Force, Motion & Newton's Laws",
+        gradeLevel: "Class 8",
+        questionCount: 3,
+      });
+
+      expect(res.text).toContain("Force, Motion");
+      expect(res.text).toMatch(/Newton|Inertia|Acceleration/i);
+      expect(res.text).not.toContain("Chloroplast");
+      expect(res.text).not.toContain("Photosynthesis");
+    });
+
     it("should generate school administrative circular with event schedule", async () => {
       const res = await generateNotice({
         topic: "Science Exhibition & Robotic Fair 2026",

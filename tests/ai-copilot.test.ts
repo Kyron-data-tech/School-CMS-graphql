@@ -38,6 +38,23 @@ describe("AI Academic Copilot LLM Services", () => {
     expect(result.provider).toBeDefined();
   });
 
+  it("should generate topic-accurate Mathematics Probability quiz without algebra or slope questions", async () => {
+    const result = await generateQuiz({
+      subject: "Mathematics",
+      topic: "Probability (Class 8)",
+      gradeLevel: "Class 8",
+      questionCount: 4,
+    });
+
+    expect(result.text).toBeDefined();
+    expect(result.text).toContain("Probability (Class 8)");
+    expect(result.text).toContain("Answer Key");
+    expect(result.text).toMatch(/theoretical probability|die|coins|sample space|outcomes/i);
+    // Must NOT contain unrelated algebra/slope questions
+    expect(result.text).not.toContain("slope (m)");
+    expect(result.text).not.toContain("distributive property");
+  });
+
   it("should draft formal administrative circular with reference and signature", async () => {
     const result = await generateNotice({
       topic: "Annual Sports Meet 2026",
