@@ -1991,29 +1991,38 @@ export function AiCopilotClient({
                           setQuizTopic("Probability (Class 8)");
                         } else if (nextSubject === "Science") {
                           setQuizTopic("Cell Structure & Photosynthesis");
-                        } else if (nextSubject === "Computer Science") {
-                          setQuizTopic("Arrays & Linked Lists");
                         } else if (nextSubject === "English") {
                           setQuizTopic("Active & Passive Voice");
                         } else if (nextSubject === "History") {
                           setQuizTopic("Indian National Movement (1857–1947)");
                         } else if (nextSubject === "Geography") {
-                          setQuizTopic("Earth's Climate Zones & Resources");
+                          setQuizTopic("Earth's Climate Zones & Atmosphere");
+                        } else if (nextSubject === "Civics") {
+                          setQuizTopic("The Indian Constitution & Fundamental Rights");
+                        } else if (nextSubject === "Economics") {
+                          setQuizTopic("Money, Banking & RBI");
+                        } else if (nextSubject === "Hindi") {
+                          setQuizTopic("हिन्दी व्याकरण (संज्ञा, सर्वनाम, विशेषण)");
+                        } else if (nextSubject === "Computer Science") {
+                          setQuizTopic("Arrays & Linked Lists");
                         }
                       }}
                     >
                       <option value="Mathematics">Mathematics</option>
-                      <option value="Science">Science</option>
-                      <option value="Computer Science">Computer Science (Data Structures)</option>
-                      <option value="English">English</option>
+                      <option value="Science">Science (Physics, Chemistry, Biology)</option>
+                      <option value="English">English (Grammar & Literature)</option>
                       <option value="History">History</option>
-                      <option value="Geography">Geography</option>
+                      <option value="Geography">Geography & Environment</option>
+                      <option value="Civics">Civics & Political Science</option>
+                      <option value="Economics">Economics</option>
+                      <option value="Computer Science">Computer Science & IT</option>
+                      <option value="Hindi">Hindi / Languages</option>
                     </select>
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="label text-xs m-0 p-0">Lesson / Topic</label>
-                      <span className="text-[10px] text-slate-400 font-mono">Select or type custom</span>
+                      <span className="text-[10px] text-slate-400 font-mono">Select chip or type ANY custom topic</span>
                     </div>
                     <input
                       className="input text-xs font-medium"
@@ -2021,14 +2030,22 @@ export function AiCopilotClient({
                       onChange={(e) => setQuizTopic(e.target.value)}
                       placeholder={
                         quizSubject === "Mathematics"
-                          ? "e.g. Probability (Class 8), Linear Equations, Mensuration & Surface Area"
+                          ? "e.g. Probability, Linear Equations, Profit & Loss, Trigonometry, Statistics"
                           : quizSubject === "Science"
-                          ? "e.g. Cell Structure & Photosynthesis, Force & Motion, Chemical Reactions"
+                          ? "e.g. Cell Structure, Force & Motion, Light & Optics, Acids & Bases, Electricity"
                           : quizSubject === "English"
-                          ? "e.g. Active & Passive Voice, Reading Comprehension"
-                          : quizSubject === "History" || quizSubject === "Geography"
-                          ? "e.g. Indian National Movement, Earth's Climate Zones"
-                          : "e.g. Arrays & Linked Lists, Trees & Graphs, Stacks & Queues"
+                          ? "e.g. Active & Passive Voice, Reported Speech, Tenses, Figures of Speech"
+                          : quizSubject === "History"
+                          ? "e.g. Indian National Movement, French Revolution, Revolt of 1857, Mughal Empire"
+                          : quizSubject === "Geography"
+                          ? "e.g. Climate Zones, Volcanoes & Plate Tectonics, Solar System, Water Cycle"
+                          : quizSubject === "Civics"
+                          ? "e.g. Indian Constitution, Parliamentary Democracy, Judiciary & Supreme Court"
+                          : quizSubject === "Economics"
+                          ? "e.g. Money & Banking, Sectors of Economy, Inflation"
+                          : quizSubject === "Hindi"
+                          ? "e.g. संज्ञा, सर्वनाम, विशेषण, संधि और समास"
+                          : "e.g. Arrays & Linked Lists, OOP, SQL Databases, Cyber Security"
                       }
                       required
                     />
@@ -2082,6 +2099,28 @@ export function AiCopilotClient({
                           >
                             🔢 Square Roots &amp; Exponents
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Statistics & Data Handling")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Statistics & Data Handling"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            📊 Statistics &amp; Mean
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Profit & Loss and Simple Interest")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Profit & Loss and Simple Interest"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            💰 Profit, Loss &amp; Interest
+                          </button>
                         </>
                       ) : quizSubject === "Science" ? (
                         <>
@@ -2116,7 +2155,40 @@ export function AiCopilotClient({
                                 : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
                             }`}
                           >
-                            🧪 Chemical Reactions
+                            🧪 Acids, Bases &amp; Reactions
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Light, Reflection & Refraction")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Light, Reflection & Refraction"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            💡 Light &amp; Reflection
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Electricity, Circuits & Magnetism")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Electricity, Circuits & Magnetism"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🔌 Electricity &amp; Circuits
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Human Circulatory & Digestive System")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Human Circulatory & Digestive System"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🫀 Human Body Systems
                           </button>
                         </>
                       ) : quizSubject === "English" ? (
@@ -2134,17 +2206,6 @@ export function AiCopilotClient({
                           </button>
                           <button
                             type="button"
-                            onClick={() => setQuizTopic("Reading Comprehension & Inferences")}
-                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
-                              quizTopic === "Reading Comprehension & Inferences"
-                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
-                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
-                            }`}
-                          >
-                            📖 Reading Comprehension
-                          </button>
-                          <button
-                            type="button"
                             onClick={() => setQuizTopic("Direct and Indirect Speech")}
                             className={`px-2 py-0.5 rounded text-[10px] border transition ${
                               quizTopic === "Direct and Indirect Speech"
@@ -2154,8 +2215,41 @@ export function AiCopilotClient({
                           >
                             💬 Reported Speech
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Tenses & Subject-Verb Agreement")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Tenses & Subject-Verb Agreement"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            ⏱️ Tenses &amp; Agreement
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Figures of Speech (Metaphor & Simile)")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Figures of Speech (Metaphor & Simile)"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🎭 Metaphor &amp; Simile
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Reading Comprehension & Inferences")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Reading Comprehension & Inferences"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            📖 Comprehension
+                          </button>
                         </>
-                      ) : quizSubject === "History" || quizSubject === "Geography" ? (
+                      ) : quizSubject === "History" ? (
                         <>
                           <button
                             type="button"
@@ -2166,13 +2260,107 @@ export function AiCopilotClient({
                                 : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
                             }`}
                           >
-                            🏛️ Indian National Movement
+                            🏛️ Freedom Movement
                           </button>
                           <button
                             type="button"
-                            onClick={() => setQuizTopic("The Indian Constitution & Democracy")}
+                            onClick={() => setQuizTopic("The Revolt of 1857")}
                             className={`px-2 py-0.5 rounded text-[10px] border transition ${
-                              quizTopic === "The Indian Constitution & Democracy"
+                              quizTopic === "The Revolt of 1857"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            ⚔️ Revolt of 1857
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("The French Revolution (1789)")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "The French Revolution (1789)"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🇫🇷 French Revolution
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Mughal Empire & Emperor Akbar")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Mughal Empire & Emperor Akbar"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            👑 Mughal Empire
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Indus Valley Civilization (Harappa)")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Indus Valley Civilization (Harappa)"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🏺 Indus Valley
+                          </button>
+                        </>
+                      ) : quizSubject === "Geography" ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Earth's Climate Zones & Atmosphere")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Earth's Climate Zones & Atmosphere"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🌍 Climate &amp; Atmosphere
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Volcanoes, Earthquakes & Plate Tectonics")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Volcanoes, Earthquakes & Plate Tectonics"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🌋 Volcanoes &amp; Tectonics
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Solar System & Earth's Rotation")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Solar System & Earth's Rotation"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🪐 Solar System &amp; Rotation
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Soil Types, Crops & Agriculture")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Soil Types, Crops & Agriculture"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🌾 Soils &amp; Agriculture
+                          </button>
+                        </>
+                      ) : quizSubject === "Civics" ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("The Indian Constitution & Fundamental Rights")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "The Indian Constitution & Fundamental Rights"
                                 ? "bg-indigo-600 border-indigo-400 text-white font-bold"
                                 : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
                             }`}
@@ -2181,14 +2369,86 @@ export function AiCopilotClient({
                           </button>
                           <button
                             type="button"
-                            onClick={() => setQuizTopic("Earth's Climate Zones & Resources")}
+                            onClick={() => setQuizTopic("Parliamentary Democracy & Lok Sabha")}
                             className={`px-2 py-0.5 rounded text-[10px] border transition ${
-                              quizTopic === "Earth's Climate Zones & Resources"
+                              quizTopic === "Parliamentary Democracy & Lok Sabha"
                                 ? "bg-indigo-600 border-indigo-400 text-white font-bold"
                                 : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
                             }`}
                           >
-                            🌍 Climate &amp; Resources
+                            🏛️ Parliament &amp; Elections
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Judiciary System & Supreme Court")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Judiciary System & Supreme Court"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            ⚖️ Judiciary &amp; Supreme Court
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Local Self-Government & Panchayati Raj")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Local Self-Government & Panchayati Raj"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🗳️ Panchayati Raj
+                          </button>
+                        </>
+                      ) : quizSubject === "Economics" ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Money, Banking & RBI")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Money, Banking & RBI"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            💵 Money, Banking &amp; RBI
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Sectors of the Indian Economy")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Sectors of the Indian Economy"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🏭 Sectors of the Economy
+                          </button>
+                        </>
+                      ) : quizSubject === "Hindi" ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("हिन्दी व्याकरण (संज्ञा, सर्वनाम, विशेषण)")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "हिन्दी व्याकरण (संज्ञा, सर्वनाम, विशेषण)"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            📝 संज्ञा, सर्वनाम, विशेषण
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("संधि और समास")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "संधि और समास"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🔤 संधि और समास
                           </button>
                         </>
                       ) : (
@@ -2225,6 +2485,39 @@ export function AiCopilotClient({
                             }`}
                           >
                             📚 Stacks &amp; Queues
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Object-Oriented Programming (OOP)")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Object-Oriented Programming (OOP)"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            ☕ OOP &amp; Classes
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("SQL Database Queries")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "SQL Database Queries"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🗄️ SQL &amp; Databases
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizTopic("Cyber Security & Phishing")}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
+                              quizTopic === "Cyber Security & Phishing"
+                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            🛡️ Cyber Security
                           </button>
                         </>
                       )}

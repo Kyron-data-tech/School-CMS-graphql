@@ -146,6 +146,95 @@ describe("LLM Academic Copilot - Unit Test Suite", () => {
       expect(res.text).not.toContain("Photosynthesis");
     });
 
+    it("should generate dedicated History questions for The Revolt of 1857", async () => {
+      const res = await generateQuiz({
+        subject: "History",
+        topic: "The Revolt of 1857",
+        gradeLevel: "Class 8",
+        questionCount: 2,
+      });
+
+      expect(res.text).toContain("Revolt of 1857");
+      expect(res.text).toMatch(/Meerut|British Crown|sepoys/i);
+      expect(res.text).not.toContain("slope");
+      expect(res.text).not.toContain("Photosynthesis");
+    });
+
+    it("should generate dedicated Geography questions for Plate Tectonics and Earthquakes", async () => {
+      const res = await generateQuiz({
+        subject: "Geography",
+        topic: "Volcanoes, Earthquakes & Plate Tectonics",
+        gradeLevel: "Class 8",
+        questionCount: 2,
+      });
+
+      expect(res.text).toContain("Volcanoes");
+      expect(res.text).toMatch(/Epicenter|Seismograph|tectonic/i);
+      expect(res.text).not.toContain("distributive property");
+    });
+
+    it("should generate dedicated Civics questions for The Indian Constitution", async () => {
+      const res = await generateQuiz({
+        subject: "Civics",
+        topic: "The Indian Constitution & Fundamental Rights",
+        gradeLevel: "Class 8",
+        questionCount: 2,
+      });
+
+      expect(res.text).toContain("Indian Constitution");
+      expect(res.text).toMatch(/Ambedkar|Republic Day|Article 32/i);
+    });
+
+    it("should generate dedicated English questions for Active and Passive Voice", async () => {
+      const res = await generateQuiz({
+        subject: "English",
+        topic: "Active & Passive Voice",
+        gradeLevel: "Class 8",
+        questionCount: 2,
+      });
+
+      expect(res.text).toContain("Active & Passive Voice");
+      expect(res.text).toMatch(/Passive Voice|written by her/i);
+    });
+
+    it("should generate dedicated Economics questions for Money and Banking", async () => {
+      const res = await generateQuiz({
+        subject: "Economics",
+        topic: "Money, Banking & RBI",
+        gradeLevel: "Class 9",
+        questionCount: 2,
+      });
+
+      expect(res.text).toContain("Money, Banking");
+      expect(res.text).toMatch(/Reserve Bank of India|RBI/i);
+    });
+
+    it("should generate dedicated Computer Science questions for SQL Databases", async () => {
+      const res = await generateQuiz({
+        subject: "Computer Science",
+        topic: "SQL Database Queries",
+        gradeLevel: "Class 9",
+        questionCount: 2,
+      });
+
+      expect(res.text).toContain("SQL Database Queries");
+      expect(res.text).toMatch(/Primary Key|WHERE clause/i);
+    });
+
+    it("should dynamically synthesize topic-accurate questions for any arbitrary custom subject and topic", async () => {
+      const res = await generateQuiz({
+        subject: "Biotechnology",
+        topic: "CRISPR Gene Editing",
+        gradeLevel: "Class 10",
+        questionCount: 3,
+      });
+
+      expect(res.text).toContain("CRISPR Gene Editing");
+      expect(res.text).toContain("Biotechnology");
+      expect(res.text).not.toContain("slope (m)");
+      expect(res.text).not.toContain("distributive property");
+    });
+
     it("should generate school administrative circular with event schedule", async () => {
       const res = await generateNotice({
         topic: "Science Exhibition & Robotic Fair 2026",
