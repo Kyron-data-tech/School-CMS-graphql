@@ -2001,8 +2001,6 @@ export function AiCopilotClient({
                           setQuizTopic("The Indian Constitution & Fundamental Rights");
                         } else if (nextSubject === "Economics") {
                           setQuizTopic("Money, Banking & RBI");
-                        } else if (nextSubject === "Hindi") {
-                          setQuizTopic("हिन्दी व्याकरण (संज्ञा, सर्वनाम, विशेषण)");
                         } else if (nextSubject === "Computer Science") {
                           setQuizTopic("Arrays & Linked Lists");
                         }
@@ -2016,7 +2014,6 @@ export function AiCopilotClient({
                       <option value="Civics">Civics & Political Science</option>
                       <option value="Economics">Economics</option>
                       <option value="Computer Science">Computer Science & IT</option>
-                      <option value="Hindi">Hindi / Languages</option>
                     </select>
                   </div>
                   <div>
@@ -2043,8 +2040,6 @@ export function AiCopilotClient({
                           ? "e.g. Indian Constitution, Parliamentary Democracy, Judiciary & Supreme Court"
                           : quizSubject === "Economics"
                           ? "e.g. Money & Banking, Sectors of Economy, Inflation"
-                          : quizSubject === "Hindi"
-                          ? "e.g. संज्ञा, सर्वनाम, विशेषण, संधि और समास"
                           : "e.g. Arrays & Linked Lists, OOP, SQL Databases, Cyber Security"
                       }
                       required
@@ -2424,31 +2419,6 @@ export function AiCopilotClient({
                             }`}
                           >
                             🏭 Sectors of the Economy
-                          </button>
-                        </>
-                      ) : quizSubject === "Hindi" ? (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => setQuizTopic("हिन्दी व्याकरण (संज्ञा, सर्वनाम, विशेषण)")}
-                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
-                              quizTopic === "हिन्दी व्याकरण (संज्ञा, सर्वनाम, विशेषण)"
-                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
-                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
-                            }`}
-                          >
-                            📝 संज्ञा, सर्वनाम, विशेषण
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setQuizTopic("संधि और समास")}
-                            className={`px-2 py-0.5 rounded text-[10px] border transition ${
-                              quizTopic === "संधि और समास"
-                                ? "bg-indigo-600 border-indigo-400 text-white font-bold"
-                                : "bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800"
-                            }`}
-                          >
-                            🔤 संधि और समास
                           </button>
                         </>
                       ) : (

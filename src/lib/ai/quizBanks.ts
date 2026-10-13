@@ -1,7 +1,7 @@
 /**
  * Greenfield Academic AI Engine — Comprehensive Curriculum Question Banks
  * Covers Mathematics, Science (Physics, Chemistry, Biology), Social Science (History, Geography, Civics, Economics),
- * English, Computer Science, and Hindi, along with an intelligent topic-specific dynamic generator.
+ * English, and Computer Science, along with an intelligent topic-specific dynamic generator.
  */
 
 export interface DomainQuizQuestion {
@@ -2033,103 +2033,6 @@ export const DOMAIN_QUIZ_BANKS: TopicQuizBank[] = [
       },
     ],
   },
-
-  // ==========================================
-  // 11. HINDI / LANGUAGES
-  // ==========================================
-  {
-    id: "hindi_sandhi_samas",
-    matches: (t) =>
-      t.includes("sandhi") ||
-      t.includes("samas") ||
-      t.includes("संधि") ||
-      t.includes("समास"),
-    questions: [
-      {
-        q: "दो समीपवर्ती वर्णों के परस्पर मेल से जो विकार (परिवर्तन) उत्पन्न होता है, उसे क्या कहते हैं?",
-        options: [
-          "A) संधि (Sandhi)",
-          "B) समास (Samas)",
-          "C) प्रत्यय",
-          "D) कारक",
-        ],
-        answer: "A",
-        explanation: "दो ध्वनियों या वर्णों के परस्पर मिलने पर जो परिवर्तन होता है, उसे व्याकरण में संधि कहते हैं (जैसे: देव + आलय = देवालय)।",
-      },
-      {
-        q: "दो या दो से अधिक शब्दों के मेल से बने नए सार्थक शब्द की प्रक्रिया को क्या कहते हैं?",
-        options: [
-          "A) समास (Samas)",
-          "B) संधि (Sandhi)",
-          "C) उपसर्ग",
-          "D) मुहावरा",
-        ],
-        answer: "A",
-        explanation: "परस्पर संबंध रखने वाले दो या दो से अधिक शब्दों के मेल से नया संक्षिप्त शब्द बनाने की विधि समास कहलाती है (जैसे: राज + पुत्र = राजपुत्र)।",
-      },
-      {
-        q: "‘देवालय’ (देव + आलय) में कौन सी संधि है?",
-        options: [
-          "A) दीर्घ स्वर संधि",
-          "B) गुण स्वर संधि",
-          "C) व्यंजन संधि",
-          "D) विसर्ग संधि",
-        ],
-        answer: "A",
-        explanation: "अ + आ = आ के मेल से दीर्घ स्वर संधि का निर्माण होता है।",
-      },
-    ],
-  },
-  {
-    id: "hindi_sangya_sarvanam",
-    matches: (t, s) =>
-      s.includes("hindi") ||
-      t.includes("vyakaran") ||
-      t.includes("व्याकरण") ||
-      t.includes("sangya") ||
-      t.includes("संज्ञा") ||
-      t.includes("sarvanam") ||
-      t.includes("सर्वनाम") ||
-      t.includes("visheshan") ||
-      t.includes("विशेषण") ||
-      t.includes("kriya") ||
-      t.includes("क्रिया"),
-    questions: [
-      {
-        q: "हिन्दी व्याकरण में किसी व्यक्ति, वस्तु, स्थान या भाव के नाम का बोध कराने वाले शब्द को क्या कहते हैं?",
-        options: [
-          "A) संज्ञा (Noun)",
-          "B) सर्वनाम (Pronoun)",
-          "C) क्रिया (Verb)",
-          "D) विशेषण (Adjective)",
-        ],
-        answer: "A",
-        explanation: "किसी व्यक्ति, वस्तु, स्थान, गुण या भाव के नाम को संज्ञा कहा जाता है (जैसे- राम, दिल्ली, पुस्तक, मिठास)।",
-      },
-      {
-        q: "संज्ञा के स्थान पर प्रयुक्त होने वाले शब्दों (जैसे- वह, तुम, मैं, हम) को क्या कहा जाता है?",
-        options: [
-          "A) सर्वनाम",
-          "B) क्रियाविशेषण",
-          "C) अव्यय",
-          "D) उपसर्ग",
-        ],
-        answer: "A",
-        explanation: "संज्ञा की पुनरुक्ति रोकने और वाक्य को सहज बनाने के लिए संज्ञा के स्थान पर सर्वनाम का प्रयोग किया जाता है।",
-      },
-      {
-        q: "संज्ञा या सर्वनाम की विशेषता बताने वाले शब्द को क्या कहते हैं?",
-        options: [
-          "A) विशेषण (Adjective)",
-          "B) क्रिया (Verb)",
-          "C) अव्यय",
-          "D) कारक",
-        ],
-        answer: "A",
-        explanation: "जो शब्द संज्ञा अथवा सर्वनाम के गुण, संख्या, मात्रा या परिमाण की विशेषता बताते हैं, उन्हें विशेषण कहते हैं।",
-      },
-    ],
-  },
 ];
 
 /**
@@ -2227,7 +2130,6 @@ export function getDomainQuiz(
   else if (subjectLower.includes("civic") || subjectLower.includes("polit") || subjectLower.includes("social")) preferredPrefix = "civics_";
   else if (subjectLower.includes("econ")) preferredPrefix = "econ_";
   else if (subjectLower.includes("eng") || subjectLower.includes("gram")) preferredPrefix = "eng_";
-  else if (subjectLower.includes("hin")) preferredPrefix = "hindi_";
 
   // First pass: try banks that match the preferred subject prefix
   if (preferredPrefix) {
