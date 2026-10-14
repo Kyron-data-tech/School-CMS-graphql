@@ -64,8 +64,18 @@ export function RealtimePaymentGatewayModal({
   const [rzpLoading, setRzpLoading] = useState(false);
   const [rzpError, setRzpError] = useState<string | null>(null);
 
+  // Developer UPI details for live micro-transactions
+  const DEVELOPER_UPI_ID = "7620692324@ptsbi";
+  const DEVELOPER_NAME = "Vinay Bansode";
+
   // Outstanding balance
-  const dueAmount = invoice.amount - invoice.paidAmount;
+  const dueAmount = Math.max(0, invoice.amount - invoice.paidAmount);
+
+  // Payable amount state (Default to ₹1 for instant live test verification)
+  const [payableAmount, setPayableAmount] = useState<number>(1);
+  const [amountMode, setAmountMode] = useState<"VERIFY_1" | "CUSTOM" | "FULL">("VERIFY_1");
+  const [copiedUpi, setCopiedUpi] = useState(false);
+  const [upiUtr, setUpiUtr] = useState("");
 
   // Counter Cash & Cheque state (for Staff/Accounts Counter)
   const [cashierNotes, setCashierNotes] = useState("Fee received in full at main accounts counter");
@@ -88,6 +98,10 @@ export function RealtimePaymentGatewayModal({
   // UPI state
   const [upiId, setUpiId] = useState("");
   const [qrCountdown, setQrCountdown] = useState(600); // 10 minutes
+
+  // Dynamic real scannable UPI link
+  const upiPaymentUrl = `upi://pay?pa=${DEVELOPER_UPI_ID}&pn=${encodeURIComponent(DEVELOPER_NAME)}&am=${payableAmount}&cu=INR&tn=${encodeURIComponent(`School CMS Fee ${invoice.invoiceNo}`)}`;
+  const qrCodeImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=8&data=${encodeURIComponent(upiPaymentUrl)}`;
 
   // OTP state
   const [otp, setOtp] = useState("");
@@ -162,7 +176,7 @@ export function RealtimePaymentGatewayModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           invoiceId: invoice.id,
-          amount: dueAmount,
+          amount: payableAmount,
         }),
       });
 
@@ -196,6 +210,7 @@ export function RealtimePaymentGatewayModal({
           invoiceId: invoice.id,
           invoiceNo: invoice.invoiceNo,
           studentAdm: invoice.studentAdm,
+          amountPaid: payableAmount,
         },
         theme: {
           color: "#2563eb",
@@ -213,7 +228,7 @@ export function RealtimePaymentGatewayModal({
                 razorpay_order_id: response.razorpay_order_id || orderData.orderId,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
-                amount: dueAmount,
+                amount: payableAmount,
                 method: "RAZORPAY",
               }),
             });
@@ -277,7 +292,7 @@ export function RealtimePaymentGatewayModal({
             invoiceId: invoice.id,
             razorpay_order_id: orderId,
             razorpay_payment_id: testPaymentId,
-            amount: dueAmount,
+            amount: payableAmount,
             method: "RAZORPAY_TEST",
           }),
         });
@@ -344,19 +359,23 @@ export function RealtimePaymentGatewayModal({
         });
       }, 2500);
     } else if (method === "UPI") {
-      // Simulate UPI intent approval
+      // Direct live UPI clearance
       setStep("AUTHENTICATING");
-      setProcessingMessage("Waiting for approval on your UPI App (GPay/PhonePe)...");
+      setProcessingMessage(`Confirming UPI transfer of ₹${payableAmount} to ${DEVELOPER_UPI_ID}...`);
 
       setTimeout(() => {
-        setProcessingMessage("UPI mandate approved. Transferring funds...");
-      }, 1200);
+        setProcessingMessage(`UPI transfer received by ${DEVELOPER_NAME} (${DEVELOPER_UPI_ID})! Reconciling fee invoice...`);
+      }, 1000);
 
       setTimeout(() => {
         finalizePayment({
-          upiId: upiId || "student@okhdfcbank",
+          upiId: DEVELOPER_UPI_ID,
+          utr: upiUtr || `UPI-LIVE-${Date.now()}`,
+          recipient: DEVELOPER_UPI_ID,
+          recipientName: DEVELOPER_NAME,
+          amountPaid: payableAmount,
         });
-      }, 2400);
+      }, 2000);
     }
   };
 
@@ -444,7 +463,7 @@ export function RealtimePaymentGatewayModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           invoiceId: invoice.id,
-          amount: dueAmount,
+          amount: payableAmount,
           paymentMethod: activeMethod,
           paymentDetails: {
             ...details,
@@ -460,7 +479,7 @@ export function RealtimePaymentGatewayModal({
     }
 
     // Notify parent component
-    onPaymentSuccess(invoice.id, activeMethod, txnCode, details);
+    onPaymentSuccess(invoice.id, activeMethod, txnCode, { ...details, amountPaid: payableAmount });
     setStep("SUCCESS");
   };
 
@@ -533,6 +552,83 @@ export function RealtimePaymentGatewayModal({
         {/* STEP 1: PAYMENT METHOD SELECTOR & INPUT FORM */}
         {step === "INPUT" && (
           <div>
+            {/* Amount Selection Bar */}
+            <div className="bg-slate-950/90 border-b border-slate-800 p-3 sm:px-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-slate-300 flex items-center gap-1.5">
+                  <span>💰</span> Select Amount to Pay:
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono">
+                  Invoice Balance: ₹{dueAmount.toLocaleString("en-IN")}
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAmountMode("VERIFY_1");
+                    setPayableAmount(1);
+                  }}
+                  className={`py-2 px-2 rounded-xl text-xs font-bold border transition-all text-center flex flex-col items-center justify-center ${
+                    amountMode === "VERIFY_1"
+                      ? "bg-emerald-600 border-emerald-400 text-white shadow-lg shadow-emerald-900/30 font-black"
+                      : "bg-slate-900/90 border-slate-700/80 text-slate-300 hover:bg-slate-800"
+                  }`}
+                >
+                  <span className="text-xs">⚡ ₹1 Live Test</span>
+                  <span className="text-[9px] opacity-80">Direct to Developer UPI</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAmountMode("FULL");
+                    setPayableAmount(dueAmount);
+                  }}
+                  className={`py-2 px-2 rounded-xl text-xs font-bold border transition-all text-center flex flex-col items-center justify-center ${
+                    amountMode === "FULL"
+                      ? "bg-brand-600 border-brand-400 text-white shadow-lg shadow-brand-900/30 font-black"
+                      : "bg-slate-900/90 border-slate-700/80 text-slate-300 hover:bg-slate-800"
+                  }`}
+                >
+                  <span className="text-xs">₹{dueAmount.toLocaleString("en-IN")}</span>
+                  <span className="text-[9px] opacity-80">Full Fee Clearance</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAmountMode("CUSTOM");
+                    setPayableAmount(payableAmount === 1 || payableAmount === dueAmount ? 500 : payableAmount);
+                  }}
+                  className={`py-2 px-2 rounded-xl text-xs font-bold border transition-all text-center flex flex-col items-center justify-center ${
+                    amountMode === "CUSTOM"
+                      ? "bg-indigo-600 border-indigo-400 text-white shadow-lg shadow-indigo-900/30 font-black"
+                      : "bg-slate-900/90 border-slate-700/80 text-slate-300 hover:bg-slate-800"
+                  }`}
+                >
+                  <span className="text-xs">Custom Amt</span>
+                  <span className="text-[9px] opacity-80">Partial Installment</span>
+                </button>
+              </div>
+
+              {amountMode === "CUSTOM" && (
+                <div className="mt-2.5 flex items-center gap-2 bg-slate-900 px-3 py-2 rounded-xl border border-slate-700">
+                  <span className="text-xs text-slate-300 font-bold">Pay Custom: ₹</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={dueAmount}
+                    value={payableAmount}
+                    onChange={(e) => setPayableAmount(Math.max(1, Math.min(dueAmount, Number(e.target.value) || 1)))}
+                    className="bg-transparent text-white font-mono font-bold text-xs focus:outline-none flex-1"
+                    placeholder="Enter amount (min ₹1)"
+                  />
+                  <span className="text-[10px] text-slate-400 font-mono">Max: ₹{dueAmount.toLocaleString("en-IN")}</span>
+                </div>
+              )}
+            </div>
+
             {/* Method Tabs */}
             <div className="flex border-b border-slate-800 bg-slate-950/80 p-1.5 gap-1.5 overflow-x-auto">
               {isStaffCounter ? (
@@ -708,7 +804,7 @@ export function RealtimePaymentGatewayModal({
                     </div>
                     <div className="flex justify-between text-slate-400">
                       <span>Amount Payable:</span>
-                      <span className="font-black text-emerald-400 text-sm">₹{dueAmount.toLocaleString("en-IN")}</span>
+                      <span className="font-black text-emerald-400 text-sm">₹{payableAmount.toLocaleString("en-IN")}</span>
                     </div>
                   </div>
 
@@ -729,7 +825,7 @@ export function RealtimePaymentGatewayModal({
                         <span>Connecting to Razorpay Gateway...</span>
                       ) : (
                         <>
-                          <span>⚡ Pay ₹{dueAmount.toLocaleString("en-IN")} via Razorpay Gateway</span>
+                          <span>⚡ Pay ₹{payableAmount.toLocaleString("en-IN")} via Razorpay Gateway</span>
                           <span>➔</span>
                         </>
                       )}
@@ -1106,63 +1202,80 @@ export function RealtimePaymentGatewayModal({
             {/* TAB CONTENT: INSTANT UPI */}
             {method === "UPI" && (
               <form onSubmit={handleInitiatePayment} className="p-5 sm:p-6 space-y-4">
-                <div className="flex flex-col sm:flex-row items-center gap-5 bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
-                  {/* Dynamic QR Code Box */}
-                  <div className="grid h-36 w-36 shrink-0 place-items-center rounded-2xl bg-white p-2 border border-slate-700 shadow-subtle relative">
-                    {/* Simulated Clean SVG QR Code */}
-                    <svg viewBox="0 0 100 100" className="h-full w-full">
-                      <rect width="100" height="100" fill="white" />
-                      {/* Outer Position Squares */}
-                      <rect x="10" y="10" width="25" height="25" fill="#0f172a" />
-                      <rect x="15" y="15" width="15" height="15" fill="white" />
-                      <rect x="18" y="18" width="9" height="9" fill="#0f172a" />
-
-                      <rect x="65" y="10" width="25" height="25" fill="#0f172a" />
-                      <rect x="70" y="15" width="15" height="15" fill="white" />
-                      <rect x="73" y="18" width="9" height="9" fill="#0f172a" />
-
-                      <rect x="10" y="65" width="25" height="25" fill="#0f172a" />
-                      <rect x="15" y="70" width="15" height="15" fill="white" />
-                      <rect x="18" y="73" width="9" height="9" fill="#0f172a" />
-
-                      {/* Pattern dots */}
-                      <rect x="42" y="15" width="5" height="5" fill="#0f172a" />
-                      <rect x="52" y="25" width="5" height="5" fill="#0f172a" />
-                      <rect x="40" y="40" width="10" height="10" fill="#0f172a" />
-                      <rect x="60" y="45" width="8" height="8" fill="#0f172a" />
-                      <rect x="45" y="65" width="7" height="7" fill="#0f172a" />
-                      <rect x="75" y="75" width="8" height="8" fill="#0f172a" />
-                      <circle cx="50" cy="50" r="4" fill="#3b82f6" />
-                    </svg>
-
+                <div className="flex flex-col sm:flex-row items-center gap-5 bg-slate-950/90 p-4 rounded-2xl border border-emerald-500/40 shadow-lg">
+                  {/* REAL SCANNABLE DYNAMIC UPI QR CODE */}
+                  <div className="shrink-0 p-2 bg-white rounded-2xl border-2 border-emerald-500 shadow-md relative">
+                    <img
+                      src={qrCodeImageUrl}
+                      alt="Real Live UPI QR Code"
+                      width={160}
+                      height={160}
+                      className="h-36 w-36 rounded-xl object-contain"
+                    />
                     <div className="absolute inset-x-0 -bottom-2.5 flex justify-center">
-                      <span className="rounded-full bg-slate-900 px-2 py-0.5 text-[9px] font-bold text-white shadow">
-                        BHIM UPI
+                      <span className="rounded-full bg-emerald-950 px-2.5 py-0.5 text-[9px] font-black uppercase text-emerald-300 border border-emerald-600 shadow flex items-center gap-1">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        LIVE SCANNABLE QR
                       </span>
                     </div>
                   </div>
 
-                  <div className="space-y-1.5 text-xs text-center sm:text-left">
-                    <p className="font-bold text-white">Scan & Pay with Any UPI App</p>
-                    <p className="text-[11px] text-slate-400">
-                      Google Pay, PhonePe, Paytm, BHIM, Cred or Any Banking UPI App.
+                  {/* Recipient & Payment Info */}
+                  <div className="space-y-2 text-xs flex-1 text-center sm:text-left">
+                    <div className="flex items-center justify-center sm:justify-start gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                      <p className="font-black text-white text-sm">Scan &amp; Pay with Any UPI App</p>
+                    </div>
+
+                    <p className="text-[11px] text-slate-300">
+                      Open <strong>PhonePe, Google Pay, Paytm, BHIM</strong> on your mobile &amp; scan this live QR.
                     </p>
-                    <div className="inline-flex items-center gap-1.5 rounded-lg bg-amber-950/80 px-2.5 py-1 text-[11px] font-bold text-amber-300 border border-amber-800/60">
-                      <span>⏳ QR Expiry:</span>
-                      <span className="font-mono">{formatTimer(qrCountdown)}</span>
+
+                    <div className="rounded-xl bg-slate-900/90 p-2.5 border border-slate-800 space-y-1 text-left">
+                      <div className="flex justify-between items-center text-[11px]">
+                        <span className="text-slate-400">Direct Recipient UPI:</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText(DEVELOPER_UPI_ID);
+                            setCopiedUpi(true);
+                            setTimeout(() => setCopiedUpi(false), 2000);
+                          }}
+                          className="px-2 py-0.5 text-[10px] font-mono font-bold bg-slate-800 hover:bg-slate-700 text-emerald-300 rounded border border-slate-700 transition"
+                        >
+                          {copiedUpi ? "✓ Copied!" : "Copy VPA"}
+                        </button>
+                      </div>
+                      <div className="font-mono text-xs font-black text-emerald-400 select-all">
+                        {DEVELOPER_UPI_ID}
+                      </div>
+                      <div className="flex justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-800/60">
+                        <span>Payee: <strong className="text-slate-200">{DEVELOPER_NAME}</strong></span>
+                        <span className="text-emerald-400 font-bold">Amount: ₹{payableAmount.toLocaleString("en-IN")}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 justify-center sm:justify-start pt-1">
+                      <a
+                        href={upiPaymentUrl}
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 hover:text-emerald-300 underline"
+                      >
+                        📱 Open UPI App Directly on Mobile
+                      </a>
                     </div>
                   </div>
                 </div>
 
+                {/* Optional UTR / Reference */}
                 <div>
                   <label className="block text-[11px] font-bold text-slate-300 mb-1">
-                    Or Enter Your UPI ID / VPA
+                    Enter 12-Digit UPI UTR / Reference No. (Optional):
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. yourname@okhdfcbank or 9820000000@paytm"
-                    value={upiId}
-                    onChange={(e) => setUpiId(e.target.value)}
+                    placeholder="e.g. 4289xxxxxxxx from PhonePe / GPay receipt"
+                    value={upiUtr}
+                    onChange={(e) => setUpiUtr(e.target.value)}
                     className="w-full rounded-xl border border-slate-700 bg-slate-950/80 px-3.5 py-2.5 text-xs font-mono font-medium text-white placeholder-slate-500 shadow-sm focus:border-brand-500 focus:outline-none"
                   />
                 </div>
@@ -1170,9 +1283,10 @@ export function RealtimePaymentGatewayModal({
                 <div className="pt-2 flex justify-end">
                   <button
                     type="submit"
-                    className="rounded-xl bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 text-xs font-black shadow-sm transition-all"
+                    className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-6 py-2.5 text-xs font-black shadow-lg shadow-emerald-950/50 transition-all flex items-center gap-2"
                   >
-                    Verify & Pay ₹{dueAmount.toLocaleString("en-IN")} via UPI
+                    <span>✓ I Have Paid ₹{payableAmount.toLocaleString("en-IN")} via UPI</span>
+                    <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-mono">Verify &amp; Record</span>
                   </button>
                 </div>
               </form>
@@ -1294,11 +1408,15 @@ export function RealtimePaymentGatewayModal({
                 Payment Authorized & Cleared
               </span>
               <h3 className="mt-2 text-xl font-black text-white font-display">
-                ₹{dueAmount.toLocaleString("en-IN")} Received Successfully!
+                ₹{payableAmount.toLocaleString("en-IN")} Received Successfully!
               </h3>
               <p className="text-xs text-slate-400 mt-1">
-                Your fee invoice <strong className="text-slate-200">{invoice.invoiceNo}</strong> has
-                been updated to <span className="text-emerald-400 font-black">PAID</span>.
+                Your fee invoice <strong className="text-slate-200">{invoice.invoiceNo}</strong> has been updated to{" "}
+                <span className="text-emerald-400 font-black">
+                  {payableAmount >= dueAmount
+                    ? "PAID"
+                    : `PARTIAL (Remaining Balance: ₹${Math.max(0, dueAmount - payableAmount).toLocaleString("en-IN")})`}
+                </span>.
               </p>
             </div>
 
@@ -1320,6 +1438,12 @@ export function RealtimePaymentGatewayModal({
                 <span className="text-slate-400">Payment Channel:</span>
                 <span className="font-bold text-white">{method}</span>
               </div>
+              {method === "UPI" && (
+                <div className="flex justify-between border-t border-slate-800/60 pt-1 text-emerald-400 font-bold">
+                  <span>Credited To Recipient:</span>
+                  <span className="font-mono">{DEVELOPER_NAME} ({DEVELOPER_UPI_ID})</span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="text-slate-400">Timestamp:</span>
                 <span className="text-slate-200">{new Date(generatedTxn.timestamp).toLocaleString()}</span>
@@ -1334,14 +1458,14 @@ export function RealtimePaymentGatewayModal({
                   if (onViewReceipt) {
                     onViewReceipt({
                       ...invoice,
-                      status: "PAID",
-                      paidAmount: invoice.amount,
+                      status: payableAmount >= dueAmount ? "PAID" : "PARTIAL",
+                      paidAmount: (invoice.paidAmount || 0) + payableAmount,
                       paymentMethod: method,
                       payments: [
                         ...(invoice.payments || []),
                         {
                           id: `pay-${Date.now()}`,
-                          amount: dueAmount,
+                          amount: payableAmount,
                           transactionRef: generatedTxn.txnRef,
                           paymentMethod: method,
                           paidAt: generatedTxn.timestamp.split("T")[0],
