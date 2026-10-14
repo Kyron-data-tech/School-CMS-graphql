@@ -81,25 +81,25 @@ export async function StudentDashboard({ ctx }: { ctx: AuthContext }) {
 
   return (
     <div className="space-y-6">
-      {/* Student Progress Hero with Campus Background */}
-      <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/[0.12] bg-slate-950/80 backdrop-blur-2xl ring-1 ring-inset ring-white/[0.05]">
+      {/* Student Progress Hero with Light Nostalgic Campus Background */}
+      <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-amber-500/20 bg-slate-950/75 backdrop-blur-2xl ring-1 ring-inset ring-amber-500/10">
         <div 
-          className="absolute inset-0 bg-cover bg-center opacity-25 filter contrast-125 pointer-events-none"
+          className="absolute inset-0 bg-cover bg-center opacity-45 filter sepia-[0.25] contrast-[1.12] brightness-[1.15] saturate-[1.3] pointer-events-none"
           style={{ backgroundImage: `url('/campus-background.jpg')` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-emerald-950/75 pointer-events-none" />
-        <div className="absolute right-0 top-0 -mt-16 -mr-16 w-80 h-80 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/92 via-slate-950/75 to-amber-950/50 pointer-events-none" />
+        <div className="absolute right-0 top-0 w-96 h-96 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3.5 py-1 text-xs font-bold text-emerald-300 border border-emerald-500/30 backdrop-blur-md">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              Student Academic Portal · Session 2026–27
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-3.5 py-1 text-xs font-bold text-amber-200 border border-amber-500/30 backdrop-blur-md">
+              <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+              🏛️ Greenfield Scholar · Cherished Campus Memories 2026–27
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-2 font-display text-white">
               Welcome, {ctx.name}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
-              Track your daily class attendance, assignment deadlines, term exam results, and campus broadcasts.
+            <p className="text-xs sm:text-sm text-slate-200 mt-1 max-w-xl">
+              Cherishing every day of your school journey — attendance, class discussions, and CBSE achievements.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">

@@ -40,41 +40,43 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="relative flex min-h-screen text-slate-100 font-sans selection:bg-brand-500 selection:text-white bg-slate-950 overflow-x-hidden">
-      {/* ── ATMOSPHERIC CAMPUS BACKGROUND IMAGE ON DASHBOARD ── */}
+      {/* ── LIGHT NOSTALGIC CAMPUS BACKGROUND IMAGE ON DASHBOARD ── */}
       <div 
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none opacity-[0.11] filter contrast-125"
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none opacity-[0.38] filter sepia-[0.22] contrast-[1.10] brightness-[1.14] saturate-[1.25]"
         style={{ backgroundImage: `url('/campus-background.jpg')` }}
       />
-      <div className="fixed inset-0 z-0 bg-gradient-to-b from-slate-950/75 via-slate-950/92 to-slate-950 pointer-events-none" />
+      {/* Soft warm nostalgic golden-hour vignette */}
+      <div className="fixed inset-0 z-0 bg-gradient-to-b from-slate-950/45 via-slate-950/68 to-slate-950/85 pointer-events-none" />
+      <div className="fixed inset-0 z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-500/12 via-transparent to-transparent pointer-events-none" />
 
       {/* ── MODERN FROSTED SIDEBAR ── */}
       <aside className="hidden w-64 shrink-0 flex-col border-r border-white/[0.08] bg-slate-950/80 backdrop-blur-2xl md:flex shadow-2xl z-20 relative">
-        {/* Brand Header */}
+        {/* Brand Header with Heritage Touch */}
         <div className="flex items-center gap-3.5 border-b border-white/[0.08] px-5 py-4 bg-white/[0.02]">
-          <div className="relative h-10 w-10 shrink-0 p-0.5 rounded-xl bg-gradient-to-tr from-brand-500 via-indigo-500 to-cyan-400 shadow-[0_0_20px_rgba(99,102,241,0.5)]">
+          <div className="relative h-10 w-10 shrink-0 p-0.5 rounded-xl bg-gradient-to-tr from-amber-400 via-brand-500 to-indigo-500 shadow-[0_0_20px_rgba(245,158,11,0.4)]">
             <div className="h-full w-full rounded-[10px] bg-[#090d16] flex flex-col items-center justify-center text-center p-0.5 border border-white/20">
-              <span className="font-display font-extrabold text-white text-xs tracking-wider">GIA</span>
-              <span className="text-[7px] font-mono text-cyan-300">SIS</span>
+              <span className="font-display font-extrabold text-amber-200 text-xs tracking-wider">GIA</span>
+              <span className="text-[7px] font-mono text-cyan-300">EST.88</span>
             </div>
-            <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-slate-950 animate-pulse" />
+            <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-amber-400 ring-2 ring-slate-950 animate-pulse" />
           </div>
           <div className="min-w-0 flex-1">
             <span className="block truncate text-sm font-extrabold tracking-tight text-white font-display">
               Greenfield Academy
             </span>
-            <span className="block truncate text-[11px] font-medium text-slate-400">
-              Central Academic SIS
+            <span className="block truncate text-[11px] font-medium text-amber-200/70">
+              Heritage SIS &amp; Campus
             </span>
           </div>
         </div>
 
         {/* Academic Context Badge */}
-        <div className="mx-3.5 my-3 rounded-xl bg-white/[0.03] p-2.5 border border-white/[0.07] flex items-center justify-between text-xs backdrop-blur-md shadow-sm">
+        <div className="mx-3.5 my-3 rounded-xl bg-white/[0.03] p-2.5 border border-amber-500/15 flex items-center justify-between text-xs backdrop-blur-md shadow-sm">
           <div className="text-[11px] font-bold text-slate-200 flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
             2026–27 Session
           </div>
-          <span className="rounded-lg bg-brand-500/20 px-2 py-0.5 text-[10px] font-mono font-bold text-brand-300 border border-brand-500/30 uppercase">
+          <span className="rounded-lg bg-amber-500/15 px-2 py-0.5 text-[10px] font-mono font-bold text-amber-300 border border-amber-500/30 uppercase">
             Term 1
           </span>
         </div>
@@ -132,6 +134,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Campus Net: <strong className="text-emerald-300 font-semibold">Online</strong>
+            </span>
+            <span className="text-slate-700 hidden lg:inline">·</span>
+            <span className="hidden lg:inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/25 px-2.5 py-0.5 text-[10px] font-bold text-amber-300 backdrop-blur-md">
+              <span>🏛️</span>
+              <span>Heritage Campus · Est. 1988</span>
             </span>
           </div>
 

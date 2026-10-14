@@ -74,28 +74,28 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
 
   return (
     <div className="space-y-6">
-      {/* ── WELCOME HERO BANNER WITH CAMPUS BACKGROUND ── */}
-      <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/[0.12] bg-slate-950/80 backdrop-blur-2xl ring-1 ring-inset ring-white/[0.05]">
-        {/* Campus background texture */}
+      {/* ── WELCOME HERO BANNER WITH LIGHT NOSTALGIC CAMPUS BACKGROUND ── */}
+      <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-amber-500/20 bg-slate-950/75 backdrop-blur-2xl ring-1 ring-inset ring-amber-500/10">
+        {/* Nostalgic Golden Campus Texture */}
         <div 
-          className="absolute inset-0 bg-cover bg-center opacity-25 filter contrast-125 pointer-events-none"
+          className="absolute inset-0 bg-cover bg-center opacity-45 filter sepia-[0.25] contrast-[1.12] brightness-[1.15] saturate-[1.3] pointer-events-none"
           style={{ backgroundImage: `url('/campus-background.jpg')` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-indigo-950/75 pointer-events-none" />
-        <div className="absolute right-0 top-0 -mt-16 -mr-16 w-80 h-80 rounded-full bg-brand-500/20 blur-3xl pointer-events-none" />
-        <div className="absolute left-1/3 bottom-0 -mb-20 w-72 h-72 rounded-full bg-indigo-500/15 blur-3xl pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/92 via-slate-950/75 to-amber-950/50 pointer-events-none" />
+        <div className="absolute right-0 top-0 w-96 h-96 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
+        <div className="absolute left-1/3 bottom-0 w-80 h-80 rounded-full bg-orange-500/10 blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2.5">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.06] px-3.5 py-1 text-xs font-bold text-brand-200 backdrop-blur-md border border-white/[0.1]">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              Greenfield Executive Command Desk · Session 2026–2027
+            <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/15 px-3.5 py-1 text-xs font-bold text-amber-200 backdrop-blur-md border border-amber-500/30">
+              <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+              🏛️ Greenfield Heritage Quadrangle · Golden Session 2026–27
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight font-display text-white">
               Welcome back, {ctx.name}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Academic Term 1 is in active session. All campus sections, biometric attendance registers, and CBSE grading workflows are operational.
+            <p className="text-xs sm:text-sm text-slate-200 max-w-2xl leading-relaxed">
+              Academic Term 1 is in active session. Where timeless campus memories meet modern institutional governance and AI excellence.
             </p>
           </div>
 
