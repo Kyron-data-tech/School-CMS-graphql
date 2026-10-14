@@ -77,15 +77,15 @@ export async function TeacherDashboard({ ctx }: { ctx: AuthContext }) {
         <div className="absolute right-0 top-0 w-96 h-96 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-3.5 py-1 text-xs font-bold text-amber-200 border border-amber-500/30 backdrop-blur-md">
-              <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-              🏛️ Faculty Heritage Workspace · Academic Memories 2026–27
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.08] px-3.5 py-1 text-xs font-bold text-brand-200 border border-white/[0.15] backdrop-blur-md">
+              <span className="h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
+              Faculty Academic Workspace · Session 2026–27
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-2 font-display text-white">
               Welcome, {ctx.name}
             </h1>
             <p className="text-xs sm:text-sm text-slate-200 mt-1 max-w-xl">
-              Guiding students across campus quadrangle, homework evaluations, and CBSE curriculum excellence.
+              Manage your course offerings, attendance registers, homework evaluations, and examination grading.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">

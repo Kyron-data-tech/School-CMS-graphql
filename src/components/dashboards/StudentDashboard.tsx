@@ -91,15 +91,15 @@ export async function StudentDashboard({ ctx }: { ctx: AuthContext }) {
         <div className="absolute right-0 top-0 w-96 h-96 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-3.5 py-1 text-xs font-bold text-amber-200 border border-amber-500/30 backdrop-blur-md">
-              <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-              🏛️ Greenfield Scholar · Cherished Campus Memories 2026–27
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3.5 py-1 text-xs font-bold text-emerald-300 border border-emerald-500/30 backdrop-blur-md">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              Student Academic Portal · Session 2026–27
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-2 font-display text-white">
               Welcome, {ctx.name}
             </h1>
             <p className="text-xs sm:text-sm text-slate-200 mt-1 max-w-xl">
-              Cherishing every day of your school journey — attendance, class discussions, and CBSE achievements.
+              Track your daily class attendance, assignment deadlines, term exam results, and campus broadcasts.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
