@@ -81,8 +81,13 @@ export async function StudentDashboard({ ctx }: { ctx: AuthContext }) {
 
   return (
     <div className="space-y-6">
-      {/* Student Progress Hero */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900/90 via-emerald-950/30 to-slate-900/90 p-6 sm:p-8 text-white shadow-[0_16px_40px_rgba(0,0,0,0.4)] border border-white/[0.08] backdrop-blur-2xl ring-1 ring-inset ring-white/[0.03]">
+      {/* Student Progress Hero with Campus Background */}
+      <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/[0.12] bg-slate-950/80 backdrop-blur-2xl ring-1 ring-inset ring-white/[0.05]">
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-25 filter contrast-125 pointer-events-none"
+          style={{ backgroundImage: `url('/campus-background.jpg')` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-emerald-950/75 pointer-events-none" />
         <div className="absolute right-0 top-0 -mt-16 -mr-16 w-80 h-80 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>

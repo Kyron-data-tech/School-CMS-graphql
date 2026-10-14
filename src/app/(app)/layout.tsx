@@ -7,11 +7,11 @@ import Link from "next/link";
 
 function roleBadge(roleKey: string) {
   const map: Record<string, { label: string; className: string; dot: string }> = {
-    headmaster: { label: "Principal", className: "bg-purple-500/10 border-purple-500/25 text-purple-300", dot: "bg-purple-400" },
-    teacher: { label: "Faculty", className: "bg-blue-500/10 border-blue-500/25 text-blue-300", dot: "bg-blue-400" },
-    class_teacher: { label: "Class Teacher", className: "bg-indigo-500/10 border-indigo-500/25 text-indigo-300", dot: "bg-indigo-400" },
-    student: { label: "Student", className: "bg-emerald-500/10 border-emerald-500/25 text-emerald-300", dot: "bg-emerald-400" },
-    exam_controller: { label: "Exam Controller", className: "bg-rose-500/10 border-rose-500/25 text-rose-300", dot: "bg-rose-400" },
+    headmaster: { label: "Principal", className: "bg-purple-500/15 border-purple-500/30 text-purple-300", dot: "bg-purple-400" },
+    teacher: { label: "Faculty", className: "bg-blue-500/15 border-blue-500/30 text-blue-300", dot: "bg-blue-400" },
+    class_teacher: { label: "Class Teacher", className: "bg-indigo-500/15 border-indigo-500/30 text-indigo-300", dot: "bg-indigo-400" },
+    student: { label: "Student", className: "bg-emerald-500/15 border-emerald-500/30 text-emerald-300", dot: "bg-emerald-400" },
+    exam_controller: { label: "Exam Controller", className: "bg-rose-500/15 border-rose-500/30 text-rose-300", dot: "bg-rose-400" },
   };
 
   const item = map[roleKey] || { label: roleKey, className: "bg-white/[0.05] border-white/[0.1] text-slate-300", dot: "bg-slate-400" };
@@ -39,12 +39,19 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const items = navFor(ctx);
 
   return (
-    <div className="flex min-h-screen text-slate-100 font-sans selection:bg-brand-500 selection:text-white">
-      {/* ── SIDEBAR ── */}
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-white/[0.07] bg-slate-900/40 backdrop-blur-2xl md:flex shadow-2xl z-20">
+    <div className="relative flex min-h-screen text-slate-100 font-sans selection:bg-brand-500 selection:text-white bg-slate-950 overflow-x-hidden">
+      {/* ── ATMOSPHERIC CAMPUS BACKGROUND IMAGE ON DASHBOARD ── */}
+      <div 
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none opacity-[0.11] filter contrast-125"
+        style={{ backgroundImage: `url('/campus-background.jpg')` }}
+      />
+      <div className="fixed inset-0 z-0 bg-gradient-to-b from-slate-950/75 via-slate-950/92 to-slate-950 pointer-events-none" />
+
+      {/* ── MODERN FROSTED SIDEBAR ── */}
+      <aside className="hidden w-64 shrink-0 flex-col border-r border-white/[0.08] bg-slate-950/80 backdrop-blur-2xl md:flex shadow-2xl z-20 relative">
         {/* Brand Header */}
-        <div className="flex items-center gap-3.5 border-b border-white/[0.07] px-5 py-4">
-          <div className="relative h-10 w-10 shrink-0 p-0.5 rounded-xl bg-gradient-to-tr from-brand-500 via-indigo-500 to-cyan-400 shadow-[0_0_20px_-3px_rgba(99,102,241,0.5)]">
+        <div className="flex items-center gap-3.5 border-b border-white/[0.08] px-5 py-4 bg-white/[0.02]">
+          <div className="relative h-10 w-10 shrink-0 p-0.5 rounded-xl bg-gradient-to-tr from-brand-500 via-indigo-500 to-cyan-400 shadow-[0_0_20px_rgba(99,102,241,0.5)]">
             <div className="h-full w-full rounded-[10px] bg-[#090d16] flex flex-col items-center justify-center text-center p-0.5 border border-white/20">
               <span className="font-display font-extrabold text-white text-xs tracking-wider">GIA</span>
               <span className="text-[7px] font-mono text-cyan-300">SIS</span>
@@ -62,12 +69,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Academic Context Badge */}
-        <div className="mx-3.5 my-3 rounded-xl bg-white/[0.03] p-2.5 border border-white/[0.07] flex items-center justify-between text-xs backdrop-blur-md">
+        <div className="mx-3.5 my-3 rounded-xl bg-white/[0.03] p-2.5 border border-white/[0.07] flex items-center justify-between text-xs backdrop-blur-md shadow-sm">
           <div className="text-[11px] font-bold text-slate-200 flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
             2026–27 Session
           </div>
-          <span className="rounded-lg bg-brand-500/15 px-2 py-0.5 text-[10px] font-mono font-bold text-brand-300 border border-brand-500/30 uppercase">
+          <span className="rounded-lg bg-brand-500/20 px-2 py-0.5 text-[10px] font-mono font-bold text-brand-300 border border-brand-500/30 uppercase">
             Term 1
           </span>
         </div>
@@ -78,10 +85,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Admissions Quick Shortcut Link */}
-        <div className="p-3 border-t border-white/[0.07] bg-white/[0.01]">
+        <div className="p-3 border-t border-white/[0.08] bg-white/[0.01]">
           <Link
             href="/register"
-            className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] hover:border-white/[0.16] transition group text-xs text-white"
+            className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] hover:border-white/[0.16] transition group text-xs text-white shadow-sm"
           >
             <div className="flex items-center gap-2">
               <svg className="h-4 w-4 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -94,7 +101,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Institutional Footer Info */}
-        <div className="border-t border-white/[0.07] p-3.5 bg-white/[0.01] text-[11px] text-slate-400 flex items-center justify-between">
+        <div className="border-t border-white/[0.08] p-3.5 bg-white/[0.01] text-[11px] text-slate-400 flex items-center justify-between">
           <span className="flex items-center gap-1.5 font-bold text-slate-300">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
             Campus Network
@@ -106,9 +113,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* ── MAIN CONTENT AREA ── */}
-      <div className="flex min-w-0 flex-1 flex-col min-h-screen">
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col min-h-screen">
         {/* Top Navbar */}
-        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/[0.07] bg-slate-900/40 backdrop-blur-2xl px-5 sm:px-8 py-3.5 shadow-sm">
+        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/[0.08] bg-slate-950/75 backdrop-blur-2xl px-5 sm:px-8 py-3.5 shadow-sm">
           <div className="md:hidden flex items-center gap-2.5">
             <div className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 font-bold text-white text-xs shadow-sm">
               G

@@ -74,8 +74,14 @@ export async function HeadmasterDashboard({ ctx }: { ctx: AuthContext }) {
 
   return (
     <div className="space-y-6">
-      {/* ── WELCOME HERO BANNER ── */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900/90 via-brand-950/40 to-slate-900/90 p-6 sm:p-8 text-white shadow-[0_16px_40px_rgba(0,0,0,0.4)] border border-white/[0.08] backdrop-blur-2xl ring-1 ring-inset ring-white/[0.03]">
+      {/* ── WELCOME HERO BANNER WITH CAMPUS BACKGROUND ── */}
+      <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/[0.12] bg-slate-950/80 backdrop-blur-2xl ring-1 ring-inset ring-white/[0.05]">
+        {/* Campus background texture */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-25 filter contrast-125 pointer-events-none"
+          style={{ backgroundImage: `url('/campus-background.jpg')` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-indigo-950/75 pointer-events-none" />
         <div className="absolute right-0 top-0 -mt-16 -mr-16 w-80 h-80 rounded-full bg-brand-500/20 blur-3xl pointer-events-none" />
         <div className="absolute left-1/3 bottom-0 -mb-20 w-72 h-72 rounded-full bg-indigo-500/15 blur-3xl pointer-events-none" />
 
