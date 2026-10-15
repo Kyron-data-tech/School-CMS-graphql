@@ -109,7 +109,7 @@ function NavIcon({ path, active }: { path: string; active: boolean }) {
   }
 }
 
-export function Sidebar({ items }: { items: NavItem[] }) {
+export function Sidebar({ items, onNavigate }: { items: NavItem[]; onNavigate?: () => void }) {
   const pathname = usePathname();
 
   // Categorize navigation items into clean logical clusters
@@ -140,6 +140,7 @@ export function Sidebar({ items }: { items: NavItem[] }) {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={onNavigate}
                 aria-current={active ? "page" : undefined}
                 className={`group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-200 ${
                   active

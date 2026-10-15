@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getAuthContext } from "@/lib/auth/context";
 import { navFor } from "@/lib/nav";
 import { Sidebar } from "@/components/Sidebar";
+import { MobileNavigation } from "@/components/MobileNavigation";
 import { logoutAction } from "@/lib/auth/actions";
 import Link from "next/link";
 
@@ -117,8 +118,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       {/* ── MAIN CONTENT AREA ── */}
       <div className="relative z-10 flex min-w-0 flex-1 flex-col min-h-screen">
         {/* Top Navbar */}
-        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/[0.08] bg-slate-950/75 backdrop-blur-2xl px-5 sm:px-8 py-3.5 shadow-sm">
+        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/[0.08] bg-slate-950/75 backdrop-blur-2xl px-4 sm:px-8 py-3.5 shadow-sm">
           <div className="md:hidden flex items-center gap-2.5">
+            <MobileNavigation items={items} user={{ name: ctx.name, email: ctx.email, roleKeys: ctx.roleKeys }} />
             <div className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 font-bold text-white text-xs shadow-sm">
               G
             </div>

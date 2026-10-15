@@ -490,10 +490,10 @@ export function RealtimePaymentGatewayModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-xl rounded-3xl bg-slate-900 shadow-2xl overflow-hidden border border-slate-800 text-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-2 sm:p-4 backdrop-blur-sm animate-fadeIn">
+      <div className="w-full max-w-xl max-h-[92vh] flex flex-col rounded-3xl bg-slate-900 shadow-2xl overflow-hidden border border-slate-800 text-slate-100">
         {/* Gateway Security Header */}
-        <div className="bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-950 text-white p-5 sm:p-6 relative border-b border-slate-800">
+        <div className="shrink-0 bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-950 text-white p-5 sm:p-6 relative border-b border-slate-800">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <span className="grid h-8 w-8 place-items-center rounded-xl bg-brand-500/20 text-brand-300 border border-brand-400/30 text-base">
@@ -549,8 +549,10 @@ export function RealtimePaymentGatewayModal({
           </div>
         </div>
 
-        {/* STEP 1: PAYMENT METHOD SELECTOR & INPUT FORM */}
-        {step === "INPUT" && (
+        {/* Modal Scrollable Body */}
+        <div className="overflow-y-auto flex-1">
+          {/* STEP 1: PAYMENT METHOD SELECTOR & INPUT FORM */}
+          {step === "INPUT" && (
           <div>
             {/* Amount Selection Bar */}
             <div className="bg-slate-950/90 border-b border-slate-800 p-3 sm:px-6">
@@ -1489,6 +1491,7 @@ export function RealtimePaymentGatewayModal({
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
