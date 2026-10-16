@@ -92,8 +92,17 @@ export default async function FeesPage() {
       };
     });
 
-    const targetStudentId =
+    let targetStudentId =
       ctx.studentId || (ctx.childStudentIds.length > 0 ? ctx.childStudentIds[0] : null);
+
+    if (!targetStudentId && (ctx.roleKeys.includes("student") || ctx.roleKeys.includes("STUDENT"))) {
+      const studentByUserId = await db.student.findFirst({
+        where: { userId: ctx.userId },
+      });
+      if (studentByUserId) {
+        targetStudentId = studentByUserId.id;
+      }
+    }
 
     if (targetStudentId) {
       myInvoicesData = invoicesData.filter((i) => i.studentId === targetStudentId);
@@ -308,19 +317,34 @@ export default async function FeesPage() {
   }
 
   const primaryRole = ctx.roleKeys[0] || "student";
+  const isStudentOrParent =
+    !canManage &&
+    Boolean(
+      ctx.roleKeys.includes("student") ||
+        ctx.roleKeys.includes("parent") ||
+        ctx.roleKeys.includes("guardian") ||
+        ctx.roleKeys.includes("STUDENT") ||
+        ctx.roleKeys.includes("PARENT") ||
+        ctx.studentId ||
+        ctx.childStudentIds.length > 0
+    );
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Fee Invoicing & Campus Accounts"
-        subtitle="Tuition billing schedules, payment receipts, fee clearance certificates, and financial ledgers"
+        title={isStudentOrParent ? "My Fee Invoices & Payment Desk" : "Fee Invoicing & Campus Accounts"}
+        subtitle={
+          isStudentOrParent
+            ? "View academic tuition invoices, track fee clearance status, and download official receipts"
+            : "Tuition billing schedules, payment receipts, fee clearance certificates, and financial ledgers"
+        }
       />
 
       <InteractiveFeesClient
         structures={structuresData}
-        invoices={invoicesData}
+        invoices={canManage ? invoicesData : myInvoicesData}
         myInvoices={myInvoicesData}
-        userRole={primaryRole}
+        userRole={isStudentOrParent ? "student" : primaryRole}
         canManage={canManage}
       />
     </div>

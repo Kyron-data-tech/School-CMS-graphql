@@ -60,12 +60,14 @@ export function InteractiveFeesClient({
   const [myInvoices, setMyInvoices] = useState<FeeInvoiceItem[]>(initialMyInvoices);
 
   const isStudentOrParent =
-    userRole.toLowerCase().includes("student") ||
-    userRole.toLowerCase().includes("parent") ||
-    userRole.toLowerCase().includes("guardian");
+    !canManage &&
+    (userRole.toLowerCase().includes("student") ||
+      userRole.toLowerCase().includes("parent") ||
+      userRole.toLowerCase().includes("guardian") ||
+      myInvoices.length > 0);
 
   const [activeTab, setActiveTab] = useState<"invoices" | "structures" | "myFees">(
-    isStudentOrParent && myInvoices.length > 0 ? "myFees" : "invoices"
+    isStudentOrParent ? (myInvoices.length > 0 ? "myFees" : "structures") : "invoices"
   );
 
   const [search, setSearch] = useState("");
@@ -98,12 +100,20 @@ export function InteractiveFeesClient({
     return matchesSearch && matchesStatus;
   });
 
-  // Financial aggregates
-  const totalBilled = invoices.reduce((sum, inv) => sum + inv.amount, 0);
-  const totalCollected = invoices.reduce((sum, inv) => sum + inv.paidAmount, 0);
-  const totalOutstanding = Math.max(0, totalBilled - totalCollected);
-  const collectionPercentage =
-    totalBilled > 0 ? Math.round((totalCollected / totalBilled) * 100) : 100;
+  // School-wide aggregates (for admin / management)
+  const schoolTotalBilled = invoices.reduce((sum, inv) => sum + inv.amount, 0);
+  const schoolTotalCollected = invoices.reduce((sum, inv) => sum + inv.paidAmount, 0);
+  const schoolTotalOutstanding = Math.max(0, schoolTotalBilled - schoolTotalCollected);
+  const schoolCollectionPercentage =
+    schoolTotalBilled > 0 ? Math.round((schoolTotalCollected / schoolTotalBilled) * 100) : 100;
+
+  // Student / Parent personal aggregates
+  const myTotalBilled = myInvoices.reduce((sum, inv) => sum + inv.amount, 0);
+  const myTotalPaid = myInvoices.reduce((sum, inv) => sum + inv.paidAmount, 0);
+  const myTotalOutstanding = Math.max(0, myTotalBilled - myTotalPaid);
+  const myClearancePercentage =
+    myTotalBilled > 0 ? Math.round((myTotalPaid / myTotalBilled) * 100) : 100;
+  const isFullyCleared = myInvoices.length > 0 && myTotalOutstanding === 0;
 
   // Handle simulated payment
   const handleSimulatePayment = (invoiceId: string, method: string) => {
@@ -209,32 +219,88 @@ export function InteractiveFeesClient({
     <div className="space-y-6">
       {/* Financial KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          label="Total Fee Invoiced"
-          value={`₹${totalBilled.toLocaleString("en-IN")}`}
-          hint={`${invoices.length} invoices generated`}
-          icon="💳"
-        />
-        <StatCard
-          label="Collected Revenue"
-          value={`₹${totalCollected.toLocaleString("en-IN")}`}
-          hint={`${collectionPercentage}% collection efficiency`}
-          icon="💰"
-          trend={{ value: `${collectionPercentage}% cleared`, positive: true }}
-        />
-        <StatCard
-          label="Outstanding Dues"
-          value={`₹${totalOutstanding.toLocaleString("en-IN")}`}
-          hint="Pending student clearances"
-          icon="⏳"
-          trend={totalOutstanding > 0 ? { value: "Pending", positive: false } : undefined}
-        />
-        <StatCard
-          label="Audit Reconciliation"
-          value="100% Matched"
-          hint="Zero discrepancy against ledger"
-          icon="🛡️"
-        />
+        {isStudentOrParent ? (
+          <>
+            <StatCard
+              label="Total Fee Invoiced"
+              value={`₹${myTotalBilled.toLocaleString("en-IN")}`}
+              hint={`${myInvoices.length} billing cycle${myInvoices.length === 1 ? "" : "s"} generated`}
+              icon="💳"
+            />
+            <StatCard
+              label="Total Fees Paid"
+              value={`₹${myTotalPaid.toLocaleString("en-IN")}`}
+              hint={`${myClearancePercentage}% of session fees cleared`}
+              icon="💰"
+              trend={{ value: `${myClearancePercentage}% Cleared`, positive: true }}
+            />
+            <StatCard
+              label="Outstanding Dues"
+              value={`₹${myTotalOutstanding.toLocaleString("en-IN")}`}
+              hint={
+                isFullyCleared
+                  ? "All academic dues cleared"
+                  : "Action required before term examination"
+              }
+              icon="⏳"
+              trend={
+                isFullyCleared
+                  ? { value: "Fully Paid", positive: true }
+                  : { value: "Payment Due", positive: false }
+              }
+            />
+            <StatCard
+              label="Admit Card & Clearance"
+              value={
+                isFullyCleared
+                  ? "100% Cleared"
+                  : myInvoices.length === 0
+                  ? "Under Review"
+                  : "Payment Pending"
+              }
+              hint={
+                isFullyCleared
+                  ? "Eligible for Examinations & Marksheets"
+                  : "Clear balance to unlock admit card"
+              }
+              icon="🛡️"
+              trend={
+                isFullyCleared
+                  ? { value: "Eligible", positive: true }
+                  : { value: "Action Needed", positive: false }
+              }
+            />
+          </>
+        ) : (
+          <>
+            <StatCard
+              label="Total Fee Invoiced"
+              value={`₹${schoolTotalBilled.toLocaleString("en-IN")}`}
+              hint={`${invoices.length} invoices generated`}
+              icon="💳"
+            />
+            <StatCard
+              label="Collected Revenue"
+              value={`₹${schoolTotalCollected.toLocaleString("en-IN")}`}
+              hint={`${schoolCollectionPercentage}% collection efficiency`}
+              icon="💰"
+              trend={{ value: `${schoolCollectionPercentage}% cleared`, positive: true }}
+            />
+            <StatCard
+              label="Outstanding Dues"
+              value={`₹${schoolTotalOutstanding.toLocaleString("en-IN")}`}
+              hint="Pending student clearances"
+              icon="⏳"
+              trend={schoolTotalOutstanding > 0 ? { value: "Pending", positive: false } : undefined}
+            />
+            <StatCard
+              label="Audit Reconciliation"
+              value="100% Matched"
+              hint="Zero discrepancy against ledger"
+              icon="🛡️"
+            />
+          </>
+        )}
       </div>
 
       {/* Tabs */}
@@ -249,19 +315,21 @@ export function InteractiveFeesClient({
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              My Fee Account ({myInvoices.length})
+              My Fee Invoices ({myInvoices.length})
             </button>
           )}
-          <button
-            onClick={() => setActiveTab("invoices")}
-            className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all ${
-              activeTab === "invoices"
-                ? "bg-brand-600 text-white shadow-sm"
-                : "text-slate-400 hover:text-white"
-            }`}
-          >
-            School Invoices Ledger ({invoices.length})
-          </button>
+          {!isStudentOrParent && (
+            <button
+              onClick={() => setActiveTab("invoices")}
+              className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all ${
+                activeTab === "invoices"
+                  ? "bg-brand-600 text-white shadow-sm"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              School Invoices Ledger ({invoices.length})
+            </button>
+          )}
           <button
             onClick={() => setActiveTab("structures")}
             className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all ${
@@ -270,7 +338,7 @@ export function InteractiveFeesClient({
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            Fee Structure Schedule
+            {isStudentOrParent ? "Academic Fee Structure" : "Fee Structure Schedule"}
           </button>
         </div>
 
@@ -287,35 +355,70 @@ export function InteractiveFeesClient({
       {/* MY FEES TAB (Student/Parent view) */}
       {activeTab === "myFees" && (
         <div className="space-y-4">
-          <div className="rounded-2xl border border-brand-800/80 bg-brand-950/40 p-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="rounded-2xl border border-brand-800/80 bg-brand-950/40 p-5 sm:p-6 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <span className="rounded-full bg-brand-900/80 px-2.5 py-0.5 text-[10px] font-black uppercase text-brand-300 border border-brand-700/80">
-                  Student Fee Clearance Desk
-                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-brand-900/80 px-2.5 py-0.5 text-[10px] font-black uppercase text-brand-300 border border-brand-700/80">
+                    Student Fee Clearance Desk
+                  </span>
+                  {isFullyCleared ? (
+                    <span className="rounded-full bg-emerald-950/90 px-2.5 py-0.5 text-[10px] font-black uppercase text-emerald-400 border border-emerald-800/80 flex items-center gap-1">
+                      <span>✓</span> All Dues Cleared
+                    </span>
+                  ) : (
+                    <span className="rounded-full bg-amber-950/90 px-2.5 py-0.5 text-[10px] font-black uppercase text-amber-300 border border-amber-800/80 flex items-center gap-1">
+                      <span>⏳</span> Payment Due
+                    </span>
+                  )}
+                </div>
+
                 <h3 className="mt-2 text-lg font-black text-white font-display">
                   Official Academic Billing & Receipts
                 </h3>
-                <p className="text-xs text-slate-300 mt-1">
+                <p className="text-xs text-slate-300 mt-1 max-w-xl">
                   Tuition, laboratories, computer infrastructure, library, and campus transport fees.
                 </p>
+
+                {myInvoices[0] && (
+                  <div className="mt-3.5 flex flex-wrap items-center gap-2 text-xs">
+                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] px-2.5 py-1 text-slate-200 font-semibold">
+                      <span>👤</span> {myInvoices[0].studentName}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] px-2.5 py-1 text-cyan-300 font-mono font-bold">
+                      <span>🎫</span> {myInvoices[0].studentAdm}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] px-2.5 py-1 text-slate-300">
+                      <span>🏫</span> {myInvoices[0].studentClass}
+                    </span>
+                  </div>
+                )}
               </div>
 
-              <div className="text-right">
+              <div className="text-left sm:text-right bg-slate-900/60 p-3.5 rounded-xl border border-slate-800 shrink-0">
                 <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
                   Total Outstanding
                 </span>
-                <span className="text-2xl font-black text-white font-display">
-                  ₹
-                  {myInvoices
-                    .reduce((sum, inv) => sum + (inv.amount - inv.paidAmount), 0)
-                    .toLocaleString("en-IN")}
+                <span className={`text-2xl font-black font-display ${isFullyCleared ? "text-emerald-400" : "text-amber-400"}`}>
+                  ₹{myTotalOutstanding.toLocaleString("en-IN")}
+                </span>
+                <span className="text-[10px] text-slate-400 block mt-0.5">
+                  {isFullyCleared ? "No pending payments" : "Action required before term exams"}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4">
+          {myInvoices.length === 0 ? (
+            <div className="card p-10 text-center border border-slate-800 bg-slate-900/60 rounded-2xl">
+              <span className="text-4xl">🎉</span>
+              <h4 className="mt-3 text-base font-bold text-white font-display">No Invoices Pending</h4>
+              <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+                All academic fees for your student profile are in good standing. No outstanding invoices have been issued for this period.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4">
             {myInvoices.map((inv) => {
               const isPaid = inv.status === "PAID";
               const isPartial = inv.status === "PARTIAL";
@@ -384,6 +487,11 @@ export function InteractiveFeesClient({
                           Paid: ₹{inv.paidAmount.toLocaleString("en-IN")}
                         </p>
                       )}
+                      {isPaid && (
+                        <p className="text-[11px] text-emerald-400 font-bold">
+                          ✓ Fully Paid
+                        </p>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -408,6 +516,7 @@ export function InteractiveFeesClient({
               );
             })}
           </div>
+          )}
         </div>
       )}
 
