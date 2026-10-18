@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import type { NavItem } from "@/lib/nav";
 import { Sidebar } from "./Sidebar";
 import { logoutAction } from "@/lib/auth/actions";
+import { ThemeToggle } from "./theme/ThemeToggle";
 
 interface MobileNavigationProps {
   items: NavItem[];
@@ -125,6 +126,11 @@ export function MobileNavigation({ items, user }: MobileNavigationProps) {
             {/* Scrollable Navigation Items */}
             <div className="flex-1 overflow-y-auto px-1">
               <Sidebar items={items} onNavigate={() => setIsOpen(false)} />
+            </div>
+
+            {/* Mobile Theme Switcher */}
+            <div className="px-3 py-2 border-t border-white/[0.08] flex justify-center">
+              <ThemeToggle />
             </div>
 
             {/* Admissions Quick Shortcut Link */}

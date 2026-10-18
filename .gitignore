@@ -38,3 +38,6 @@ yarn-error.log*
 
 # excel temp files
 ~$*
+
+# local storage
+.data/

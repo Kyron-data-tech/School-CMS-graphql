@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { logoutAction } from "@/lib/auth/actions";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 function roleBadge(roleKey: string) {
   const map: Record<string, { label: string; className: string; dot: string }> = {
@@ -140,6 +141,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
 
           <div className="ml-auto flex items-center gap-3">
+            {/* Dark & White Combined Theme Switcher */}
+            <ThemeToggle />
+
             {/* User profile capsule */}
             <div className="flex items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-md py-1.5 pl-2 pr-3.5 shadow-sm">
               <div className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-brand-600 via-indigo-600 to-indigo-700 font-bold text-white text-xs shadow-[0_0_15px_-2px_rgba(99,102,241,0.4)]">
@@ -167,7 +171,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+        <main className="workspace-canvas flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full transition-colors duration-200">
           {children}
         </main>
       </div>

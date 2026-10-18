@@ -3,6 +3,9 @@
 import { useState, useMemo } from "react";
 import { Badge, Section } from "@/components/ui";
 import { RegisterModal } from "@/components/auth/RegisterModal";
+import { RolePermissionsModal } from "./RolePermissionsModal";
+import { EditUserModal } from "./EditUserModal";
+import { ApiKeysTab } from "./ApiKeysTab";
 
 export interface UserSummary {
   id: string;
@@ -58,20 +61,32 @@ export function RolesDirectoryClient({
   roles: RoleSummary[];
   canManage?: boolean;
 }) {
-  // Modal State
+  // Live state for optimistic client updates
+  const [userList, setUserList] = useState<UserSummary[]>(users);
+  const [roleList, setRoleList] = useState<RoleSummary[]>(roles);
+
+  // Modal State for Registering New Users
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [registerInitialRole, setRegisterInitialRole] = useState<
     "student" | "teacher" | "staff" | "parent" | "principal"
   >("staff");
 
-  // View state
-  const [activeTab, setActiveTab] = useState<"users" | "roles">("users");
+  // Modal State for Role Permissions (Create & Edit)
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [selectedRoleToEdit, setSelectedRoleToEdit] = useState<RoleSummary | null>(null);
+
+  // Modal State for User Editing
+  const [isEditUserOpen, setIsEditUserOpen] = useState(false);
+  const [selectedUserToEdit, setSelectedUserToEdit] = useState<UserSummary | null>(null);
+
+  // View state: "users" | "roles" | "api-keys"
+  const [activeTab, setActiveTab] = useState<"users" | "roles" | "api-keys">("users");
   const [roleFilter, setRoleFilter] = useState<string>("ALL");
   const [search, setSearch] = useState("");
 
   // Filtered Users
   const filteredUsers = useMemo(() => {
-    return users.filter((u) => {
+    return userList.filter((u) => {
       const q = search.toLowerCase().trim();
       const matchesSearch =
         !q ||
@@ -106,34 +121,111 @@ export function RolesDirectoryClient({
 
       return true;
     });
-  }, [users, search, roleFilter]);
+  }, [userList, search, roleFilter]);
 
   // Statistics
   const stats = useMemo(() => {
-    const teachers = users.filter((u) =>
+    const teachers = userList.filter((u) =>
       u.roles.some((r) => r.key === "teacher" || r.key === "class_teacher")
     ).length;
-    const staff = users.filter(
+    const staff = userList.filter(
       (u) =>
         u.roles.some((r) => r.key === "staff" || r.key === "non_teaching_staff") ||
         (Boolean(u.teacher) &&
           !u.roles.some((r) => r.key === "teacher" || r.key === "headmaster"))
     ).length;
-    const students = users.filter((u) => u.roles.some((r) => r.key === "student")).length;
-    const admins = users.filter((u) =>
+    const students = userList.filter((u) => u.roles.some((r) => r.key === "student")).length;
+    const admins = userList.filter((u) =>
       u.roles.some(
         (r) => r.key === "headmaster" || r.key === "admin" || r.key === "principal"
       )
     ).length;
 
-    return { total: users.length, teachers, staff, students, admins };
-  }, [users]);
+    return { total: userList.length, teachers, staff, students, admins };
+  }, [userList]);
 
   function handleOpenRegister(
     role: "student" | "teacher" | "staff" | "parent" | "principal" = "staff"
   ) {
     setRegisterInitialRole(role);
     setIsRegisterOpen(true);
+  }
+
+  function handleOpenCreateRole() {
+    setSelectedRoleToEdit(null);
+    setIsRoleModalOpen(true);
+  }
+
+  function handleOpenEditRole(r: RoleSummary) {
+    setSelectedRoleToEdit(r);
+    setIsRoleModalOpen(true);
+  }
+
+  function handleOpenEditUser(u: UserSummary) {
+    setSelectedUserToEdit(u);
+    setIsEditUserOpen(true);
+  }
+
+  async function handleToggleUserStatus(u: UserSummary) {
+    const newStatus = !u.isActive;
+    const actionWord = newStatus ? "activate" : "deactivate";
+    if (!confirm(`Are you sure you want to ${actionWord} the account for ${u.name}?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: u.id,
+          name: u.name,
+          email: u.email,
+          isActive: newStatus,
+          roleKeys: u.roles.map((r) => r.key),
+        }),
+      });
+
+      if (res.ok) {
+        setUserList((prev) =>
+          prev.map((usr) => (usr.id === u.id ? { ...usr, isActive: newStatus } : usr))
+        );
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to update account status.");
+      }
+    } catch (e) {
+      alert("Network error updating user account status.");
+    }
+  }
+
+  async function handleDeleteRole(r: RoleSummary) {
+    if (r.isSystem) {
+      alert("System roles (Headmaster, Teacher, Student) are protected core templates and cannot be deleted.");
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to delete the custom role "${r.name}"?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/admin/roles", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roleId: r.id }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Failed to delete role.");
+        return;
+      }
+
+      setRoleList((prev) => prev.filter((role) => role.id !== r.id));
+    } catch (e) {
+      alert("Network error deleting role.");
+    }
   }
 
   return (
@@ -206,20 +298,20 @@ export function RolesDirectoryClient({
             <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-display">
               Roles &amp; Access
             </div>
-            <div className="text-lg font-extrabold text-white">{roles.length} Roles</div>
+            <div className="text-lg font-extrabold text-white">{roleList.length} Roles</div>
           </div>
         </div>
       </div>
 
-      {/* Action Bar & Quick Add Buttons */}
+      {/* Action Bar & Tab Switcher */}
       <div className="card p-4 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          {/* Main Tab Toggle: Users Directory vs Roles Matrix */}
-          <div className="flex rounded-xl border border-white/[0.08] bg-white/[0.03] p-1 shrink-0">
+          {/* Main Tab Toggle: Users Directory vs Roles Matrix vs API Keys */}
+          <div className="flex rounded-xl border border-white/[0.08] bg-white/[0.03] p-1 shrink-0 overflow-x-auto">
             <button
               type="button"
               onClick={() => setActiveTab("users")}
-              className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition ${
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition shrink-0 ${
                 activeTab === "users"
                   ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-sm font-bold"
                   : "text-slate-400 hover:text-white"
@@ -230,45 +322,68 @@ export function RolesDirectoryClient({
             <button
               type="button"
               onClick={() => setActiveTab("roles")}
-              className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition ${
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition shrink-0 ${
                 activeTab === "roles"
                   ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-sm font-bold"
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              <span>Roles &amp; Permissions Matrix ({roles.length})</span>
+              <span>Roles &amp; Access Matrix ({roleList.length})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("api-keys")}
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition shrink-0 ${
+                activeTab === "api-keys"
+                  ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-sm font-bold"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <span>🔑 Organization API Keys</span>
             </button>
           </div>
 
-          {/* Quick Onboarding Button Group */}
+          {/* Quick Action Button Group */}
           {canManage && (
             <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => handleOpenRegister("staff")}
-                className="btn-ghost py-2 px-3 text-xs"
-                title="Onboard Non-Teaching Staff (Accountant, Librarian, Transport, Clerk, Lab Assistant)"
-              >
-                <span>+ Add Staff</span>
-              </button>
+              {activeTab === "roles" ? (
+                <button
+                  type="button"
+                  onClick={handleOpenCreateRole}
+                  className="btn-primary py-2 px-4 text-xs font-bold"
+                >
+                  <span>+ Create Custom Role</span>
+                </button>
+              ) : activeTab === "users" ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenRegister("staff")}
+                    className="btn-ghost py-2 px-3 text-xs"
+                    title="Onboard Non-Teaching Staff"
+                  >
+                    <span>+ Add Staff</span>
+                  </button>
 
-              <button
-                type="button"
-                onClick={() => handleOpenRegister("teacher")}
-                className="btn-ghost py-2 px-3 text-xs"
-                title="Onboard Teacher or Faculty Member"
-              >
-                <span>+ Add Teacher</span>
-              </button>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenRegister("teacher")}
+                    className="btn-ghost py-2 px-3 text-xs"
+                    title="Onboard Teacher or Faculty Member"
+                  >
+                    <span>+ Add Teacher</span>
+                  </button>
 
-              <button
-                type="button"
-                onClick={() => handleOpenRegister("student")}
-                className="btn-primary py-2 px-3.5 text-xs"
-                title="Enroll a new student"
-              >
-                <span>+ Add Student</span>
-              </button>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenRegister("student")}
+                    className="btn-primary py-2 px-3.5 text-xs"
+                    title="Enroll a new student"
+                  >
+                    <span>+ Add Student</span>
+                  </button>
+                </>
+              ) : null}
             </div>
           )}
         </div>
@@ -344,7 +459,7 @@ export function RolesDirectoryClient({
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {filteredUsers.map((u) => {
-                const isHeadmaster = u.roles.some((r) => r.key === "headmaster");
+                const isHeadmaster = u.roles.some((r) => r.key === "headmaster" || r.key === "principal");
                 const isTeacher = u.roles.some((r) => r.key === "teacher");
                 const isStudent = u.roles.some((r) => r.key === "student");
                 const isStaff = !isTeacher && !isStudent && !isHeadmaster;
@@ -352,52 +467,79 @@ export function RolesDirectoryClient({
                 return (
                   <div
                     key={u.id}
-                    className="card p-4 space-y-3 border border-slate-800 bg-slate-900/90 hover:border-slate-700 transition"
+                    className="card p-4 space-y-3 border border-slate-800 bg-slate-900/90 hover:border-slate-700 transition flex flex-col justify-between"
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="space-y-0.5">
-                        <div className="text-sm font-bold text-white flex items-center gap-1.5">
-                          {isHeadmaster && <span>👑</span>}
-                          {isTeacher && <span>👩‍🏫</span>}
-                          {isStaff && <span>💼</span>}
-                          {isStudent && <span>🎓</span>}
-                          <span>{u.name}</span>
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="space-y-0.5 min-w-0">
+                          <div className="text-sm font-bold text-white flex items-center gap-1.5 truncate">
+                            {isHeadmaster && <span>👑</span>}
+                            {isTeacher && <span>👩‍🏫</span>}
+                            {isStaff && <span>💼</span>}
+                            {isStudent && <span>🎓</span>}
+                            <span className="truncate">{u.name}</span>
+                          </div>
+                          <div className="text-xs text-slate-400 font-mono truncate">{u.email}</div>
                         </div>
-                        <div className="text-xs text-slate-400 font-mono truncate">{u.email}</div>
+
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold border shrink-0 ${
+                            u.isActive
+                              ? "bg-emerald-950/60 border-emerald-800/80 text-emerald-300"
+                              : "bg-slate-800 border-slate-700 text-slate-400"
+                          }`}
+                        >
+                          {u.isActive ? "Active" : "Inactive"}
+                        </span>
                       </div>
 
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold border ${
-                          u.isActive
-                            ? "bg-emerald-950/60 border-emerald-800/80 text-emerald-300"
-                            : "bg-slate-800 border-slate-700 text-slate-400"
-                        }`}
-                      >
-                        {u.isActive ? "Active" : "Inactive"}
-                      </span>
-                    </div>
-
-                    {/* Designation / ID detail */}
-                    <div className="text-xs bg-slate-950/80 border border-slate-800/80 rounded-lg p-2 flex items-center justify-between">
-                      <span className="text-slate-400">
-                        {u.teacher?.designation || (isStudent ? "Student Scholar" : isHeadmaster ? "Principal" : "Staff Member")}
-                      </span>
-                      <span className="font-mono text-indigo-300 font-semibold">
-                        {u.teacher?.employeeId || u.student?.admissionNo || "—"}
-                      </span>
-                    </div>
-
-                    {/* Role Badges */}
-                    <div className="flex flex-wrap gap-1 pt-1">
-                      {u.roles.map((r) => (
-                        <span
-                          key={r.id}
-                          className="inline-flex items-center rounded-md border border-slate-700 bg-slate-800/80 px-2 py-0.5 text-[10px] font-medium text-slate-200"
-                        >
-                          {r.name}
+                      {/* Designation / ID detail */}
+                      <div className="text-xs bg-slate-950/80 border border-slate-800/80 rounded-lg p-2 flex items-center justify-between">
+                        <span className="text-slate-400 truncate">
+                          {u.teacher?.designation || (isStudent ? "Student Scholar" : isHeadmaster ? "Principal" : "Staff Member")}
                         </span>
-                      ))}
+                        <span className="font-mono text-indigo-300 font-semibold shrink-0">
+                          {u.teacher?.employeeId || u.student?.admissionNo || "—"}
+                        </span>
+                      </div>
+
+                      {/* Role Badges */}
+                      <div className="flex flex-wrap gap-1 pt-0.5">
+                        {u.roles.map((r) => (
+                          <span
+                            key={r.id}
+                            className="inline-flex items-center rounded-md border border-slate-700 bg-slate-800/80 px-2 py-0.5 text-[10px] font-medium text-slate-200"
+                          >
+                            {r.name}
+                          </span>
+                        ))}
+                      </div>
                     </div>
+
+                    {/* Actions bar for Principal */}
+                    {canManage && (
+                      <div className="pt-2.5 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEditUser(u)}
+                          className="flex items-center gap-1 text-[11px] font-semibold text-brand-400 hover:text-brand-300 transition"
+                        >
+                          <span>✏️ Edit &amp; Roles</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleToggleUserStatus(u)}
+                          className={`text-[11px] font-semibold transition ${
+                            u.isActive
+                              ? "text-rose-400 hover:text-rose-300"
+                              : "text-emerald-400 hover:text-emerald-300"
+                          }`}
+                        >
+                          {u.isActive ? "🚫 Deactivate" : "🟢 Activate"}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -409,25 +551,63 @@ export function RolesDirectoryClient({
       {/* TAB 2: ROLES & PERMISSIONS MATRIX */}
       {activeTab === "roles" && (
         <div className="space-y-4">
-          {roles.map((r) => (
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-slate-400">
+              Configure granular module access (view, create, edit, delete) for custom school roles.
+            </p>
+            {canManage && (
+              <button
+                type="button"
+                onClick={handleOpenCreateRole}
+                className="btn-primary py-2 px-3.5 text-xs font-bold shrink-0"
+              >
+                + Create Custom Role
+              </button>
+            )}
+          </div>
+
+          {roleList.map((r) => (
             <Section
               key={r.id}
               title={r.name}
               action={
-                <span className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   {r.isSystem ? (
-                    <Badge color="slate">System</Badge>
+                    <Badge color="slate">System Protected</Badge>
                   ) : (
-                    <Badge color="green">Custom</Badge>
+                    <Badge color="green">Custom Role</Badge>
                   )}
                   <span className="text-xs text-slate-400">{r.userCount} user(s)</span>
-                </span>
+
+                  {canManage && (
+                    <div className="flex items-center gap-1.5 ml-2">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEditRole(r)}
+                        className="px-2.5 py-1 text-xs rounded-lg border border-brand-500/30 bg-brand-500/10 hover:bg-brand-500/20 text-brand-300 font-semibold transition"
+                        title="Configure page & module permissions"
+                      >
+                        ✏️ Edit Permissions
+                      </button>
+                      {!r.isSystem && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteRole(r)}
+                          className="px-2.5 py-1 text-xs rounded-lg border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 font-semibold transition"
+                          title="Delete this custom role"
+                        >
+                          🗑️ Delete
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               }
             >
               <p className="mb-3 text-sm text-slate-400">{r.description}</p>
               <div className="flex flex-wrap gap-1.5">
                 {r.permissions.length === 0 && (
-                  <span className="text-xs text-slate-500">No permissions granted.</span>
+                  <span className="text-xs text-slate-500">No permissions granted. Click &quot;Edit Permissions&quot; to assign access.</span>
                 )}
                 {r.permissions.map((p) => (
                   <span
@@ -446,6 +626,11 @@ export function RolesDirectoryClient({
         </div>
       )}
 
+      {/* TAB 3: ORGANIZATION API KEYS */}
+      {activeTab === "api-keys" && (
+        <ApiKeysTab canManage={canManage} />
+      )}
+
       {/* Registration Modal */}
       <RegisterModal
         isOpen={isRegisterOpen}
@@ -456,6 +641,37 @@ export function RolesDirectoryClient({
             window.location.reload();
           }, 1500);
         }}
+      />
+
+      {/* Role Permissions Modal (Create & Edit) */}
+      <RolePermissionsModal
+        isOpen={isRoleModalOpen}
+        onClose={() => {
+          setIsRoleModalOpen(false);
+          setSelectedRoleToEdit(null);
+        }}
+        onSaveSuccess={() => {
+          setIsRoleModalOpen(false);
+          setSelectedRoleToEdit(null);
+          window.location.reload();
+        }}
+        roleToEdit={selectedRoleToEdit}
+      />
+
+      {/* Edit User Details & Roles Modal */}
+      <EditUserModal
+        isOpen={isEditUserOpen}
+        onClose={() => {
+          setIsEditUserOpen(false);
+          setSelectedUserToEdit(null);
+        }}
+        onSuccess={() => {
+          setIsEditUserOpen(false);
+          setSelectedUserToEdit(null);
+          window.location.reload();
+        }}
+        user={selectedUserToEdit}
+        availableRoles={roleList}
       />
     </div>
   );
