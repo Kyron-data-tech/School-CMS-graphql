@@ -131,7 +131,7 @@ export async function GET(req: Request) {
 
     // Establish official session cookie
     await createSession(user.id);
-    return NextResponse.redirect(`${url.origin}/dashboard`);
+    return NextResponse.redirect(`${url.origin}/`);
   } catch (dbErr: any) {
     console.warn("OAuth: Database offline or query error, issuing demo session fallback.", dbErr);
     // If DB is offline, set a demo session cookie so the user can still proceed to preview!
@@ -142,6 +142,6 @@ export async function GET(req: Request) {
       path: "/",
       maxAge: 86400,
     });
-    return NextResponse.redirect(`${url.origin}/dashboard`);
+    return NextResponse.redirect(`${url.origin}/`);
   }
 }
