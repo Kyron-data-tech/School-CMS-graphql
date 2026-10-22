@@ -500,7 +500,9 @@ export default function LoginPage() {
                 {/* Google OAuth 2.0 Button */}
                 <button
                   type="button"
-                  onClick={() => setShowOAuthModal(true)}
+                  onClick={() => {
+                    window.location.href = "/api/auth/oauth/google";
+                  }}
                   className="w-full py-2.5 px-4 rounded-xl border border-white/[0.12] bg-white/[0.05] hover:bg-white/[0.1] hover:border-brand-500/40 transition-all flex items-center justify-center gap-2.5 text-xs font-bold text-white shadow-sm"
                   title="Authenticate via Google OAuth 2.0 Single Sign-On"
                 >
@@ -512,6 +514,15 @@ export default function LoginPage() {
                   </svg>
                   <span>Continue with Google (OAuth 2.0)</span>
                 </button>
+                <div className="mt-2 text-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowOAuthModal(true)}
+                    className="text-[11px] text-slate-400 hover:text-brand-300 underline underline-offset-2 transition"
+                  >
+                    🧪 Or test using offline Google Sandbox simulation
+                  </button>
+                </div>
               </div>
             )}
 
