@@ -74,15 +74,9 @@ export function InteractiveStudentPanel() {
           </button>
           <Link
             href="/students"
-            className="btn-ghost py-2 px-3 text-xs"
+            className="btn-ghost py-2 px-3 text-xs font-semibold"
           >
-            Full Student Directory →
-          </Link>
-          <Link
-            href="/register"
-            className="btn-ghost py-2 px-3 text-xs text-brand-300 hover:text-brand-200"
-          >
-            Open Public Admissions Portal ↗
+            Student Directory →
           </Link>
         </div>
       </div>

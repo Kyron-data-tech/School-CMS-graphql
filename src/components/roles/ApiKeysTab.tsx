@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { ApiKeyRecord } from "@/app/api/admin/api-keys/route";
+import type { ApiKeyRecord } from "@/lib/auth/api-key";
 
 const AVAILABLE_SCOPES = [
   { id: "students:read", name: "Read Student Directory", desc: "Access student bio-data, enrollment status, and parent contacts", icon: "👥" },

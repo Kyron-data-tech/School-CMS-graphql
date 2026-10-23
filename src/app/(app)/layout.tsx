@@ -117,7 +117,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* ── MAIN CONTENT AREA ── */}
-      <div className="relative z-10 flex min-w-0 flex-1 flex-col min-h-screen">
+      <div className="workspace-container relative z-10 flex min-w-0 flex-1 flex-col min-h-screen transition-colors duration-200">
         {/* Top Navbar */}
         <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/[0.08] bg-slate-950/75 backdrop-blur-2xl px-4 sm:px-8 py-3.5 shadow-sm">
           <div className="md:hidden flex items-center gap-2.5">

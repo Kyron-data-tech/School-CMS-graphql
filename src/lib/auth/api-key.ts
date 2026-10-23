@@ -1,5 +1,85 @@
 import { createHash } from "node:crypto";
-import { getStoredApiKeys, saveStoredApiKeys, type ApiKeyRecord } from "@/app/api/admin/api-keys/route";
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
+
+export interface ApiKeyRecord {
+  id: string;
+  name: string;
+  keyPrefix: string;
+  keyHash: string;
+  scopes: string[];
+  createdAt: string;
+  expiresAt: string | null;
+  lastUsedAt: string | null;
+  status: "ACTIVE" | "REVOKED";
+  createdBy: string;
+}
+
+const STORAGE_DIR = join(process.cwd(), ".data");
+const STORAGE_FILE = join(STORAGE_DIR, "api-keys.json");
+
+// Default seed keys for Greenfield International Academy
+export const INITIAL_KEYS: ApiKeyRecord[] = [
+  {
+    id: "key_biometric_01",
+    name: "Main Gate Biometric Scanner Terminal #1",
+    keyPrefix: "gia_live_a1b2",
+    keyHash: createHash("sha256").update("gia_live_demo_biometric_gate_token_2026").digest("hex"),
+    scopes: ["attendance:write", "attendance:read", "students:read"],
+    createdAt: new Date(Date.now() - 14 * 86400000).toISOString(),
+    expiresAt: new Date(Date.now() + 180 * 86400000).toISOString(),
+    lastUsedAt: new Date(Date.now() - 3600000).toISOString(),
+    status: "ACTIVE",
+    createdBy: "Dr. Alistair Vance (Principal)",
+  },
+  {
+    id: "key_rfid_library_02",
+    name: "Central Library Self-Check RFID Kiosk",
+    keyPrefix: "gia_live_c3d4",
+    keyHash: createHash("sha256").update("gia_live_demo_library_rfid_token_2026").digest("hex"),
+    scopes: ["students:read"],
+    createdAt: new Date(Date.now() - 30 * 86400000).toISOString(),
+    expiresAt: new Date(Date.now() + 335 * 86400000).toISOString(),
+    lastUsedAt: new Date(Date.now() - 86400000).toISOString(),
+    status: "ACTIVE",
+    createdBy: "Dr. Alistair Vance (Principal)",
+  },
+  {
+    id: "key_transport_gps_03",
+    name: "School Bus Fleet GPS Telematics Service",
+    keyPrefix: "gia_live_e5f6",
+    keyHash: createHash("sha256").update("gia_live_demo_bus_telematics_token_2026").digest("hex"),
+    scopes: ["transport:read", "students:read"],
+    createdAt: new Date(Date.now() - 60 * 86400000).toISOString(),
+    expiresAt: null,
+    lastUsedAt: new Date(Date.now() - 1800000).toISOString(),
+    status: "ACTIVE",
+    createdBy: "Dr. Alistair Vance (Principal)",
+  },
+];
+
+export function getStoredApiKeys(): ApiKeyRecord[] {
+  try {
+    if (existsSync(STORAGE_FILE)) {
+      const data = readFileSync(STORAGE_FILE, "utf-8");
+      return JSON.parse(data);
+    }
+  } catch (e) {
+    console.warn("Failed reading API keys file:", e);
+  }
+  return INITIAL_KEYS;
+}
+
+export function saveStoredApiKeys(keys: ApiKeyRecord[]) {
+  try {
+    if (!existsSync(STORAGE_DIR)) {
+      mkdirSync(STORAGE_DIR, { recursive: true });
+    }
+    writeFileSync(STORAGE_FILE, JSON.stringify(keys, null, 2), "utf-8");
+  } catch (e) {
+    console.warn("Failed saving API keys file:", e);
+  }
+}
 
 export interface ApiKeyAuthResult {
   valid: boolean;
