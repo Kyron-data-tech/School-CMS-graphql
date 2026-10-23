@@ -43,7 +43,7 @@ export async function GET(req: Request) {
     // Mode B: Live Google OAuth 2.0 Token Exchange
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-    const redirectUri = `${url.origin}/api/auth/oauth/callback`;
+    const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${url.origin}/api/auth/oauth/callback`;
 
     if (clientId && clientSecret) {
       try {

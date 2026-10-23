@@ -5,7 +5,7 @@ import { randomBytes } from "node:crypto";
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const clientId = process.env.GOOGLE_CLIENT_ID;
-  const redirectUri = `${url.origin}/api/auth/oauth/callback`;
+  const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${url.origin}/api/auth/oauth/callback`;
 
   // Generate cryptographically random state to protect against CSRF attacks (RFC 6749 Section 10.12)
   const state = randomBytes(16).toString("hex");
